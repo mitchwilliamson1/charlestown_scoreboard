@@ -1,0 +1,8 @@
+#My IP
+120.159.54.44
+
+#Copy file to Pi
+scp -r home.py mitch@10.0.0.33:mitchtranet
+
+#Copy file from Pi
+scp -r mitch@120.159.54.44:mitchtranet/apps /home/mitchellwilliamson/Desktop/
