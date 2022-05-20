@@ -1,18 +1,26 @@
 <template>
   <div class="teamAndTime">
     <img class="logo" src="../assets/tigers.jpg">
-    <div class="timer">
-      <Counter/>
+
+    <div style="width: 25%;" class="ends">
+      <div class="viewport">
+        <Ticker msg="ENDS"/>
+      </div>
     </div>
+
     <img  class="logo" src="../assets/lowlands.jpg">
   </div>
 
   <div class="scores">
     <div class="ticker">
-      <Ticker msg="Team Name" />
+      <div class="viewport">
+        <Ticker msg="Team Name" />
+      </div>
     </div>
     <div class="ticker">
-      <Ticker msg="Team Name" />
+      <div class="viewport">
+        <Ticker msg="Team Name" />
+      </div>
     </div>
   </div>
 
@@ -20,25 +28,34 @@
 
 <script>
 import Ticker from './Ticker.vue'
-import Counter from './Counter.vue'
+import Ends from './Ends.vue'
+
+// import Counter from './Counter.vue'
 
 
 export default {
   name: 'Board',
   components: {
     Ticker,
-    Counter
+    Ends,
+    // Counter
   }
 }
 </script>
 <style scoped type="text/css">
 .teamAndTime{
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;;
   background-color: #262626;
-  padding: 50px;
+  padding-bottom: 150px;
 }
+.viewport {
+  padding: 10px;
+/*  border-style: dashed;
+  border-color: white;*/
+}
+
 .scores{
   display: flex;
   align-items: center;
@@ -52,7 +69,7 @@ export default {
   height: 100%;
   border-color: white;
 }*/
-.timer{
+.ends{
   width: 40%;
   height: 300px;
 }
