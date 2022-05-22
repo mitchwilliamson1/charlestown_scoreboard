@@ -1,8 +1,8 @@
 <template>
-  <div style="">
+  <div style="text-align: center;">
     <h1 style="color: #e6e6e6;">{{msg}}</h1>
       <svg viewBox="0 3 30 18">
-        <rect x="5" y="3" width="20" height="18" style="fill:black;stroke-width:.2;stroke:#575757" />
+        <rect x="5" y="3" width="20" height="18" :style="style" />
         <text x="15" y="13" dominant-baseline="middle" text-anchor="middle">
           {{ count }}
         </text>
@@ -16,11 +16,18 @@
 export default {
   name: 'Ticker',
   props: {
-    msg: String
+    msg: String,
+    colour: String
   },
   data() {
     return {
       count: 0
+    }
+  },
+  computed: {
+    style() {
+      return "fill:"+this.colour+
+      "; stroke-width:.2;stroke:#575757"
     }
   }
 }

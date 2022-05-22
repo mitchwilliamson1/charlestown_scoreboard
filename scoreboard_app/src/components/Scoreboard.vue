@@ -1,59 +1,66 @@
 <template>
-  <div class="teamAndTime">
-    <img class="logo" src="../assets/tigers.jpg">
 
-    <div style="width: 25%;" class="ends">
-      <div class="viewport">
-        <Ticker msg="ENDS"/>
+  <div class="container">
+  <div class="row teamAndTime">
+    <div class="col-4 shadow p-1 mb-5 rounded">
+      <div style="display: flex; align-items: center; height: 100%;">
+        <img class="logo" src="../assets/tigers.jpg">
       </div>
     </div>
-
-    <img  class="logo" src="../assets/lowlands.jpg">
-  </div>
-
-  <div class="scores">
-    <div class="ticker">
-      <div class="viewport">
-        <Ticker msg="Team Name" />
+    <div class="col-4 shadow p-1 mb-5 rounded">
+      <div style="height: 100%" class="ends">
+        <!-- <div class="viewport"> -->
+          <Ticker msg="ENDS" colour="black"/>
+        <!-- </div> -->
       </div>
     </div>
-    <div class="ticker">
-      <div class="viewport">
-        <Ticker msg="Team Name" />
+    <div class="col-4 shadow p-1 mb-5 rounded">
+      <div style="display: flex; align-items: center; height: 100%">
+        <img  class="logo" src="../assets/lowlands.jpg">
       </div>
     </div>
   </div>
+
+  <div class="row scores">
+    <div class="col-6 shadow p-1 mb-5 rounded">
+      <div style="height: 100%;" class="ticker">
+        <div class="viewport">
+          <Ticker msg="Team Name" colour="red"/>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 shadow p-1 mb-5 rounded">
+      <div style="height: 100%;" class="ticker">
+        <div class="viewport">
+          <Ticker msg="Team Name" colour="blue"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </template>
 
 <script>
 import Ticker from './Ticker.vue'
-import Ends from './Ends.vue'
-
-// import Counter from './Counter.vue'
 
 
 export default {
   name: 'Board',
   components: {
     Ticker,
-    Ends,
-    // Counter
   }
 }
 </script>
+
 <style scoped type="text/css">
-.teamAndTime{
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;;
-  background-color: #262626;
-  padding-bottom: 150px;
+.row {
+    background-color: #363535;
+    height:50vh;
 }
-.viewport {
-  padding: 10px;
-/*  border-style: dashed;
-  border-color: white;*/
+
+img {
+  width: 100%;
 }
 
 .scores{
@@ -61,23 +68,6 @@ export default {
   align-items: center;
   flex-wrap: nowrap;
   justify-content: space-around;
-  background-color: #262626;
-  padding-bottom: 50px;
-}
-/*.ticker{
-  border-style: dashed;
-  height: 100%;
-  border-color: white;
-}*/
-.ends{
-  width: 40%;
-  height: 300px;
 }
 
-.logo{
-  height: 250px;
-}
-
-
-flex-grow: 4;
 </style>

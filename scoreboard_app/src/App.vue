@@ -29,7 +29,7 @@ export default {
 </script>
 <style type="text/css">
 .routeContainer {
-  background-color: #262626;
+  background-color: #2b2b2b;
   }
 
 a {
