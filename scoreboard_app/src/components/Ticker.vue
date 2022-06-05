@@ -1,14 +1,19 @@
 <template>
   <div style="text-align: center;">
-    <h1 style="color: #e6e6e6;">{{msg}}</h1>
-      <svg viewBox="0 3 30 18">
-        <rect x="5" y="3" width="20" height="18" :style="style" />
-        <text x="15" y="13" dominant-baseline="middle" text-anchor="middle">
-          {{ count }}
-        </text>
-      </svg>
+    <div class="container">
+      <div class="row align-items-center">
 
+        <div class="col-1"></div>
+
+        <div class="col-10 align-self-center count " :style="addstyle"> 
+          {{count}}
+        </div>
+
+        <div class="col-1"></div>
+      </div>
+    </div>
     <button @click="count++">Increase</button>
+
   </div>
 </template>
 
@@ -17,7 +22,9 @@ export default {
   name: 'Ticker',
   props: {
     msg: String,
-    colour: String
+    colour: String,
+    fontSize: String,
+    fontColour: String,
   },
   data() {
     return {
@@ -25,9 +32,8 @@ export default {
     }
   },
   computed: {
-    style() {
-      return "fill:"+this.colour+
-      "; stroke-width:.2;stroke:#575757"
+    addstyle() {
+      return "font-size:"+this.fontSize+"vh; color:"+this.fontColour+";"
     }
   }
 }
@@ -39,15 +45,19 @@ export default {
   /*src: url(../assets/Freshman-POdx.ttf);*/
   /*src: url(../assets/college.ttf);*/
   /*src: url(../assets/Graduate-Regular.ttf);*/
-  src: url(../assets/scorefont.otf);
+  src: url(../assets/scorefont1.otf);
+  /*src: url(../assets/bold.otf);*/
+
 }
 
-svg text {
+.count {
   font-family: clock-look;
+  color: yellow;
+  font-size: 28vh;
   text-align: center;
-  fill: yellow;
   stroke: solid;
-  background: black;
+  background-color: black;
+  line-height: 0.9;
 }
 </style>
 
