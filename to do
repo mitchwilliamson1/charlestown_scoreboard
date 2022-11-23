@@ -1,0 +1,6 @@
+to do
+
+- game start is from the front end so both coordinator and rink has same time
+- proper id's / send game to correct rink (process to compare update check etc coordinator db and rink dbs, look for games with no end time and check they'r in the rink) if they can't match show on error page
+- check that game created goes to both coordinator and rink
+- vue store has all ip addresses etc

@@ -6,19 +6,19 @@ import json
 import datetime
 from bottle import Bottle, route, run, template, static_file, TEMPLATE_PATH, JSONPlugin, response, request
 
-# from urls import budgetapp
-from budget.urls import budgetapp
-from video.urls import videoapp
+
+from players.urls import playersapp
+from games.urls import gamesapp
 
 TEMPLATE_PATH.append("dist/")
 
-sys.path.append("apps/budget/")
-sys.path.append("apps/video/")
+sys.path.append("apps/players/")
+sys.path.append("apps/games/")
 
 
 bott = Bottle()
-bott.mount("/budget", budgetapp)
-bott.mount("/video", videoapp)
+bott.mount("/players", playersapp)
+bott.mount("/games", gamesapp)
 
 
 
