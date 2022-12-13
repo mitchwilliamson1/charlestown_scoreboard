@@ -12,10 +12,9 @@
     </form>
     <br>
     <div>Show Rinks</div>
-    {{state.ips}}
     <div v-for="ip, i in state.ips" class="form-check form-check-inline">
         <input class="form-check-input" type="checkbox" id="inlineCheckbox1" v-model="ip.show">
-        <label class="form-check-label" for="inlineCheckbox1">{{ip.ip}}</label>
+        <label class="form-check-label" for="inlineCheckbox1">{{ip.rink}}</label>
     </div>
 
     <div class="col-12">
@@ -42,11 +41,6 @@ export default {
       ips: [],
     });
 
-    const addRemoveIp = e => {
-      console.log("!!!!!!!!!!", e)
-      // if (e.target.value === 'Jhon') sayHello()
-    }
-
     var path = ""
     if (process.env.NODE_ENV == 'development'){
       path = 'http://127.0.0.1:8000/games'
@@ -59,35 +53,33 @@ export default {
       getIpList()
     });
     function getIpList() {
-      var blah = props.masterboard.rink_ips.map(( e ) => {
+      var toShow = props.masterboard.rink_ips.map(( e ) => {
         return e.rink_id
       });
       state.ips = props.rinks.map(( e ) => {
-        e.show = blah.includes(e.rink_id)
-        return e
+        return {rink:e.rink, rink_id:e.rink_id, show:toShow.includes(e.rink_id)}
       });
     }
 
-    function getMasterboard() {
-      axios.get(path+'/get_masterboard', 
-        { params: { rink: props.masterboard.ip } })
-      .then(function (response) {
-        if (response.status == 200){
-          state.ips = ['127.0.0.1:8080', '127.0.0.2:885']
-          state.ips = response.data
-        }
-      })
-      .catch(function (error) {
-        console.log("ERROR ", error);
-      })
-      .then(function () {
+    // function getMasterboard() {
+    //   axios.get(path+'/get_masterboard', 
+    //     { params: { rink: props.masterboard.ip } })
+    //   .then(function (response) {
+    //     if (response.status == 200){
+    //       state.ips = ['127.0.0.1:8080', '127.0.0.2:885']
+    //       state.ips = response.data
+    //     }
+    //   })
+    //   .catch(function (error) {
+    //     console.log("ERROR ", error);
+    //   })
+    //   .then(function () {
 
-      });
-    }
+    //   });
+    // }
 
     return {
       path,
-      addRemoveIp,
       state
     };
   },
