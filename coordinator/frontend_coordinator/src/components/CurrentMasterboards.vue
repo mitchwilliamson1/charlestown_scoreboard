@@ -5,49 +5,46 @@
       <div class="col fw-bold">Rinks</div>
       <div class="col fw-bold">Ip Address</div>
     </div>
+    {{rinks}}
 
     <div v-for="rink, i in rinks" :key="i">
-      <div class="row shadow p-2 mb-1 bg-body rounded"
+      <div v-if="rink.masterboard" class="row shadow p-2 mb-1 bg-body rounded"
         data-bs-toggle="collapse" 
-        :data-bs-target="'#collapseTeam'+i+'rink'" 
+        :data-bs-target="'#collapseTeam'+i" 
         aria-expanded="false" 
         aria-controls="collapseOne">
         <div class="col">{{rink.rink}}</div>
         <div class="col">{{rink.ip}}</div>
       </div>
-      <div class="row p-2">
-        <div class="col collapse"
-          :id="'collapseTeam'+i+'rink'"
-          data-parent="#accordion">
-          <edit-rink :rinks="rink"/>
+        <div class="row p-2">
+          <div class="col collapse"
+            :id="'collapseTeam'+i"
+            data-parent="#accordion">
+            <edit-rink :rinks="rink"/>
+          </div>
         </div>
-      </div>
+
     </div>
 
-    <div class="row">
+<!--     <div class="row">
       <div class="col fw-bold">Masterboards</div>
-      <div class="col fw-bold">Ip Address</div>
     </div>
-
-    <div v-for="masterboard, i in masterboards" :key="i">
-      <div class="row shadow p-2 mb-1 bg-body rounded"
+    <div v-for="rink, i in rinks" :key="i">
+      <div v-if="rink.masterboard" class="row shadow p-2 mb-1 bg-body rounded"
         data-bs-toggle="collapse" 
-        :data-bs-target="'#collapseTeam'+i" 
+        :data-bs-target="'#collapseMasterboard'+i" 
         aria-expanded="false" 
-        aria-controls="collapseOne">
-        <div class="col">{{masterboard.masterboard}}</div>
-        <div class="col">{{masterboard.ip}}</div>
+        aria-controls="collapseTwo">
+        <div class="col">{{rink.rink}}</div>
       </div>
       <div class="row p-2">
         <div class="col collapse"
-          :id="'collapseTeam'+i"
+          :id="'collapseMasterboard'+i"
           data-parent="#accordion">
-          <edit-masterboard :rinks="rinks" :masterboard="masterboard"/>
+          <edit-masterboard :rinks="rinks" :masterboardIp="rink"/>
         </div>
       </div>
-    </div>
-
-
+    </div> -->
 
   </div>
   </div>
@@ -67,7 +64,6 @@ export default {
   },
   props: {
     rinks: Object,
-    masterboards: Object,
   },
 
   setup() {

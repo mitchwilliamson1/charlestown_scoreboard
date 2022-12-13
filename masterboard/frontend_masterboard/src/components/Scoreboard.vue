@@ -1,22 +1,30 @@
 <template>
   <div v-if="this.details" class="container-fluid p-0" style="background-color: white">
-    <div class="row align-items-center teamAndTime">
-      <div class="col align-self-center p-2 shadow rounded">
+    <div class="row align-items-center teamAndTime h-100">
+      <div class="col align-self-center p-2 shadow rounded h-100">
           <!-- <div class="txt">{{details.competitors[0].first_name.charAt(0)}} {{details.competitors[0].last_name.charAt(0)}}</div> -->
           <img class="logo" src="../assets/logos/tigers.jpg">
       </div>
-      <div class="col align-self-center p-2 shadow rounded">
+      <div class="col-1 align-self-center p-2 shadow rounded h-100">
+        <Ticker :details="details"
+                :endsProp="ends"
+                player="ends" 
+                fontSize="18" 
+                fontColour="white" 
+                colour="black"/>
+      </div>
+      <div class="col align-self-center p-2 shadow rounded h-100">
           <!-- <div class="txt">{{details.competitors[1].first_name.charAt(0)}} {{details.competitors[1].last_name.charAt(0)}}</div> -->
           <img class="logo" src="../assets/logos/Jets.png" style="background-color: white;">
       </div>
     </div>
 
-    <div class="row align-items-center scores">
+    <div class="row align-items-center scores h-100">
       <div class="col align-self-center shadow p-1 mb-5 rounded">
         <div style="height: 100%;" class="ticker">
           <Ticker :player="details.competitors[1]" 
                   :details="details"
-                  fontSize="22" 
+                  fontSize="27" 
                   colour="red"/>
         </div>
       </div>
@@ -24,27 +32,15 @@
         <div style="height: 100%;" class="ticker">
           <Ticker :player="details.competitors[0]" 
                   :details="details"
-                  fontSize="22" 
+                  fontSize="27" 
                   colour="black"/>
         </div>
       </div>
     </div>
 
-    <div class="row align-items-center scores">
-      <div class="col align-self-center shadow p-1 mb-5rounded ends">
-        <img class="logo" src="../assets/adds/belle_property.png" style="background-color: white; width: 40%;">
-      </div>
-    </div>
-
-    <div class="row align-items-center scores">
-      <div class="col align-self-center shadow p-1 mb-5 rounded">
-        {{ends}}
-        <Ticker :details="details"
-                :endsProp="ends"
-                player="ends" 
-                fontSize="18" 
-                fontColour="white" 
-                colour="black"/>
+    <div class="row align-items-center h-100 ends">
+      <div class="col align-self-center shadow p-1 mb-5rounded">
+        <img class="add" src="../assets/adds/belle_property.png">
       </div>
     </div>
   </div>
@@ -102,6 +98,14 @@ export default {
     /*width: 100vh;*/
 }
 
+.add {
+  width: 45vh;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+}
+
 .txt {
   font-family: bigText;
   color: white;
@@ -119,7 +123,7 @@ export default {
 }
 
 .logo {
-  width: 70%;
+  width: 50vh;
   display: block;
   margin-left: auto;
   margin-right: auto;

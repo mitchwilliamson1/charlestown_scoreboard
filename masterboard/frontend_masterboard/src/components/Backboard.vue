@@ -37,7 +37,7 @@ export default {
     })
 
     function getGame() {
-      axios.get(path+'get_game')
+      axios.get(path+'get_masterboard')
       .then(function (response) {
         if (response.status == 200){
           state.game = response.data[0]
@@ -47,7 +47,7 @@ export default {
         console.log("ERROR ", error);
       })
       .then(function () {
-        setTimeout(getGame, 1000)
+        // setTimeout(getGame, 1000)
       });
     }
 
