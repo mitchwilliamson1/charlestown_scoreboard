@@ -35,7 +35,7 @@
         :data-bs-target="'#collapseTeam'+i" 
         aria-expanded="false" 
         aria-controls="collapseOne">
-        <div class="col">{{masterboard.masterboard}}</div>
+        <div class="col">{{masterboard.rink}}</div>
         <div class="col">{{masterboard.ip}}</div>
       </div>
       <div class="row p-2">

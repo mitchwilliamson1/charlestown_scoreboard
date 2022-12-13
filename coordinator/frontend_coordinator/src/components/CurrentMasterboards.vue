@@ -8,12 +8,13 @@
     {{rinks}}
 
     <div v-for="rink, i in rinks" :key="i">
+      {{rink}}
       <div v-if="rink.masterboard" class="row shadow p-2 mb-1 bg-body rounded"
         data-bs-toggle="collapse" 
         :data-bs-target="'#collapseTeam'+i" 
         aria-expanded="false" 
         aria-controls="collapseOne">
-        <div class="col">{{rink.rink}}</div>
+        <div class="col">{{rink.}}</div>
         <div class="col">{{rink.ip}}</div>
       </div>
         <div class="row p-2">

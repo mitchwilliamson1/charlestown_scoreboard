@@ -11,11 +11,10 @@
       </div>
     </form>
     <br>
-    <div>Show Rinks</div>
-    {{state.ips}}
+    <div>Linked Rinks</div>
     <div v-for="ip, i in state.ips" class="form-check form-check-inline">
         <input class="form-check-input" type="checkbox" id="inlineCheckbox1" v-model="ip.show">
-        <label class="form-check-label" for="inlineCheckbox1">{{ip.ip}}</label>
+        <label class="form-check-label" for="inlineCheckbox1">{{ip.rink}}</label>
     </div>
 
     <div class="col-12">
@@ -42,11 +41,6 @@ export default {
       ips: [],
     });
 
-    const addRemoveIp = e => {
-      console.log("!!!!!!!!!!", e)
-      // if (e.target.value === 'Jhon') sayHello()
-    }
-
     var path = ""
     if (process.env.NODE_ENV == 'development'){
       path = 'http://127.0.0.1:8000/games'
@@ -64,7 +58,7 @@ export default {
       });
       state.ips = props.rinks.map(( e ) => {
         e.show = blah.includes(e.rink_id)
-        return e
+        return {rink:e.rink, ip:e.ip, rink_id:e.rink_id, show:e.show}
       });
     }
 
@@ -87,7 +81,6 @@ export default {
 
     return {
       path,
-      addRemoveIp,
       state
     };
   },
