@@ -2,30 +2,53 @@
   <div class="hello">
   <div class="container">
     <div class="row">
-      <div class="col fw-bold">Rink</div>
+      <div class="col fw-bold">Rinks</div>
       <div class="col fw-bold">Ip Address</div>
-
     </div>
 
     <div v-for="rink, i in rinks" :key="i">
       <div class="row shadow p-2 mb-1 bg-body rounded"
         data-bs-toggle="collapse" 
+        :data-bs-target="'#collapseTeam'+i+'rink'" 
+        aria-expanded="false" 
+        aria-controls="collapseOne">
+        <div class="col">{{rink.rink}}</div>
+        <div class="col">{{rink.ip}}</div>
+      </div>
+      <div class="row p-2">
+        <div class="col collapse"
+          :id="'collapseTeam'+i+'rink'"
+          data-parent="#accordion">
+          <edit-rink :rinks="rink"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col fw-bold">Masterboards</div>
+      <div class="col fw-bold">Ip Address</div>
+    </div>
+
+    <div v-for="masterboard, i in masterboards" :key="i">
+      <div class="row shadow p-2 mb-1 bg-body rounded"
+        data-bs-toggle="collapse" 
         :data-bs-target="'#collapseTeam'+i" 
         aria-expanded="false" 
         aria-controls="collapseOne">
-      <div class="col">{{rink.rink}}</div>
-      <div class="col">{{rink.ip}}</div>
+        <div class="col">{{masterboard.masterboard}}</div>
+        <div class="col">{{masterboard.ip}}</div>
       </div>
-
       <div class="row p-2">
         <div class="col collapse"
           :id="'collapseTeam'+i"
           data-parent="#accordion">
-          <edit-rink/>
+          <edit-masterboard :rinks="rinks" :masterboard="masterboard"/>
         </div>
-        
       </div>
     </div>
+
+
+
   </div>
   </div>
 </template>
@@ -33,15 +56,18 @@
 <script>
 import { reactive, onMounted } from "vue";
 import EditRink from '../components/EditRink.vue'
+import EditMasterboard from '../components/EditMasterboard.vue'
 
 
 export default {
   name: 'CurrentRinks',
   components: {
-    EditRink
+    EditRink,
+    EditMasterboard,
   },
   props: {
     rinks: Object,
+    masterboards: Object,
   },
 
   setup() {

@@ -24,7 +24,7 @@
         <div class="col collapse"
           :id="'collapse'+i"
           data-parent="#accordion">
-          <edit-player/>
+          <edit-player :teams="teams" :player="player"/>
         </div>
         
       </div>

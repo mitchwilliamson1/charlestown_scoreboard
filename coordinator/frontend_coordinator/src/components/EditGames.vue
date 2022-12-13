@@ -1,10 +1,9 @@
 <template>
   <div class="edit">
-
     <div class="row" v-for="item, key in details[0]">
       <div class="col-4">{{capitalise(key)}}</div>
       <select class="form-select col">
-        <option v-for="type in item" :value="type">{{type[key]}}</option>
+        <option v-for="type in item" :value="type">{{item}}</option>
       </select>
     </div>
 

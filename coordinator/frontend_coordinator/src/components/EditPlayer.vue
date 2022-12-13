@@ -2,48 +2,31 @@
   <div class="edit">
     <form class="row g-3">
       <div class="col-md-6">
-        <label for="inputEmail4" class="form-label">Email</label>
-        <input type="email" class="form-control" id="inputEmail4">
+        <label for="inputEmail4" class="form-label">First Name</label>
+        <input class="form-control" id="inputEmail4" v-model="player.first_name">
       </div>
       <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Password</label>
-        <input type="password" class="form-control" id="inputPassword4">
+        <label for="inputPassword4" class="form-label">Last Name</label>
+        <input class="form-control" id="inputPassword4" v-model="player.last_name">
       </div>
       <div class="col-12">
         <label for="inputAddress" class="form-label">Address</label>
-        <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+        <input type="text" class="form-control" id="inputAddress" v-model="player.address">
       </div>
       <div class="col-12">
-        <label for="inputAddress2" class="form-label">Address 2</label>
-        <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-      </div>
-      <div class="col-md-6">
-        <label for="inputCity" class="form-label">City</label>
-        <input type="text" class="form-control" id="inputCity">
-      </div>
-      <div class="col-md-4">
-        <label for="inputState" class="form-label">State</label>
-        <select id="inputState" class="form-select">
-          <option selected>Choose...</option>
-          <option>...</option>
+        <label for="inputAddress2" class="form-label">Team</label>
+        <select class="form-select" v-model="player.team">
+          <option v-for="team in teams" :value="team.team_id">{{team.team_name}}</option>
         </select>
       </div>
-      <div class="col-md-2">
-        <label for="inputZip" class="form-label">Zip</label>
-        <input type="text" class="form-control" id="inputZip">
-      </div>
-      <div class="col-12">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="gridCheck">
-          <label class="form-check-label" for="gridCheck">
-            Check me out
-          </label>
-        </div>
-      </div>
-      <div class="col-12">
-        <button type="submit" class="btn btn-primary">Sign in</button>
+      <div class="col-md-12">
+        <label for="inputCity" class="form-label">Email</label>
+        <input type="text" class="form-control" id="inputCity" v-model="player.email">
       </div>
     </form>
+      <div class="col-12">
+        <button type="submit" @click="updatePlayer" class="btn btn-primary">Update</button>
+      </div>
 
   </div>
 </template>
@@ -54,6 +37,8 @@ import { reactive, onMounted } from "vue";
 export default {
   name: 'EditGames',
   props: {
+    player: Object,
+    teams: Object,
   },
 
   setup() {
@@ -63,7 +48,7 @@ export default {
 
     var path = ""
     if (process.env.NODE_ENV == 'development'){
-      path = 'http://127.0.0.1:8000/budget'
+      path = 'http://127.0.0.1:8000/games'
     }else{
       path = window.location.toString();
     }
@@ -89,22 +74,25 @@ export default {
   },
 
   methods:{
-    post() {
+    teamName(playerTeam){
+      console.log("!!!!!!!!", playerTeam)
+      console.log(this.teams.filter(i => i.team_id == playerTeam))
+      var team = this.teams.filter(i => i.team_id == playerTeam)
+      return team[0]['team_name']
+    },
+    updatePlayer() {
       (async () => {
-      const rawResponse = await fetch(this.path+'/save', {
+      const rawResponse = await fetch(this.path+'/update_player', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         mode: 'no-cors',
-        body: JSON.stringify(this.state)
+        body: JSON.stringify(this.player)
       })
       const content = await rawResponse.json();
       console.log(content);
       })();
-    },
-    edit(game) {
-      console.log(game)
     },
   },
 }

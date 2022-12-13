@@ -3,11 +3,11 @@
     <div class="row">
 
       <div class="col">
-        <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">New Team</div>
+        <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">New Rink</div>
 
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
-          <h5 id="offcanvasRightLabel">New Team</h5>
+          <h5 id="offcanvasRightLabel">New Rink</h5>
           <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -30,18 +30,17 @@
           </div>
 
           <div class="">
-            <button type="button" @click="createTeamButton(this.createTeam)" class="btn btn-success">Create Team</button>
+            <button @click="createTeamButton(this.createTeam)" class="btn btn-success">Create Rink</button>
           </div>
         </div>
       </div>
 
         <div class="row">
           <div v-if="state.rinks" class="col-12">
-            <div>Rinks</div>
-            <current-rinks :rinks="state.rinks"/>
+            <current-rinks :rinks="state.rinks" :masterboards="state.masterboards"/>
           </div>
         </div>
-        
+  
       </div>
     </div>
     
@@ -79,6 +78,7 @@ export default {
   setup() {
     const state = reactive({
       rinks: null,
+      masterboards: null,
     });
 
     var path = ""
@@ -90,6 +90,7 @@ export default {
     
     onMounted(async () => { 
       getRinks()
+      getMasterboards()
     });
     function createTeamButton(team) {
       axios.post(path+'players/create_team', {
@@ -109,6 +110,22 @@ export default {
         if (response.status == 200){
           console.log("RESPONSE ", response.data);
           state.rinks = response.data
+        }
+      })
+      .catch(function (error) {
+        // handle error
+        console.log("ERROR ", error);
+      })
+      .then(function () {
+        // always executed
+      });
+    }
+    function getMasterboards() {
+      axios.get(path+'games/get_masterboards')
+      .then(function (response) {
+        if (response.status == 200){
+          console.log("RESPONSE ", response.data);
+          state.masterboards = response.data
         }
       })
       .catch(function (error) {

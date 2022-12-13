@@ -28,6 +28,7 @@ def init():
     initialise["grade"] = Games().get_grades()
     initialise["level"] = Games().get_levels()
     initialise["rink"] = Games().get_rinks()
+    initialise["masterboard"] = Games().get_masterboards()
     return json.dumps(initialise)
 
 
@@ -39,6 +40,11 @@ def get_games():
 @gamesapp.route("/get_rinks")
 def get_rinks():
     return json.dumps(Games().get_rinks())
+
+
+@gamesapp.route("/get_masterboards")
+def get_masterboard():
+    return json.dumps(Games().get_masterboards())
 
 
 
@@ -60,4 +66,31 @@ def add_score():
     return request.json
 
 
+@gamesapp.route("/update_rink", method=["POST", "OPTIONS"])
+def update_rink():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().update_rink(request_params)
+    return request.json
+
+
+@gamesapp.route("/update_team", method=["POST", "OPTIONS"])
+def update_team():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().update_team(request_params)
+    return request.json
+
+
+@gamesapp.route("/update_player", method=["POST", "OPTIONS"])
+def update_player():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().update_player(request_params)
+    return request.json
+
  
+

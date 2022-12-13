@@ -14,7 +14,7 @@
         <div class="col collapse"
           :id="'collapseTeam'+i"
           data-parent="#accordion">
-          <edit-player/>
+          <edit-teams :team="team"/>
         </div>
         
       </div>
@@ -25,13 +25,13 @@
 
 <script>
 import { reactive, onMounted } from "vue";
-import EditPlayer from '../components/EditPlayer.vue'
+import EditTeams from '../components/EditTeams.vue'
 
 
 export default {
   name: 'CurrentPlayers',
   components: {
-    EditPlayer
+    EditTeams
   },
   props: {
     teams: Object,

@@ -2,48 +2,17 @@
   <div class="edit">
     <form class="row g-3">
       <div class="col-md-6">
-        <label for="inputEmail4" class="form-label">Email</label>
-        <input type="email" class="form-control" id="inputEmail4">
+        <label for="inputEmail4" class="form-label">Rink</label>
+        <input type="text" class="form-control" id="inputEmail4" v-model="rinks.rink" >
       </div>
       <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Password</label>
-        <input type="password" class="form-control" id="inputPassword4">
-      </div>
-      <div class="col-12">
-        <label for="inputAddress" class="form-label">Address</label>
-        <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-      </div>
-      <div class="col-12">
-        <label for="inputAddress2" class="form-label">Address 2</label>
-        <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-      </div>
-      <div class="col-md-6">
-        <label for="inputCity" class="form-label">City</label>
-        <input type="text" class="form-control" id="inputCity">
-      </div>
-      <div class="col-md-4">
-        <label for="inputState" class="form-label">State</label>
-        <select id="inputState" class="form-select">
-          <option selected>Choose...</option>
-          <option>...</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <label for="inputZip" class="form-label">Zip</label>
-        <input type="text" class="form-control" id="inputZip">
-      </div>
-      <div class="col-12">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="gridCheck">
-          <label class="form-check-label" for="gridCheck">
-            Check me out
-          </label>
-        </div>
-      </div>
-      <div class="col-12">
-        <button type="submit" class="btn btn-primary">Sign in</button>
+        <label for="inputPassword4" class="form-label">Ip Address</label>
+        <input type="text" class="form-control" id="inputPassword4"  v-model="rinks.ip">
       </div>
     </form>
+      <div class="col-12">
+        <button @click="updateRink" type="submit" class="btn btn-primary">Update</button>
+      </div>
 
   </div>
 </template>
@@ -54,6 +23,7 @@ import { reactive, onMounted } from "vue";
 export default {
   name: 'EditGames',
   props: {
+    rinks: Object,
   },
 
   setup() {
@@ -63,7 +33,7 @@ export default {
 
     var path = ""
     if (process.env.NODE_ENV == 'development'){
-      path = 'http://127.0.0.1:8000/budget'
+      path = 'http://127.0.0.1:8000/games'
     }else{
       path = window.location.toString();
     }
@@ -89,22 +59,19 @@ export default {
   },
 
   methods:{
-    post() {
+    updateRink() {
       (async () => {
-      const rawResponse = await fetch(this.path+'/save', {
+      const rawResponse = await fetch(this.path+'/update_rink', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         mode: 'no-cors',
-        body: JSON.stringify(this.state)
+        body: JSON.stringify(this.rinks)
       })
       const content = await rawResponse.json();
       console.log(content);
       })();
-    },
-    edit(game) {
-      console.log(game)
     },
   },
 }

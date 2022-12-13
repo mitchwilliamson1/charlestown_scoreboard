@@ -51,6 +51,22 @@ class Games:
                      ip text, "")''')
         conn.commit()
 
+        c.execute('''CREATE TABLE IF NOT EXISTS masterboards
+                     (masterboard_id INTEGER PRIMARY KEY,
+                     masterboard text,
+                     ip text, "")''')
+        conn.commit()
+
+        c.execute('''CREATE TABLE IF NOT EXISTS master_link
+                     (master_link_id INTEGER PRIMARY KEY,
+                     masterboard INTEGER DEFAULT NULL,
+                     rink INTEGER DEFAULT NULL,
+                     FOREIGN KEY (masterboard)
+                        REFERENCES masterboards (masterboard_id),
+                    FOREIGN KEY (rink)
+                        REFERENCES rinks (rink_id))''')
+        conn.commit()
+
         c.execute('''CREATE TABLE IF NOT EXISTS games
                      (game_id INTEGER PRIMARY KEY,
                      name text DEFAULT NULL,
@@ -193,6 +209,41 @@ class Games:
 
         return parsed_rows
 
+    def get_masterboards(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        parsed_rows = []
+        masterboards = cursor.execute('''SELECT * FROM masterboards''').fetchall()
+
+        for masterboard in masterboards:
+            sql = f'''SELECT r.rink, r.ip, r.rink_id from master_link ml
+                    inner join masterboards m 
+                    on ml.masterboard = m.masterboard_id
+                    inner join rinks r 
+                    on ml.rink = r.rink_id
+                    where m.masterboard_id = {masterboard['masterboard_id']}'''
+            
+            rink_ips = cursor.execute(sql).fetchall()
+            rinks = []
+            for rink_ip in rink_ips:
+                rinks.append({
+                    "rink": rink_ip[0],
+                    "ip": rink_ip[1],
+                    "rink_id": rink_ip[2],
+
+                 })
+
+            parsed_rows.append({
+                "rink": masterboard["masterboard"],
+                "ip": masterboard["ip"],
+                "rink_id": masterboard["masterboard_id"],
+                "rink_ips": rinks,
+            })
+        print(parsed_rows)
+        return parsed_rows
+
 
     def get_games(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -294,82 +345,58 @@ class Games:
         return response.status_code
 
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    def get_masterboard(self, rink):
+        response = requests.get('http://'+rink+'/get_masterboard')
+        return response.json()
 
-    def cancel_blast(self, js):
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+
+    def update_rink(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cursor.execute('''UPDATE blasts SET status=? WHERE site_blast_id=?''', (-99, js["site_blast_id"]))
-        con.commit()
-
+        cmd = f"UPDATE rinks SET ip = '{js['ip']}', rink = '{js['rink']}', masterboard = '{js['masterboard']}' WHERE rink_id = {js['rink_id']}"
+        print(cmd)
+        res = cursor.execute(cmd)
+        print(res.fetchone())
+        if res.fetchone() is None:
+            con.commit()
         return {
                 "status": "ok",
         }
 
-    def edit_blast(self, js):
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+
+    def update_team(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        now = datetime.datetime.utcnow()
-
-        # Extract data from form
-        uuid = js["uuid"]
-        operation = js["operation"]
-        site_blast_id = js["site_blast_id"]
-        scheduled = datetime.datetime.strptime(js["scheduled_date"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        pits = pickle.dumps(js.get("pits", None))
-        activity = pickle.dumps(js.get("activity", None))
-        initiation = pickle.dumps(js.get("initiation", None))
-        affected_units = pickle.dumps(js.get("affected_units", None))
-        roads = pickle.dumps(js.get("roads", []))
-
-        # Create the edited blast
-        cursor.execute('''INSERT INTO blasts (created, operation, site_blast_id,
-                                                scheduled, pits, activity, 
-                                                initiation, affected_units, roads, parent)
-                                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (now, operation, site_blast_id, scheduled, pits, activity, 
-                    initiation, affected_units, roads, uuid)
-            )
-
-        con.commit()
-
+        cmd = f"UPDATE teams SET team_name = '{js['team_name']}', address = '{js['address']}', contact_details = '{js['contact_details']}' WHERE team_id = {js['team_id']}"
+        print(cmd)
+        res = cursor.execute(cmd)
+        print(res.fetchone())
+        if res.fetchone() is None:
+            con.commit()
         return {
-                "uuid": uuid,
-                "site_blast_id": site_blast_id,
-                "operation": operation,
-                "scheduled_date": scheduled.isoformat(),
-                "activity": pickle.loads(activity),
-                "pits": pickle.loads(pits),
-                "affected_units": pickle.loads(affected_units),
-                "initiation": pickle.loads(initiation),
-                "roads": pickle.loads(roads),
-            }
+                "status": "ok",
+        }
 
-    def add_recipient(self, phone):
-        if not phone.startswith("+61"):
-            raise Exception("Malformed phone number")
-        if len(phone) != 12:
-            raise Exception("Malformed phone number")
-
-        # Connect to DB
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+    def update_player(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        # See if number already exists
-        subs = cursor.execute('''SELECT * FROM subscribers WHERE phone_number = ?''', (phone,)).fetchall()
+        print(js)
 
-        if len(subs) != 0:
-            raise Exception("Number already subscribed")
+        cmd = f"UPDATE players SET first_name = '{js['first_name']}', last_name = '{js['last_name']}', team = '{js['team']}', address = '{js['address']}', email = '{js['email']}' WHERE player_id = {js['player_id']}"
+        print(cmd)
+        res = cursor.execute(cmd)
+        print(res.fetchone())
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
 
-        # Alright ass number into database
-        cursor.execute('''INSERT INTO subscribers (phone_number, subscribed_on) VALUES (?, ?)''', (phone, datetime.datetime.utcnow(),))
-        cursor.execute('''INSERT INTO jobs (phone_number, job_type) VALUES (?, ?)''',
-                                (phone, 
-                                "subscribe"))
 
-        con.commit()
+
