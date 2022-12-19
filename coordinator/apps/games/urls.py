@@ -75,6 +75,17 @@ def update_rink():
     return request.json
 
 
+@gamesapp.route("/update_masterboards", method=["POST", "OPTIONS"])
+def update_masterboards():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().update_masterboards(request_params['masterboard'])
+    Games().update_master_link(request_params['ips'], request_params['masterboard']['masterboard_id'])
+    return request.json
+
+
+
 @gamesapp.route("/update_team", method=["POST", "OPTIONS"])
 def update_team():
     if request.method == "OPTIONS":

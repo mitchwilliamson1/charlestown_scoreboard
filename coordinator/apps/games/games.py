@@ -236,12 +236,11 @@ class Games:
                  })
 
             parsed_rows.append({
-                "rink": masterboard["masterboard"],
+                "masterboard": masterboard["masterboard"],
                 "ip": masterboard["ip"],
-                "rink_id": masterboard["masterboard_id"],
+                "masterboard_id": masterboard["masterboard_id"],
                 "rink_ips": rinks,
             })
-        print(parsed_rows)
         return parsed_rows
 
 
@@ -311,7 +310,6 @@ class Games:
 
         js['game_id'] = game_id[0]
 
-        print(js)
 
         response = self.write_scoreboard(js)
         if response == 500:
@@ -329,7 +327,6 @@ class Games:
         cursor = con.cursor()
 
         cmd = f'UPDATE competitors SET score = {js["score"]} WHERE player={js["player_id"]} and game = {js["game_id"]}'
-        print(cmd)
         res = cursor.execute(cmd)
         print(res.fetchone())
         if res.fetchone() is None:
@@ -355,10 +352,43 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"UPDATE rinks SET ip = '{js['ip']}', rink = '{js['rink']}', masterboard = '{js['masterboard']}' WHERE rink_id = {js['rink_id']}"
-        print(cmd)
+        cmd = f"UPDATE rinks SET ip = '{js['ip']}', rink = '{js['rink']}' WHERE rink_id = {js['rink_id']}"
         res = cursor.execute(cmd)
-        print(res.fetchone())
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
+    def update_masterboards(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = f"UPDATE masterboards SET ip = '{js['ip']}', masterboard = '{js['masterboard']}' WHERE masterboard_id = {js['masterboard_id']}"
+        res = cursor.execute(cmd)
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
+    def update_master_link(self, js, master_id):
+        print(js, master_id)
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = f"DELETE from master_link WHERE masterboard = '{master_id}'"
+        res = cursor.execute(cmd)
+
+        for rink in js:
+            if rink['show'] is True:
+                cmd = f"INSERT INTO master_link (masterboard,  rink) values ({master_id}, {rink['rink_id']})"
+                print(cmd)
+                res = cursor.execute(cmd)
         if res.fetchone() is None:
             con.commit()
         return {
@@ -372,9 +402,7 @@ class Games:
         cursor = con.cursor()
 
         cmd = f"UPDATE teams SET team_name = '{js['team_name']}', address = '{js['address']}', contact_details = '{js['contact_details']}' WHERE team_id = {js['team_id']}"
-        print(cmd)
         res = cursor.execute(cmd)
-        print(res.fetchone())
         if res.fetchone() is None:
             con.commit()
         return {
@@ -386,12 +414,8 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        print(js)
-
         cmd = f"UPDATE players SET first_name = '{js['first_name']}', last_name = '{js['last_name']}', team = '{js['team']}', address = '{js['address']}', email = '{js['email']}' WHERE player_id = {js['player_id']}"
-        print(cmd)
         res = cursor.execute(cmd)
-        print(res.fetchone())
         if res.fetchone() is None:
             con.commit()
         return {

@@ -3,7 +3,7 @@
     <form class="row g-3">
       <div class="col-md-6">
         <label for="inputEmail4" class="form-label">Rink</label>
-        <input type="text" class="form-control" id="inputEmail4" v-model="masterboard.rink">
+        <input type="text" class="form-control" id="inputEmail4" v-model="masterboard.masterboard">
       </div>
       <div class="col-md-6">
         <label for="inputPassword4" class="form-label">Ip Address</label>
@@ -18,7 +18,7 @@
     </div>
 
     <div class="col-12">
-      <button @click="updateRink" type="submit" class="btn btn-primary">Update</button>
+      <button @click="updateMasterboard" type="submit" class="btn btn-primary">Update</button>
     </div>
     
 
@@ -99,15 +99,15 @@ export default {
   },
 
   methods:{
-    updateRink() {
+    updateMasterboard() {
       (async () => {
-      const rawResponse = await fetch(this.path+'/update_rink', {
+      const rawResponse = await fetch(this.path+'/update_masterboards', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         mode: 'no-cors',
-        body: JSON.stringify(this.rinks)
+        body: JSON.stringify({masterboard:this.masterboard, ips:this.state.ips})
       })
       const content = await rawResponse.json();
       console.log(content);
