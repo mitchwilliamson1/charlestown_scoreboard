@@ -83,6 +83,7 @@ class Game:
                 "competitors": competitors,
             })
 
+        print('SCORE PARSE: ', parsed_rows)
         return json.dumps(parsed_rows)
 
 

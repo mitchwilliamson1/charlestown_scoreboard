@@ -48,6 +48,7 @@ class Masterboard:
                 "ip": ip["ip"],
                 "rink_id": ip["rink_id"],
             })
+        print('PARSED ', parsed_rows)
 
         return json.dumps(parsed_rows)
 

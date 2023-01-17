@@ -30,6 +30,7 @@ def index():
 
 @bott.route("/get_game")
 def get_game():
+    print('1234566')
     return Game().get_game()
 
 
@@ -68,6 +69,6 @@ def send_static(filename):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8081))
+    port = int(os.environ.get('PORT', 8082))
     bott.run(host='0.0.0.0', port=port, debug=True)
 

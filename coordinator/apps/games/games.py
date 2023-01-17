@@ -342,9 +342,13 @@ class Games:
         return response.status_code
 
 
-    def get_masterboard(self, rink):
-        response = requests.get('http://'+rink+'/get_masterboard')
-        return response.json()
+    def get_masterboard(self, masterboard_id):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+        masterboard = cursor.execute('''SELECT * FROM masterboards WHERE masterboard_id = ?''', (masterboard_id, )).fetchone()
+        
+        return masterboard
 
 
     def update_rink(self, js):
@@ -376,7 +380,6 @@ class Games:
 
 
     def update_master_link(self, js, master_id):
-        print(js, master_id)
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -387,13 +390,27 @@ class Games:
         for rink in js:
             if rink['show'] is True:
                 cmd = f"INSERT INTO master_link (masterboard,  rink) values ({master_id}, {rink['rink_id']})"
-                print(cmd)
                 res = cursor.execute(cmd)
         if res.fetchone() is None:
             con.commit()
+            self.write_masterboard(js, master_id)
         return {
                 "status": "ok",
         }
+
+    def write_masterboard(self, js, master_id):
+        ips = []
+        for rink in js:
+            if rink['show']:
+                ips.append(rink['ip'])
+
+        masterboard_ip = self.get_masterboard(master_id)
+
+        print('http://'+masterboard_ip['ip']+'/create_game')
+
+        response = requests.post('http://'+masterboard_ip['ip']+'/create_game', json = ips)
+        print(response)
+        return response.status_code
 
 
     def update_team(self, js):
