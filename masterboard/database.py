@@ -28,6 +28,22 @@ class Masterboard:
 
         conn.commit()
 
+
+    def setup(self, js):
+        print(js)
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        sql = "DELETE FROM masterboard;"
+        cursor.execute(sql)
+
+        sql = "INSERT INTO masterboard (ip, rink_id) VALUES(?, ?);"
+        game_id = cursor.executemany(sql, js)
+
+        con.commit()
+
+
     def encode_if_required(self, str_val):
         try:
             return str_val.encode()
@@ -39,18 +55,14 @@ class Masterboard:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
         parsed_rows = []
-        
+
         ips = cursor.execute('''SELECT * FROM masterboard''').fetchall()
         for ip in ips:
-            
-            parsed_rows.append({
-                "ip_id": ip["ip_id"],
-                "ip": ip["ip"],
-                "rink_id": ip["rink_id"],
-            })
-        print('PARSED ', parsed_rows)
+            print('IPS', ip['ip'])
+            response = requests.get('http://'+ip['ip']+'/get_game')
+            data = json.loads(response.content)
 
-        return json.dumps(parsed_rows)
+        return json.dumps(data, indent=4, sort_keys=True)
 
 
     def write_coordinator_score(self, js):

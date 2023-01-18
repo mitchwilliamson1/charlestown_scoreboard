@@ -402,13 +402,12 @@ class Games:
         ips = []
         for rink in js:
             if rink['show']:
-                ips.append(rink['ip'])
+                tpl = (rink['ip'], rink['rink_id'])
+                ips.append(tpl)
 
         masterboard_ip = self.get_masterboard(master_id)
 
-        print('http://'+masterboard_ip['ip']+'/create_game')
-
-        response = requests.post('http://'+masterboard_ip['ip']+'/create_game', json = ips)
+        response = requests.post('http://'+masterboard_ip['ip']+'/setup', json = ips)
         print(response)
         return response.status_code
 

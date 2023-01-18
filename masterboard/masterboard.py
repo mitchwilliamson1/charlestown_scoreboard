@@ -30,16 +30,15 @@ def index():
 
 @bott.route("/get_masterboard")
 def get_masterboard():
-    print("!!!!!!!!!!!!!!!!!")
     return Masterboard().get_masterboard()
 
 
-@bott.route("/create_game", method=["POST", "OPTIONS"])
+@bott.route("/setup", method=["POST", "OPTIONS"])
 def create_game():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Game().create_game(request_params)
+    Masterboard().setup(request_params)
     return request.json
 
 
@@ -48,7 +47,7 @@ def add_score():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Game().add_score(request_params['update'])
+    Masterboard().add_score(request_params['update'])
     return request.json
 
 
@@ -57,7 +56,7 @@ def add_score():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Game().add_ends(request_params['update'])
+    Masterboard().add_ends(request_params['update'])
     return request.json
 
 
