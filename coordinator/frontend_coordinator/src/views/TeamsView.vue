@@ -18,7 +18,9 @@
           </div>
           <div class="row">
             <div class="col-4">Logo</div>
-            <input class="col" v-model="createTeam.logo" type="text">
+            <!-- <input class="col" v-model="createTeam.logo" type="text"> -->
+            <!-- <input type="file" ref="file" v-on:change="handleFileUpload()"  class="col"> -->
+            <input type="file" ref="file" @change="onChange($event)" class="col">
           </div>
           <div class="row">
             <div class="col-4">Address</div>
@@ -30,7 +32,7 @@
           </div>
 
           <div class="">
-            <button type="button" @click="createTeamButton(this.createTeam)" class="btn btn-success">Create Team</button>
+            <button type="button" @click="createTeamButton(createTeam)" class="btn btn-success">Create Team</button>
           </div>
         </div>
       </div>
@@ -38,6 +40,7 @@
         <div class="row">
           <div v-if="state.teams" class="col-12">
             <div>Current Teams</div>
+            {{file.value}}
             <current-teams :teams="state.teams"/>
           </div>
         </div>
@@ -49,7 +52,7 @@
 </template>
 
 <script>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, ref} from "vue";
 import CurrentPlayers from '../components/CurrentPlayers.vue'
 import CurrentTeams from '../components/CurrentTeams.vue'
 import axios from 'axios'
@@ -82,7 +85,23 @@ export default {
     const state = reactive({
       players: null,
       teams: null,
+      
     });
+
+    const file = ref(null)
+
+    // const handleFileUpload = async() => {
+    //    // debugger;
+    //    console.log("selected file",file.value.files)
+    //    console.log("IMG: ", file.value.file)
+    //    state.createTeam.logo = file.value.files[0].value
+    //     //Upload to server
+    // }
+
+    function onChange(event) {
+      console.log("!!!! ", event.target.files[0]);
+      file = event.target.files[0]
+    }
 
     var path = ""
     if (process.env.NODE_ENV == 'development'){
@@ -158,6 +177,9 @@ export default {
       getPlayers,
       createTeamButton,
       createPlayerButton,
+      // handleFileUpload,
+      onChange,
+      file
     };
   },
   methods: {
