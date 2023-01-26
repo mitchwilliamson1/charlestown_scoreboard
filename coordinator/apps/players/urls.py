@@ -1,4 +1,4 @@
-from bottle import Bottle, route, template, request, response
+from bottle import Bottle, route, template, request, response, static_file
 from .players import Players
 import urllib
 import json
@@ -37,6 +37,11 @@ def get_players():
     return Players().get_teams()
 
 
+@playersapp.route("/get_logo/<logo>")
+def get_players(logo):
+    return static_file(logo, root="assets/")
+
+
 @playersapp.route("/create_player", method=["POST", "OPTIONS"])
 def save():
     if request.method == "OPTIONS":
@@ -50,8 +55,11 @@ def save():
 def save():
     if request.method == "OPTIONS":
         return
-    json_obj = json.loads(request.body.getvalue())
-    Players().create_team(json_obj['create_team']) 
+
+    logo = request.files.get('file')
+    team = request.forms.get('team')
+
+    Players().create_team(json.loads(team), logo)
     return request.json
 
 

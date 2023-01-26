@@ -40,7 +40,7 @@
         <div class="row">
           <div v-if="state.teams" class="col-12">
             <div>Current Teams</div>
-            {{file.value}}
+            {{createTeam}}
             <current-teams :teams="state.teams"/>
           </div>
         </div>
@@ -73,12 +73,6 @@ export default {
         'address': null,
         'email':null,
       },
-      createTeam: {
-        'name':null,
-        'logo':null,
-        'address': null,
-        'contact': null,
-      }
     }
   },
   setup() {
@@ -88,7 +82,12 @@ export default {
       
     });
 
-    const file = ref(null)
+  const createTeam = reactive({
+        name:null,
+        logo:null,
+        address: null,
+        contact: null,
+      });
 
     // const handleFileUpload = async() => {
     //    // debugger;
@@ -99,8 +98,7 @@ export default {
     // }
 
     function onChange(event) {
-      console.log("!!!! ", event.target.files[0]);
-      file = event.target.files[0]
+      createTeam.logo = event.target.files[0]
     }
 
     var path = ""
@@ -115,8 +113,17 @@ export default {
       getTeams()
     });
     function createTeamButton(team) {
-      axios.post(path+'players/create_team', {
-      create_team: team,
+      let data = new FormData();
+      data.append('file', team.logo);
+      data.append('team', JSON.stringify(team));
+
+      console.log("name: ", JSON.stringify(team))
+
+      axios.post(path+'players/create_team',
+      data,
+      {headers: {
+        'Content-Type': 'multipart/form-data'
+        }
       })
       .then(function (response) {
         console.log(response);
@@ -174,12 +181,12 @@ export default {
     return {
       path,
       state,
+      createTeam,
       getPlayers,
       createTeamButton,
       createPlayerButton,
-      // handleFileUpload,
       onChange,
-      file
+      
     };
   },
   methods: {

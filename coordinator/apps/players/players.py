@@ -96,6 +96,7 @@ class Players:
             parsed_rows.append({
                 "team_id": team["team_id"],
                 "team_name": team["team_name"],
+                "logo": team["logo"],
                 "address": team["address"],
                 "contact_details": team["contact_details"],
             })
@@ -118,15 +119,16 @@ class Players:
         con.commit()
 
 
-    def create_team(self, team):
+    def create_team(self, team, logo):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        sql = f''' INSERT INTO teams (team_name, logo, address, contact_details) 
-        VALUES('{team['name']}', "{team['logo']}", "{team['address']}", '{team['contact']}');'''
+        logo.save("./assets/"+logo.filename)
 
-        print(sql)
+        sql = f''' INSERT INTO teams (team_name, logo, address, contact_details) 
+        VALUES('{team['name']}', "{"./assets/"+logo.filename}", "{team['address']}", '{team['contact']}');'''
+
         cursor.execute(sql)
         con.commit()
 
