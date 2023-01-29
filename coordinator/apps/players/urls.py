@@ -39,7 +39,12 @@ def get_players():
 
 @playersapp.route("/get_logo/<logo>")
 def get_players(logo):
-    return static_file(logo, root="assets/")
+    import os 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print("LOGO: ", logo, dir_path)
+    x = static_file(logo, root="./assets")
+    print("XXXX ", x)
+    return x
 
 
 @playersapp.route("/create_player", method=["POST", "OPTIONS"])
@@ -60,6 +65,18 @@ def save():
     team = request.forms.get('team')
 
     Players().create_team(json.loads(team), logo)
+    return request.json
+
+
+@playersapp.route("/update_team", method=["POST", "OPTIONS"])
+def save():
+    if request.method == "OPTIONS":
+        return
+
+    logo = request.files.get('file')
+    team = request.forms.get('team')
+
+    Players().update_team(json.loads(team), logo)
     return request.json
 
 

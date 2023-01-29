@@ -40,7 +40,6 @@
         <div class="row">
           <div v-if="state.teams" class="col-12">
             <div>Current Teams</div>
-            {{createTeam}}
             <current-teams :teams="state.teams"/>
           </div>
         </div>

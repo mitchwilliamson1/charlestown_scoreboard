@@ -19,7 +19,6 @@
         
       </div>
       {{}}
-      <img class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+team.logo" >
     </div>
   </div>
   </div>
