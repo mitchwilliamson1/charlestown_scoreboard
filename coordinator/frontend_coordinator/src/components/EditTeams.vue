@@ -14,9 +14,11 @@
         <input type="text" class="form-control" id="inputPassword4" v-model="team.contact_details">
       </div>
       <div class="col-md-6">
-        <label for="inputPassword4" class="form-label w-100">Logo</label>
-        <input type="file" ref="file" @change="onChange($event)" class="col">
-        <img class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+team.logo" >
+          <label for="inputPassword4" class="form-label w-100">Logo</label>
+        <div class="row border rounded p-1">
+          <div class="col">{{team.logo}}</div>
+          <input type="file" ref="file" @change="onChange($event)" class="col">
+        </div>
       </div>
     </form>
       <div class="col-12">

@@ -8,7 +8,9 @@
         :data-bs-target="'#collapseTeam'+i" 
         aria-expanded="false" 
         aria-controls="collapseOne">
-      <div class="col">{{team.team_name}}</div>
+        <div class="col">
+          <img class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+team.logo" >
+        </div>
       </div>
       <div class="row p-2">
         <div class="col collapse"
@@ -16,9 +18,7 @@
           data-parent="#accordion">
           <edit-teams :team="team"/>
         </div>
-        
       </div>
-      {{}}
     </div>
   </div>
   </div>
@@ -115,6 +115,13 @@ export default {
   flex-grow: 1;
   border: 2px solid grey;
   margin: 2px;
+}
+
+.logo {
+  width: 10%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 input {
