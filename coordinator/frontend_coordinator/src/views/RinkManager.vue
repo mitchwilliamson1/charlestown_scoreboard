@@ -13,24 +13,16 @@
         <div class="offcanvas-body">
           
           <div class="row">
-            <div class="col-4">Name</div>
-            <input class="col" v-model="createTeam.name" type="text">
+            <div class="col-4">Rink Name</div>
+            <input class="col" v-model="createRink.rink" type="text">
           </div>
           <div class="row">
-            <div class="col-4">Logo</div>
-            <input class="col" v-model="createTeam.logo" type="text">
-          </div>
-          <div class="row">
-            <div class="col-4">Address</div>
-            <input class="col" v-model="createTeam.address" type="text">
-          </div>
-          <div class="row">
-            <div class="col-4">Contact</div>
-            <input class="col" v-model="createTeam.contact" type="text">
+            <div class="col-4">IP Address</div>
+            <input class="col" v-model="createRink.ip" type="text">
           </div>
 
           <div class="">
-            <button @click="createTeamButton(this.createTeam)" class="btn btn-success">Create Rink</button>
+            <button @click="createRinkButton(this.createRink)" class="btn btn-success">Create Rink</button>
           </div>
         </div>
       </div>
@@ -60,18 +52,9 @@ export default {
   },
   data() {
     return {
-      createPlayer: {
-        'team':null,
-        'first_name':null,
-        'last_name': null,
-        'address': null,
-        'email':null,
-      },
-      createTeam: {
-        'name':null,
-        'logo':null,
-        'address': null,
-        'contact': null,
+      createRink: {
+        'rink':null,
+        'ip':null,
       }
     }
   },
@@ -92,13 +75,13 @@ export default {
       getRinks()
       getMasterboards()
     });
-    function createTeamButton(team) {
-      axios.post(path+'players/create_team', {
-      create_team: team,
+    function createRinkButton(rink) {
+      axios.post(path+'games/create_rink', {
+      create_rink: rink,
       })
       .then(function (response) {
         console.log(response);
-        getTeams()
+        getRinks()
       })
       .catch(function (error) {
         console.log(error);
@@ -141,7 +124,7 @@ export default {
       path,
       state,
       getRinks,
-      createTeamButton,
+      createRinkButton,
     };
   },
   methods: {

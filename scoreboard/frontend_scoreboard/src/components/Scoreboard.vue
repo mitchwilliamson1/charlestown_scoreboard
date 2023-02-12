@@ -16,6 +16,7 @@
         <div style="height: 100%;" class="ticker">
           <Ticker :player="details.competitors[1]" 
                   :details="details"
+                  type='score'
                   fontSize="22" 
                   colour="red"/>
         </div>
@@ -24,6 +25,7 @@
         <div style="height: 100%;" class="ticker">
           <Ticker :player="details.competitors[0]" 
                   :details="details"
+                  type='score'
                   fontSize="22" 
                   colour="black"/>
         </div>
@@ -38,9 +40,8 @@
 
     <div class="row align-items-center scores">
       <div class="col align-self-center shadow p-1 mb-5 rounded">
-        {{ends}}
         <Ticker :details="details"
-                :endsProp="ends"
+                type="ends"
                 player="ends" 
                 fontSize="18" 
                 fontColour="white" 

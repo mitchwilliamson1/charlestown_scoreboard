@@ -351,6 +351,22 @@ class Games:
         return masterboard
 
 
+    def create_rink(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = f"INSERT INTO rinks (ip, rink) VALUES (?, ?)"
+        params = (js['ip'], js['rink'])
+        
+        res = cursor.execute(cmd,params)
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
     def update_rink(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row

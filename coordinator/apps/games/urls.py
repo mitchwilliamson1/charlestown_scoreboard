@@ -57,6 +57,15 @@ def create_game():
     return request.json
 
 
+@gamesapp.route("/create_rink", method=["POST", "OPTIONS"])
+def create_game():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().create_rink(request_params['create_rink']) 
+    return request.json
+
+
 @gamesapp.route("/add_score", method=["POST", "OPTIONS"])
 def add_score():
     if request.method == "OPTIONS":

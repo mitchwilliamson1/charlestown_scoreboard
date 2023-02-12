@@ -3,13 +3,14 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col align-self-center count " :style="addstyle"> 
-          <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
-          <div v-if="typeof score !== 'undefined'">{{score}}</div>
+          <div v-if="type == 'ends'">{{ends}}</div>
+          <div v-if="type == 'score'">{{score}}</div>
         </div>
       </div>
     </div>
-    <button v-if="ends" @click="endsUp">Increase</button>
-    <button v-if="score" @click="scoreUp">Increase</button>
+    <button v-if="type == 'ends'" @click="endsUp">Increase</button>
+    <button v-if="type == 'ends'" @click="endsDown">Decrease</button>
+    <button v-if="type == 'score'" @click="scoreUp">Increase</button>
 
   </div>
 </template>
@@ -22,7 +23,7 @@ export default {
   props: {
     player: Object,
     details: Object,
-    endsProp: Number,
+    type: String,
     colour: String,
     fontSize: String,
     fontColour: String,
@@ -37,7 +38,7 @@ export default {
       return this.player.score
     },
     ends() {
-      return this.endsProp
+      return this.details.ends
     },
     addstyle() {
       return "font-size:"+this.fontSize+"vh; color:"+this.fontColour+";"
@@ -47,7 +48,7 @@ export default {
     scoreUp() {
       if(typeof this.score !== "undefined") {
         this.player.score++
-        axios.post('http://127.0.0.1:8081/add_score', {
+        axios.post('http://127.0.0.1:8082/add_score', {
         update: {score: parseInt(this.score), player_id: this.player.player_id, game_id:this.details.game_id}
         })
         .then(function (response) {
@@ -59,9 +60,21 @@ export default {
       }
     },
     endsUp() {
-      console.log("GAME ID", this.details.game_id)
-      this.ends++
-      axios.post('http://127.0.0.1:8081/add_ends', {
+      this.details.ends++
+      console.log(this.details.ends)
+      axios.post('http://127.0.0.1:8082/add_ends', {
+      update: {ends: parseInt(this.ends), game_id:this.details.game_id}
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    endsDown() {
+      this.details.ends--
+      axios.post('http://127.0.0.1:8082/add_ends', {
       update: {ends: parseInt(this.ends), game_id:this.details.game_id}
       })
       .then(function (response) {

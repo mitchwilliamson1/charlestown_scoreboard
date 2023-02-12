@@ -8,6 +8,11 @@ import requests
 # COORDINATOR_IP = "127.0.0.1:8000"
 COORDINATOR_IP = "10.0.0.41:8000"
 
+DEFAULT_GAME = {"game_id":-1, "name":"standard", 'players':
+                    {1:{'player_id':'1', 'first_name': 'Player', 'last_name':'1'},
+                    2:{'player_id':'2', 'first_name': 'Player', 'last_name':'2'}}
+                }
+
 
 local_tz = pytz.timezone("Australia/Sydney")
 
@@ -23,7 +28,6 @@ class Game:
 
         c.execute('''CREATE TABLE IF NOT EXISTS games
                      (game_id INTEGER PRIMARY KEY,
-                     game int,
                      name text DEFAULT NULL,
                      start_time text, 
                      finish_time text, 
@@ -57,15 +61,15 @@ class Game:
         parsed_rows = []
         
         games = cursor.execute('''SELECT * FROM games WHERE finish_time is NULL''').fetchall()
+
+        if not games:
+            self.create_game(DEFAULT_GAME)
         for game in games:
-            sql = f'''SELECT player_id, first_name, last_name, score FROM competitors WHERE game = {game['game']}'''
+            sql = f'''SELECT player_id, first_name, last_name, score FROM competitors WHERE game = {game['game_id']}'''
             
             players = cursor.execute(sql).fetchall()
-            print(players)
             competitors = []
             for player in players:
-                print(player)
-                print(player[0])
                 competitors.append({
                     "player_id": player['player_id'],
                     "first_name": player['first_name'],
@@ -83,44 +87,48 @@ class Game:
                 "competitors": competitors,
             })
 
-        print('SCORE PARSE: ', parsed_rows)
         return json.dumps(parsed_rows)
 
-
-    def create_game(self, js):
+    def delete_all_games(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
+        sql = f'''DELETE FROM games '''
+        cursor.execute(sql)
+        sql = f'''DELETE FROM competitors '''
+        cursor.execute(sql)
+        con.commit()
 
-        sql = f'''INSERT INTO games (game, name, start_time) 
+    def create_game(self, js):
+        self.delete_all_games()
+
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        if 'start_time' in js:
+            utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
+        else:
+            utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
+
+
+        sql = f'''INSERT INTO games (game_id, name, start_time) 
             VALUES("{js["game_id"]}", "{js["name"]}", '{utc}');'''
         game_id = cursor.execute(sql)
 
         for player in js['players']:
             sql = f'''INSERT INTO competitors (player_id, first_name, last_name, score, game) 
                     VALUES({js['players'][player]['player_id']}, "{js['players'][player]['first_name']}", "{js['players'][player]['last_name']}", 0, {js['game_id']});'''
-            print(sql)
             cursor.execute(sql)
         con.commit()
 
 
-        # utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
-        # player_a = js["player_a"]['first_name']
-        # player_b = js["player_b"]['first_name']
-
-        # cursor.execute('''INSERT INTO game (id,
-        #                                     start_time,
-        #                                     player_a, 
-        #                                     player_b)
-        #                                     VALUES (?, ?, ?, ?)''',
-        #                                     ('', utc, player_a, player_b)
-        #     )
-        # con.commit()
-
 
     def add_ends(self, js):
+        if js['ends'] < 0:
+            self.create_game(DEFAULT_GAME)
+            return {"status": "ok",}
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -128,7 +136,7 @@ class Game:
         cmd = f'UPDATE games SET ends = {js["ends"]} WHERE game_id = {js["game_id"]}'
 
         res = cursor.execute(cmd)
-        if res.fetchone() is None:
+        if res.fetchone() is None and js["game_id"] is not -1:
             try:
                 r_code = self.write_coordinator_ends(js)
             except:
@@ -148,7 +156,7 @@ class Game:
         cmd = f'UPDATE competitors SET score = {js["score"]} WHERE player_id={js["player_id"]} and game = {js["game_id"]}'
 
         res = cursor.execute(cmd)
-        if res.fetchone() is None:
+        if res.fetchone() is None and js["game_id"] is not -1:
             try:
                 r_code = self.write_coordinator_score(js)
             except:

@@ -124,7 +124,10 @@ class Players:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        logo.save("./assets/"+logo.filename)
+        try:
+            logo.save("./assets/"+logo.filename)
+        except:
+            pass
 
         sql = f''' INSERT INTO teams (team_name, logo, address, contact_details) 
         VALUES('{team['name']}', "{logo.filename}", "{team['address']}", '{team['contact']}');'''
