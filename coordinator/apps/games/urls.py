@@ -58,13 +58,22 @@ def create_game():
 
 
 @gamesapp.route("/create_rink", method=["POST", "OPTIONS"])
-def create_game():
+def create_rink():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
     Games().create_rink(request_params['create_rink']) 
+
     return request.json
 
+@gamesapp.route("/create_masterboard", method=["POST", "OPTIONS"])
+def create_masterboard():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().create_masterboard(request_params['create_masterboard']) 
+
+    return request.json
 
 @gamesapp.route("/add_score", method=["POST", "OPTIONS"])
 def add_score():
@@ -72,6 +81,15 @@ def add_score():
         return
     request_params = json.loads(request.body.getvalue())
     Games().add_score(request_params)
+    return request.json
+
+
+@gamesapp.route("/update_game", method=["POST", "OPTIONS"])
+def update_game():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().update_game(request_params[0])
     return request.json
 
 

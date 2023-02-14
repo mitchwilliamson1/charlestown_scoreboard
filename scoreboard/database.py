@@ -124,6 +124,24 @@ class Game:
         con.commit()
 
 
+    def update_game(self, js):
+        print(js)
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = "UPDATE games SET name = ?,type = ?,gender = ?,round = ?,level = ?,grade = ?,rink = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
+        params = (js['name'],js['type'], js['gender'], js['round'], js['level'], js['grade'], js["rink"]["rink_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
+
+        res = cursor.execute(cmd, params)
+        if res.fetchone() is None:
+            print("HERERERERE: ", res.fetchone())
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
 
     def add_ends(self, js):
         if js['ends'] < 0:

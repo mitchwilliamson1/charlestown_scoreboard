@@ -341,6 +341,10 @@ class Games:
         response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js)
         return response.status_code
 
+    def update_scoreboard(self, js):
+        response = requests.post('http://'+js["rink"]["ip"]+'/update_game', json = js)
+        return response.status_code
+
 
     def get_masterboard(self, masterboard_id):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -362,6 +366,41 @@ class Games:
         res = cursor.execute(cmd,params)
         if res.fetchone() is None:
             con.commit()
+        return {
+                "status": "ok",
+        }
+
+
+    def create_masterboard(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = f"INSERT INTO masterboards (ip, masterboard) VALUES (?, ?)"
+        params = (js['ip'], js['masterboard'])
+        
+        res = cursor.execute(cmd,params)
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
+    def update_game(self, js):
+        print(js)
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = "UPDATE games SET name = ?,type = ?,gender = ?,round = ?,level = ?,grade = ?,rink = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
+        params = (js['name'],js['type'], js['gender'], js['round'], js['level'], js['grade'], js["rink"]["rink_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
+
+        res = cursor.execute(cmd, params)
+        if res.fetchone() is None:
+            print("RES: ", res.fetchone())
+            con.commit()
+            self.update_scoreboard(js)
         return {
                 "status": "ok",
         }

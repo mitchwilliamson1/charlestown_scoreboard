@@ -47,7 +47,7 @@ export default {
         console.log("ERROR ", error);
       })
       .then(function () {
-        // setTimeout(getGame, 1000)
+        setTimeout(getGame, 1000)
       });
     }
 

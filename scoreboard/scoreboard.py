@@ -43,6 +43,15 @@ def create_game():
     return request.json
 
 
+@bott.route("/update_game", method=["POST", "OPTIONS"])
+def update_game():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Game().update_game(request_params)
+    return request.json
+
+
 @bott.route("/add_score", method=["POST", "OPTIONS"])
 def add_score():
     if request.method == "OPTIONS":

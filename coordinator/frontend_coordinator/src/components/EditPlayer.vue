@@ -24,9 +24,9 @@
         <input type="text" class="form-control" id="inputCity" v-model="player.email">
       </div>
     </form>
-      <div class="col-12">
-        <button type="submit" @click="updatePlayer" class="btn btn-primary">Update</button>
-      </div>
+    <div class="col-12">
+      <button type="submit" @click="updatePlayer" class="btn btn-primary">Update</button>
+    </div>
 
   </div>
 </template>
