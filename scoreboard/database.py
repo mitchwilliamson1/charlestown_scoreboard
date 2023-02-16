@@ -5,12 +5,12 @@ import pickle
 import pytz
 import requests
 
-# COORDINATOR_IP = "127.0.0.1:8000"
-COORDINATOR_IP = "10.0.0.41:8000"
+COORDINATOR_IP = "127.0.0.1:8000"
+# COORDINATOR_IP = "10.0.0.41:8000"s
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", 'players':
-                    {1:{'player_id':'1', 'first_name': 'Player', 'last_name':'1'},
-                    2:{'player_id':'2', 'first_name': 'Player', 'last_name':'2'}}
+DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
+                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0},
+                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0}]
                 }
 
 
@@ -64,41 +64,48 @@ class Game:
 
         if not games:
             self.create_game(DEFAULT_GAME)
-        for game in games:
-            sql = f'''SELECT player_id, first_name, last_name, score FROM competitors WHERE game = {game['game_id']}'''
-            
-            players = cursor.execute(sql).fetchall()
-            competitors = []
-            for player in players:
-                competitors.append({
-                    "player_id": player['player_id'],
-                    "first_name": player['first_name'],
-                    "last_name": player['last_name'],
-                    "score": player['score']
-                 })
-            
-            parsed_rows.append({
-                "game_id": game["game_id"],
-                "name": game["name"],
-                "start_time": game["start_time"],
-                "finish_time": game["finish_time"],
-                "ends": game["ends"],
-                "winner": game["winner"],
-                "competitors": competitors,
-            })
+        else:
+            for game in games:
+                # print()
+                sql = "SELECT player_id, first_name, last_name, score FROM competitors WHERE game = ?"
+                params = (game['game_id'],)
+                # print("PARAMS ", type(params))
+                players = cursor.execute(sql, params).fetchall()
+                competitors = []
+                for player in players:
+                    competitors.append({
+                        "player_id": player['player_id'],
+                        "first_name": player['first_name'],
+                        "last_name": player['last_name'],
+                        "score": player['score']
+                     })
+                
+                parsed_rows.append({
+                    "game_id": game["game_id"],
+                    "name": game["name"],
+                    "start_time": game["start_time"],
+                    "finish_time": game["finish_time"],
+                    "ends": game["ends"],
+                    "winner": game["winner"],
+                    "competitors": competitors,
+                })
 
         return json.dumps(parsed_rows)
 
     def delete_all_games(self):
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
+        try:
+            con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+            con.row_factory = sqlite3.Row
+            cursor = con.cursor()
 
-        sql = f'''DELETE FROM games '''
-        cursor.execute(sql)
-        sql = f'''DELETE FROM competitors '''
-        cursor.execute(sql)
-        con.commit()
+            sql = f'''DELETE FROM games '''
+            cursor.execute(sql)
+            sql = f'''DELETE FROM competitors '''
+            cursor.execute(sql)
+            con.commit()
+        except:
+            return "no data"
+
 
     def create_game(self, js):
         self.delete_all_games()
@@ -107,39 +114,39 @@ class Game:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        if 'start_time' in js:
-            utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
-        else:
-            utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
+        utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
 
+        sql = "INSERT INTO games (game_id, name, start_time) VALUES(?,?,?);"
+        params = (js['game_id'], js['name'], utc)
+        game_id = cursor.execute(sql, params)
 
-        sql = f'''INSERT INTO games (game_id, name, start_time) 
-            VALUES("{js["game_id"]}", "{js["name"]}", '{utc}');'''
-        game_id = cursor.execute(sql)
-
-        for player in js['players']:
-            sql = f'''INSERT INTO competitors (player_id, first_name, last_name, score, game) 
-                    VALUES({js['players'][player]['player_id']}, "{js['players'][player]['first_name']}", "{js['players'][player]['last_name']}", 0, {js['game_id']});'''
-            cursor.execute(sql)
+        for player in js['competitors']:
+            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, game) VALUES(?,?,?,?,?);"
+            params = (player['player_id'], player['first_name'], player['last_name'],player['score'], js['game_id'])
+            cursor.execute(sql, params)
         con.commit()
 
 
-    def update_game(self, js):
-        print(js)
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
+    # def update_game(self, js):
+    #     print(js)
+    #     con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+    #     con.row_factory = sqlite3.Row
+    #     cursor = con.cursor()
 
-        cmd = "UPDATE games SET name = ?,type = ?,gender = ?,round = ?,level = ?,grade = ?,rink = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
-        params = (js['name'],js['type'], js['gender'], js['round'], js['level'], js['grade'], js["rink"]["rink_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
+    #     utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
 
-        res = cursor.execute(cmd, params)
-        if res.fetchone() is None:
-            print("HERERERERE: ", res.fetchone())
-            con.commit()
-        return {
-                "status": "ok",
-        }
+    #     cmd = "UPDATE games SET game_id = ?, name = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? "
+    #     params = (js[''game_id], js['name'], js['ends'], utc, js['finish_time'], js['winner'] )
+
+    #     cmd = "UPDATE games SET game_id = ?, name = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? "
+    #     params = (js[''game_id], js['name'], js['ends'], utc, js['finish_time'], js['winner'] )
+
+    #     res = cursor.execute(cmd, params)
+    #     if res.fetchone() is None:
+    #         con.commit()
+    #     return {
+    #             "status": "ok",
+    #     }
 
 
 
@@ -154,7 +161,7 @@ class Game:
         cmd = f'UPDATE games SET ends = {js["ends"]} WHERE game_id = {js["game_id"]}'
 
         res = cursor.execute(cmd)
-        if res.fetchone() is None and js["game_id"] is not -1:
+        if res.fetchone() is None:
             try:
                 r_code = self.write_coordinator_ends(js)
             except:
@@ -174,7 +181,7 @@ class Game:
         cmd = f'UPDATE competitors SET score = {js["score"]} WHERE player_id={js["player_id"]} and game = {js["game_id"]}'
 
         res = cursor.execute(cmd)
-        if res.fetchone() is None and js["game_id"] is not -1:
+        if res.fetchone() is None:
             try:
                 r_code = self.write_coordinator_score(js)
             except:

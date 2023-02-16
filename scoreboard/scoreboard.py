@@ -30,7 +30,6 @@ def index():
 
 @bott.route("/get_game")
 def get_game():
-    print('1234566')
     return Game().get_game()
 
 

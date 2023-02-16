@@ -1,6 +1,5 @@
 <template>
   <div class="edit">
-    {{details}}
     <div v-if="gameOptions">
       <form class="row">
         <div class="col-6">
@@ -27,6 +26,7 @@
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Rink</label>
+          <!-- fix this: needs to v-model the whole object to start with not just the number 1 -->
           <select class="form-select" v-model="details[0].rink">
             <option v-for="game in gameOptions['rink']" :value="game">{{game.rink}}</option>
           </select>

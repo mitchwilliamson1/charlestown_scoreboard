@@ -253,7 +253,7 @@ class Games:
         games = cursor.execute('''SELECT * FROM games''').fetchall()
 
         for game in games:
-            sql = f'''SELECT p.first_name, p.last_name, c.score FROM competitors AS c
+            sql = f'''SELECT player_id, p.first_name, p.last_name, c.score FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     WHERE c.game = {game['game_id']}'''
@@ -263,9 +263,10 @@ class Games:
             competitors = []
             for player in players:
                 competitors.append({
-                    "first_name": player[0],
-                    "last_name": player[1],
-                    "score": player[2]
+                    "player_id": player[0],
+                    "first_name": player[1],
+                    "last_name": player[2],
+                    "score": player[3]
                  })
             
             parsed_rows.append({
@@ -326,8 +327,9 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f'UPDATE competitors SET score = {js["score"]} WHERE player={js["player_id"]} and game = {js["game_id"]}'
-        res = cursor.execute(cmd)
+        cmd = "UPDATE competitors SET score = ? WHERE player = ? and game = ?"
+        params = (js["score"], js["player_id"], js["game_id"])
+        res = cursor.execute(cmd, params)
         print(res.fetchone())
         if res.fetchone() is None:
             con.commit()
@@ -343,6 +345,7 @@ class Games:
 
     def update_scoreboard(self, js):
         response = requests.post('http://'+js["rink"]["ip"]+'/update_game', json = js)
+        print(response)
         return response.status_code
 
 
@@ -398,9 +401,8 @@ class Games:
 
         res = cursor.execute(cmd, params)
         if res.fetchone() is None:
-            print("RES: ", res.fetchone())
             con.commit()
-            self.update_scoreboard(js)
+            self.write_scoreboard(js)
         return {
                 "status": "ok",
         }

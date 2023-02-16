@@ -54,13 +54,20 @@ class Masterboard:
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
-        parsed_rows = []
 
+        summed = []
         ips = cursor.execute('''SELECT * FROM masterboard''').fetchall()
         for ip in ips:
             print('IPS', ip['ip'])
-            response = requests.get('http://'+ip['ip']+'/get_game')
+            try:
+                response = requests.get('http://'+ip['ip']+'/get_game')
+            except:
+                continue
             data = json.loads(response.content)
+            print(data)
+            summed.append(data[0])
+
+        # print {k: x.get(k, 0) + y.get(k, 0) for k in set(summed) & set(y)}
 
         return json.dumps(data, indent=4, sort_keys=True)
 
