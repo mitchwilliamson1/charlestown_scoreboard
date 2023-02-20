@@ -8,6 +8,8 @@ import requests
 # COORDINATOR_IP = "127.0.0.1:8000"
 COORDINATOR_IP = "10.0.0.41:8000"
 
+DEFAULT_MASTER = [{'game_id': -1, 'name': 'standard', 'start_time': '2023-02-16 07:08:47.105881+00:00', 'finish_time': None, 'ends': 0, 'winner': '', 'competitors': [{'player_id': 1, 'first_name': 'Player', 'last_name': '1', 'score': '0'}, {'player_id': 2, 'first_name': 'Player', 'last_name': '2', 'score': '0'}]}]
+
 
 local_tz = pytz.timezone("Australia/Sydney")
 
@@ -55,21 +57,35 @@ class Masterboard:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
+        player_1_score=0
+        player_2_score=0
+        ends=0
+
         summed = []
         ips = cursor.execute('''SELECT * FROM masterboard''').fetchall()
         for ip in ips:
-            print('IPS', ip['ip'])
             try:
                 response = requests.get('http://'+ip['ip']+'/get_game')
             except:
                 continue
             data = json.loads(response.content)
-            print(data)
-            summed.append(data[0])
+            ends += int(data[0]['ends'])
 
-        # print {k: x.get(k, 0) + y.get(k, 0) for k in set(summed) & set(y)}
+            for i in data[0]['competitors']:
+                if i['player_id'] == 1:
+                    player_1_score += int(i['score'])
+                elif i['player_id'] == 2:
+                    player_2_score += int(i['score'])
 
-        return json.dumps(data, indent=4, sort_keys=True)
+        for i in DEFAULT_MASTER[0]['competitors']:
+            if i['player_id'] == 1:
+                i['score'] = str(player_1_score)
+            if i['player_id'] == 2:
+                i['score'] = str(player_2_score)
+
+        DEFAULT_MASTER[0]['ends'] = ends
+
+        return json.dumps(DEFAULT_MASTER, indent=4, sort_keys=True)
 
 
     def write_coordinator_score(self, js):
