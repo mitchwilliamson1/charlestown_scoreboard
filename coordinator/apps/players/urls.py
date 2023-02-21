@@ -41,10 +41,8 @@ def get_players():
 def get_players(logo):
     import os 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    print("LOGO: ", logo, dir_path)
-    x = static_file(logo, root="./assets")
-    print("XXXX ", x)
-    return x
+    logo = static_file(logo, root="./assets")
+    return logo
 
 
 @playersapp.route("/create_player", method=["POST", "OPTIONS"])

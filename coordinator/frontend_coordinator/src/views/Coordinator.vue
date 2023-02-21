@@ -20,6 +20,8 @@
               </select>
           </div>
 
+          {{createGame}}
+
           <div class="row">
             <div v-if="createGame['type']" v-for="teamNumber in 2" class="col">
               <div class="">Team {{teamNumber}}</div>
@@ -29,7 +31,7 @@
               <div class="col" v-for="number in parseInt(createGame['type']['players']/2)">
                 <div v-if="createGame.teams[teamNumber]">
                   <div class="">Player {{number}}</div>
-                  <select v-model="createGame.players[teamNumber +'.'+number]" class="form-select">
+                  <select v-model="createGame.players[teamNumber]" class="form-select">
                     <option v-for="player in selectPlayers(createGame.teams[teamNumber].team_id)" :value="player">{{player.first_name}} {{player.last_name}}</option>
                   </select>
                 </div>

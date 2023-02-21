@@ -48,7 +48,7 @@ export default {
     scoreUp() {
       if(typeof this.score !== "undefined") {
         this.player.score++
-        axios.post('http://127.0.0.1:8082/add_score', {
+        axios.post('http://127.0.0.1:8081/add_score', {
         update: {score: parseInt(this.score), player_id: this.player.player_id, game_id:this.details.game_id}
         })
         .then(function (response) {
@@ -62,7 +62,7 @@ export default {
     endsUp() {
       this.details.ends++
       console.log(this.details.ends)
-      axios.post('http://127.0.0.1:8082/add_ends', {
+      axios.post('http://127.0.0.1:8081/add_ends', {
       update: {ends: parseInt(this.ends), game_id:this.details.game_id}
       })
       .then(function (response) {
@@ -74,7 +74,7 @@ export default {
     },
     endsDown() {
       this.details.ends--
-      axios.post('http://127.0.0.1:8082/add_ends', {
+      axios.post('http://127.0.0.1:8081/add_ends', {
       update: {ends: parseInt(this.ends), game_id:this.details.game_id}
       })
       .then(function (response) {

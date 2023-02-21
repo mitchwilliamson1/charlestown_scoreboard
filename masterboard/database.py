@@ -61,6 +61,8 @@ class Masterboard:
         player_2_score=0
         ends=0
 
+        print("here")
+
         summed = []
         ips = cursor.execute('''SELECT * FROM masterboard''').fetchall()
         for ip in ips:

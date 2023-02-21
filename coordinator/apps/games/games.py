@@ -300,6 +300,7 @@ class Games:
             RETURNING game_id;'''
         game_id = cursor.execute(sql)
 
+        print(js)
 
         for i in game_id:
             game_id = i

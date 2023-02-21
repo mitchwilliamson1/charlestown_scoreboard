@@ -8,9 +8,12 @@ import requests
 COORDINATOR_IP = "127.0.0.1:8000"
 # COORDINATOR_IP = "10.0.0.41:8000"s
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
-                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0},
-                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0}]
+DEFAULT_GAME = {"game_id":-1, "name":"standard", 'players':
+                    {1:{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'team': '1'},
+                    2:{'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'team': '2'}},
+                    'teams':
+                    {'1':{'logo':''},
+                    '2':{'logo':''}}
                 }
 
 
@@ -18,7 +21,7 @@ local_tz = pytz.timezone("Australia/Sydney")
 
 class Game:
     def __init__(self):
-        self.db_path = "game.db"
+        self.db_path = "scoreboard.db"
         self.init_database_tables()
 
     def init_database_tables(self):
@@ -40,6 +43,7 @@ class Game:
                      first_name text DEFAULT "",
                      last_name text DEFAULT "",
                      score text DEFAULT "",
+                     logo text DEFAULT "",
                      game INTEGER NOT NULL DEFAULT "No Game",
                      FOREIGN KEY (game)
                         REFERENCES games (game_id)
@@ -67,7 +71,7 @@ class Game:
         else:
             for game in games:
                 # print()
-                sql = "SELECT player_id, first_name, last_name, score FROM competitors WHERE game = ?"
+                sql = "SELECT player_id, first_name, last_name, score, logo FROM competitors WHERE game = ?"
                 params = (game['game_id'],)
                 # print("PARAMS ", type(params))
                 players = cursor.execute(sql, params).fetchall()
@@ -77,7 +81,8 @@ class Game:
                         "player_id": player['player_id'],
                         "first_name": player['first_name'],
                         "last_name": player['last_name'],
-                        "score": player['score']
+                        "score": player['score'],
+                        "logo": player['logo']
                      })
                 
                 parsed_rows.append({
@@ -116,13 +121,18 @@ class Game:
 
         utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
 
+
         sql = "INSERT INTO games (game_id, name, start_time) VALUES(?,?,?);"
         params = (js['game_id'], js['name'], utc)
         game_id = cursor.execute(sql, params)
 
-        for player in js['competitors']:
-            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, game) VALUES(?,?,?,?,?);"
-            params = (player['player_id'], player['first_name'], player['last_name'],player['score'], js['game_id'])
+
+
+        for competitor in js['players']:
+            player = js['players'][competitor]
+            print(player)
+            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, game) VALUES(?,?,?,?,?,?);"
+            params = (player['player_id'], player['first_name'], player['last_name'], 0, js['teams'][str(competitor)]['logo'], js['game_id'])
             cursor.execute(sql, params)
         con.commit()
 
