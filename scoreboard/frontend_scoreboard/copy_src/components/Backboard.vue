@@ -1,6 +1,6 @@
 <template>
-  <div class="h-100 w-100">
-    <Scoreboard class="h-100" :detail="state.game"/>
+  <div style="background-color: #2b2b2b;">
+    <Scoreboard :detail="state.game"/>
   </div>
 </template>
 
@@ -27,7 +27,7 @@ export default {
 
     var path = ""
     if (process.env.NODE_ENV == 'development'){
-      path = 'http://127.0.0.1:8081/'
+      path = 'http://127.0.0.1:8082/'
     }else{
       path = window.location.toString();
     }
