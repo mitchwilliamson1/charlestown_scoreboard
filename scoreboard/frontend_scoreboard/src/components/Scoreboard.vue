@@ -1,7 +1,7 @@
 <template>
   <div v-if="this.details" class="container-fluid h-100 w-100 p-0" style="background-color: black;">
     <div class="container-fluid h-100 w-100">
-      <div class="row h-25 align-items-center bg-primary">
+      <div class="row h-25 bg-dark align-items-center">
         <div class="col-6 h-100 text-justify rounded">
           <img class="logo" src="../assets/logos/tigers.jpg">
         </div>
@@ -9,9 +9,38 @@
           <img class="logo"  src="../assets/logos/Jets.png">
         </div>
       </div>
-      <div class="row h-25 bg-success"></div>
-      <div class="row h-25 bg-danger"></div>
-      <div class="row h-25 bg-warning"></div>
+
+      <div class="row h-25 bg-success align-items-center">
+        <div class="col text-justify mb-5 rounded">
+          <Ticker :player="details.competitors[0]" 
+                    :details="details"
+                    fontSize="20" 
+                    colour="red"/>
+        </div>
+        <div class="col text-justify mb-5 rounded">
+          <Ticker :player="details.competitors[1]" 
+                    :details="details"
+                    fontSize="20" 
+                    colour="black"/>
+        </div>
+      </div>
+
+      <div class="row h-25 bg-danger align-items-center">
+        <div class="col h-100 align-self-center mb-5rounded ends">
+          <img src="../assets/adds/belle_property.png" style="background-color: white; height: 100%;">
+        </div>
+      </div>
+
+      <div class="row h-25 bg-warning align-items-center">
+        <div class="col align-self-center mb-5 rounded">
+          <Ticker :details="details"
+                  :endsProp="ends"
+                  player="ends" 
+                  fontSize="20" 
+                  fontColour="white" 
+                  colour="black"/>
+        </div>
+      </div>
     </div>
 
     <div class="row h-25 align-items-center">
@@ -26,7 +55,6 @@
     </div>
 
     <div class="row h-25 align-items-center scores">
-    <div class=""></div>
       <div class="col text-justify mb-5 rounded">
         <div class="ticker">
           <Ticker :player="details.competitors[0]" 
