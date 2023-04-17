@@ -1,14 +1,9 @@
 <template>
-  <div style="text-align: center;">
-    <div>
-      <div>
-        <div class="count h-100" :style="addstyle"> 
-          <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
-          <div v-if="typeof score !== 'undefined'">{{score}}</div>
-        </div>
-      </div>
+  <div>
+    <div class="count text-align-center h-100" :style="addstyle"> 
+      <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
+      <div v-if="typeof score !== 'undefined'">{{score}}</div>
     </div>
-
   </div>
 </template>
 
@@ -96,7 +91,7 @@ export default {
   text-align: center;
   stroke: solid;
   background-color: black;
-  line-height: 0.9;
+  line-height: 0.8;
 }
 </style>
 
