@@ -3,12 +3,12 @@
     <div class="container-fluid h-100 w-100">
       <div class="row align-items-center" style="height: 25%;">
         <div class="col h-100">
-          <!-- <div class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div> -->
-          <img class="logo" :src="'http://127.0.0.1:8000/players/get_logo/charls.jpeg'">
+          <img v-if="p1Logo" class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+p1Logo">
+          <div v-else class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div>
         </div>
         <div class="col h-100">
-          <!-- <div class="txt">{{details.competitors[0].first_name.charAt(0)}}{{details.competitors[1].last_name.charAt(0)}}</div> -->
-          <img class="logo"  :src="'http://127.0.0.1:8000/players/get_logo/merelogo.jpeg'">
+          <img v-if="p2Logo" class="logo"  :src="'http://127.0.0.1:8000/players/get_logo/'+p2Logo">
+          <div v-else class="txt">{{details.competitors[0].first_name.charAt(0)}}{{details.competitors[1].last_name.charAt(0)}}</div>
         </div>
       </div>
 
@@ -77,6 +77,12 @@ export default {
     details() {
       return this.detail
     },
+    p1Logo() {
+      return this.detail.competitors[0].logo
+    },
+    p2Logo() {
+      return this.detail.competitors[1].logo
+    },
     ends() {
       return this.detail.ends
     }
@@ -85,7 +91,8 @@ export default {
     // updateGame() {
     //   this.game = this details
     // },
-  }
+  },
+
 }
 </script>
 

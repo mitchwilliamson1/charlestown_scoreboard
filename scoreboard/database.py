@@ -9,8 +9,8 @@ COORDINATOR_IP = "127.0.0.1:8000"
 # COORDINATOR_IP = "10.0.0.41:8000"s
 
 DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
-                    {1:{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'team': '1'},
-                    2:{'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'team': '2'}},
+                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'team': '1'},
+                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'team': '2'}],
                     'teams':
                     {'1':{'logo':''},
                     '2':{'logo':''}}
