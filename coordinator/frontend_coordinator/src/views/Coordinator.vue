@@ -176,7 +176,29 @@ export default {
       // this.state.games.filter(i => console.log(i))
       // var data = this.state.games
       // return data
+      var games = []
 
+      this.state.games.forEach(game => {
+        var teams = []
+        var players = []
+
+        game.players.forEach(player => {
+          players.push(this.state.players.find(p => p.id = player.player_id))
+        })
+
+        game.teams.forEach(team => {
+          teams.push(this.state.teams.find(t => t.id = team.team_id))
+        })
+
+        games.push({
+          ...game,
+          playersInfo: players,
+          teamsInfo: teams,
+        })
+
+      })
+
+      return games
     },
 
   },
