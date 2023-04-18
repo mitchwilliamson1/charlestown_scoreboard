@@ -8,7 +8,7 @@ import requests
 COORDINATOR_IP = "127.0.0.1:8000"
 # COORDINATOR_IP = "10.0.0.41:8000"s
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", 'players':
+DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
                     {1:{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'team': '1'},
                     2:{'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'team': '2'}},
                     'teams':
@@ -126,10 +126,10 @@ class Game:
         params = (js['game_id'], js['name'], utc)
         game_id = cursor.execute(sql, params)
 
+        print("JS: ", js)
 
-
-        for competitor in js['players']:
-            player = js['players'][competitor]
+        for competitor in js['competitors']:
+            player = js['competitors'][competitor]
             print(player)
             sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, game) VALUES(?,?,?,?,?,?);"
             params = (player['player_id'], player['first_name'], player['last_name'], 0, js['teams'][str(competitor)]['logo'], js['game_id'])

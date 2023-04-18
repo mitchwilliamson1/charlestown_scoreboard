@@ -4,11 +4,11 @@
       <div class="row align-items-center" style="height: 25%;">
         <div class="col h-100">
           <!-- <div class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div> -->
-          <img class="logo" src="../assets/logos/tigers.jpg">
+          <img class="logo" :src="'http://127.0.0.1:8000/players/get_logo/charls.jpeg'">
         </div>
         <div class="col h-100">
           <!-- <div class="txt">{{details.competitors[0].first_name.charAt(0)}}{{details.competitors[1].last_name.charAt(0)}}</div> -->
-          <img class="logo"  src="../assets/logos/Jets.png">
+          <img class="logo"  :src="'http://127.0.0.1:8000/players/get_logo/merelogo.jpeg'">
         </div>
       </div>
 
