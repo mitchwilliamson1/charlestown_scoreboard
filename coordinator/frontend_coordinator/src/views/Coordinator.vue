@@ -20,8 +20,6 @@
               </select>
           </div>
 
-          {{createGame}}
-
           <div class="row">
             <div v-if="createGame['type']" v-for="teamNumber in 2" class="col">
               <div class="">Team {{teamNumber}}</div>
@@ -174,6 +172,12 @@ export default {
   created () {
   },
   computed: {
+    amalgame() {
+      // this.state.games.filter(i => console.log(i))
+      // var data = this.state.games
+      // return data
+
+    },
 
   },
   methods:{

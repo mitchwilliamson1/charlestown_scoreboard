@@ -4,49 +4,49 @@
       <form class="row">
         <div class="col-6">
           <label for="inputEmail4" class="form-label">Game Name</label>
-          <input class="form-control" id="inputEmail4" v-model="details[0].name">
+          <input class="form-control" id="inputEmail4" v-model="details.name">
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Type</label>
-          <select class="form-select" v-model="details[0].type">
+          <select class="form-select" v-model="details.type">
             <option v-for="game in gameOptions['type']" :value="game.type_id">{{game.type}}</option>
           </select>
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Gender</label>
-          <select class="form-select" v-model="details[0].gender">
+          <select class="form-select" v-model="details.gender">
             <option v-for="game in gameOptions['gender']" :value="game.gender_id">{{game.gender}}</option>
           </select>
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Round</label>
-          <select class="form-select" v-model="details[0].round">
+          <select class="form-select" v-model="details.round">
             <option v-for="game in gameOptions['round']" :value="game.round_id">{{game.round}}</option>
           </select>
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Rink</label>
           <!-- fix this: needs to v-model the whole object to start with not just the number 1 -->
-          <select class="form-select" v-model="details[0].rink">
+          <select class="form-select" v-model="details.rink">
             <option v-for="game in gameOptions['rink']" :value="game">{{game.rink}}</option>
           </select>
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Level</label>
-          <select class="form-select" v-model="details[0].level">
+          <select class="form-select" v-model="details.level">
             <option v-for="game in gameOptions['level']" :value="game.level_id">{{game.level}}</option>
           </select>
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Grade</label>
-          <select class="form-select" v-model="details[0].grade">
+          <select class="form-select" v-model="details.grade">
             <option v-for="game in gameOptions['grade']" :value="game.grade_id">{{game.grade}}</option>
           </select>
         </div>
         <div class="col-6">
           <label for="inputAddress2" class="form-label">Winner</label>
-          <select class="form-select" v-model="details[0].winner">
-            <option v-for="game in details[0]['competitors']" :value="game">{{game.first_name}}</option>
+          <select class="form-select" v-model="details.winner">
+            <option v-for="game in details['competitors']" :value="game">{{game.first_name}}</option>
           </select>
         </div>
       </form>
@@ -106,9 +106,6 @@ export default {
   },
 
   methods:{
-    filterDict(teamName) {
-      return this.state.players.filter(i => i.team == teamName)
-    },
     capitalise(key) {
       return key.charAt(0).toUpperCase() + key.slice(1);
     },

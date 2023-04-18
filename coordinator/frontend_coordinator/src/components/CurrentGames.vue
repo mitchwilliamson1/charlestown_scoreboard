@@ -45,6 +45,7 @@ export default {
   },
   props: {
     games: Object,
+    teams: Object,
     gameOptions: Object,
   },
 
