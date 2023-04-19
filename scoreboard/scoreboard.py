@@ -33,6 +33,15 @@ def get_game():
     return Game().get_game()
 
 
+@bott.route("/<logo>")
+def get_logo(logo):
+    import os 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    logo = static_file(logo, root="./assets")
+    print("!!!!!! ", logo)
+    return logo
+
+
 @bott.route("/create_game", method=["POST", "OPTIONS"])
 def create_game():
     if request.method == "OPTIONS":
@@ -77,6 +86,6 @@ def send_static(filename):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8090))
+    port = int(os.environ.get('PORT', 8081))
     bott.run(host='0.0.0.0', port=port, debug=True)
 

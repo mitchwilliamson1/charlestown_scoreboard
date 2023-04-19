@@ -3,11 +3,13 @@
     <div class="container-fluid h-100 w-100">
       <div class="row align-items-center" style="height: 25%;">
         <div class="col h-100">
-          <img v-if="p1Logo" class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+p1Logo">
+          <!-- <img v-if="p1Logo" class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+p1Logo"> -->
+          <img v-if="p1Logo" class="logo"  :src="'http://127.0.0.1:8081/'+p1Logo">
           <div v-else class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div>
         </div>
         <div class="col h-100">
-          <img v-if="p2Logo" class="logo"  :src="'http://127.0.0.1:8000/players/get_logo/'+p2Logo">
+          <!-- <img v-if="p2Logo" class="logo"  :src="'http://127.0.0.1:8000/players/get_logo/'+p2Logo"> -->
+          <img v-if="p2Logo" class="logo"  :src="'http://127.0.0.1:8081/'+p2Logo">
           <div v-else class="txt">{{details.competitors[0].first_name.charAt(0)}}{{details.competitors[1].last_name.charAt(0)}}</div>
         </div>
       </div>

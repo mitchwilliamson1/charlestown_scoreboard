@@ -67,7 +67,8 @@ class Game:
             self.create_game(DEFAULT_GAME)
         else:
             for game in games:
-                # print()
+                if game['ends'] < 0:
+                    self.create_game(DEFAULT_GAME)
                 sql = "SELECT player_id, first_name, last_name, score, logo FROM competitors WHERE game = ?"
                 params = (game['game_id'],)
                 # print("PARAMS ", type(params))
@@ -158,9 +159,6 @@ class Game:
 
 
     def add_ends(self, js):
-        if js['ends'] < 0:
-            self.create_game(DEFAULT_GAME)
-            return {"status": "ok",}
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
