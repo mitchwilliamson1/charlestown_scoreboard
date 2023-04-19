@@ -33,6 +33,15 @@ def get_masterboard():
     return Masterboard().get_masterboard()
 
 
+@bott.route("/<logo>")
+def get_logo(logo):
+    import os 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    logo = static_file(logo, root="./assets")
+    print("!!!!!! ", logo)
+    return logo
+
+
 @bott.route("/setup", method=["POST", "OPTIONS"])
 def create_game():
     if request.method == "OPTIONS":

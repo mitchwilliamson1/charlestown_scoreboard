@@ -1,6 +1,6 @@
 <template>
-  <div style="background-color: #2b2b2b;">
-    <Scoreboard :detail="state.game"/>
+  <div class="h-100 w-100">
+    <Scoreboard class="h-100" :detail="state.game"/>
   </div>
 </template>
 

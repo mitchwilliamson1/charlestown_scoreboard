@@ -1,16 +1,11 @@
 <template>
-  <div style="text-align: center;">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col align-self-center count " :style="addstyle"> 
-          <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
-          <div v-if="typeof score !== 'undefined'">{{score}}</div>
-        </div>
-      </div>
+  <div>
+    <div class="count text-align-center h-100" :style="addstyle"> 
+      <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
+      <div v-if="typeof score !== 'undefined'">{{score}}</div>
     </div>
-    <button v-if="ends" @click="endsUp">Increase</button>
-    <button v-if="score" @click="scoreUp">Increase</button>
-
+<!-- <button v-if="typeof ends !== 'undefined'" @click="endsUp(ends)">Increase</button>
+      <button v-if="typeof ends !== 'undefined'" @click="endsDown(ends)">Decrease</button> -->
   </div>
 </template>
 
