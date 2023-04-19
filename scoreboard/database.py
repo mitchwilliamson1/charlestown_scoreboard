@@ -129,7 +129,7 @@ class Game:
             # player = js['competitors'][competitor]
             print(competitor['player_id'])
             sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, game) VALUES(?,?,?,?,?,?);"
-            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], 0, competitor['logo'], js['game_id'])
+            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], js['game_id'])
             cursor.execute(sql, params)
         con.commit()
 
@@ -168,13 +168,13 @@ class Game:
         cmd = f'UPDATE games SET ends = {js["ends"]} WHERE game_id = {js["game_id"]}'
 
         res = cursor.execute(cmd)
+        con.commit()
         if res.fetchone() is None:
             try:
                 r_code = self.write_coordinator_ends(js)
             except:
                 pass
         
-        con.commit()
         return {
                 "status": "ok",
         }

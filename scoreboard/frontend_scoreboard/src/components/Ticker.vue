@@ -4,6 +4,8 @@
       <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
       <div v-if="typeof score !== 'undefined'">{{score}}</div>
     </div>
+<!--       <button v-if="typeof ends !== 'undefined'" @click="endsUp(ends)">Increase</button>
+      <button v-if="typeof ends !== 'undefined'" @click="endsDown(ends)">Decrease</button> -->
   </div>
 </template>
 
@@ -51,11 +53,11 @@ export default {
         });
       }
     },
-    endsUp() {
-      this.details.ends++
-      console.log(this.details.ends)
+    endsUp(ends) {
+      ends++
+      console.log(ends)
       axios.post('http://127.0.0.1:8081/add_ends', {
-      update: {ends: parseInt(this.ends), game_id:this.details.game_id}
+      update: {ends: parseInt(ends), game_id:this.details.game_id}
       })
       .then(function (response) {
         console.log(response);
@@ -64,10 +66,10 @@ export default {
         console.log(error);
       });
     },
-    endsDown() {
-      this.details.ends--
+    endsDown(ends) {
+      ends--
       axios.post('http://127.0.0.1:8081/add_ends', {
-      update: {ends: parseInt(this.ends), game_id:this.details.game_id}
+      update: {ends: parseInt(ends), game_id:this.details.game_id}
       })
       .then(function (response) {
         console.log(response);

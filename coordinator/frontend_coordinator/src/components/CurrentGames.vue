@@ -24,7 +24,7 @@
           <div class="col collapse"
             :id="'collapse'+i"
             data-parent="#accordion">
-            <edit-games :details="games" :gameOptions="gameOptions"/>
+            <edit-games :details="game" :gameOptions="gameOptions"/>
           </div>
           
         </div>

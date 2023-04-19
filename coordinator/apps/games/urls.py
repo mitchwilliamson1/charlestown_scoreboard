@@ -89,7 +89,8 @@ def update_game():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Games().update_game(request_params[0])
+    print(request_params)
+    Games().update_game(request_params)
     return request.json
 
 

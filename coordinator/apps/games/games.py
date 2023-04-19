@@ -253,9 +253,11 @@ class Games:
         games = cursor.execute('''SELECT * FROM games''').fetchall()
 
         for game in games:
-            sql = f'''SELECT player_id, p.first_name, p.last_name, c.score FROM competitors AS c
+            sql = f'''SELECT player_id, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
+                    INNER JOIN teams AS t
+                    ON p.team = t.team_id 
                     WHERE c.game = {game['game_id']}'''
             
             players = cursor.execute(sql).fetchall()
@@ -266,7 +268,8 @@ class Games:
                     "player_id": player[0],
                     "first_name": player[1],
                     "last_name": player[2],
-                    "score": player[3]
+                    "score": player[3],
+                    "logo": player[4]
                  })
             
             parsed_rows.append({
@@ -283,6 +286,46 @@ class Games:
                 "finish_time": game["finish_time"],
                 "winner": game["winner"],
                 "competitors": competitors
+            })
+
+        return json.dumps(parsed_rows)
+
+
+    def get_players(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        parsed_rows = []
+        players = cursor.execute('''SELECT * FROM players''').fetchall()
+
+        for player in players:
+            parsed_rows.append({
+                "player_id": player["player_id"],
+                "first_name": player["first_name"],
+                "last_name": player["last_name"],
+                "team": player["team"],
+                "address": player["address"],
+                "email": player["email"],
+            })
+
+        return json.dumps(parsed_rows)
+
+    def get_teams(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        parsed_rows = []
+        teams = cursor.execute('''SELECT * FROM teams''').fetchall()
+
+        for team in teams:
+            parsed_rows.append({
+                "team_id": team["team_id"],
+                "team_name": team["team_name"],
+                "logo": team["logo"],
+                "address": team["address"],
+                "contact_details": team["contact_details"],
             })
 
         return json.dumps(parsed_rows)
@@ -392,7 +435,6 @@ class Games:
 
 
     def update_game(self, js):
-        print(js)
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
