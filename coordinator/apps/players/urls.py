@@ -41,8 +41,9 @@ def get_players():
 def get_players(logo):
     import os 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    logo = static_file(logo, root="./assets")
     print("!!!!!! ", logo)
+    logo = static_file(logo, root="./assets")
+    
     return logo
 
 

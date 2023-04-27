@@ -4,9 +4,11 @@ import json
 import pickle
 import pytz
 import requests
+import os
 
 COORDINATOR_IP = "127.0.0.1:8000"
 # COORDINATOR_IP = "10.0.0.41:8000"s
+
 
 DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
                     [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'logo':'', 'team': '1'},
@@ -55,6 +57,27 @@ class Game:
         except Exception:
             return str_val
 
+    def coordinator_running(self):
+        from ipaddress import ip_address
+        ip, separator, port = COORDINATOR_IP.rpartition(':')
+        assert separator # separator (`:`) must be present
+        port = int(port) # convert to integer
+        ip = ip_address(ip)
+        return self.check(ip, port)
+
+    def check(self, host,port,timeout=5):
+        import socket
+        sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM) #presumably 
+        sock.settimeout(timeout)
+        try:
+           sock.connect((str(host),port))
+        except:
+            return False
+        else:
+            sock.close()
+            return True
+
+
     def get_game(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
@@ -69,13 +92,14 @@ class Game:
             for game in games:
                 if game['ends'] < 0:
                     self.create_game(DEFAULT_GAME)
-                sql = "SELECT player_id, first_name, last_name, score, logo FROM competitors WHERE game = ?"
+                sql = "SELECT competitor_id, player_id, first_name, last_name, score, logo FROM competitors WHERE game = ?"
                 params = (game['game_id'],)
                 # print("PARAMS ", type(params))
                 players = cursor.execute(sql, params).fetchall()
                 competitors = []
                 for player in players:
                     competitors.append({
+                        "competitor_id": player['competitor_id'],
                         "player_id": player['player_id'],
                         "first_name": player['first_name'],
                         "last_name": player['last_name'],
@@ -90,6 +114,8 @@ class Game:
                     "finish_time": game["finish_time"],
                     "ends": game["ends"],
                     "winner": game["winner"],
+                    "coordinator": COORDINATOR_IP,
+                    "coordinator_running": self.coordinator_running(),
                     "competitors": competitors,
                 })
 

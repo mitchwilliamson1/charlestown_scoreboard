@@ -1,7 +1,7 @@
 <template>
   <div v-if="this.details" class="container-fluid h-100 w-100 p-0" style="background-color: black;">
     <div class="container-fluid h-100 w-100">
-      <div class="row align-items-center" style="height: 40%;">
+      <div class="row align-items-center" style="height: 60%;">
         <div class="col h-100">
           <!-- <img v-if="p1Logo" class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+p1Logo"> -->
           <img class="logo"  :src="'http://127.0.0.1:8083/charls.jpeg'">
@@ -20,26 +20,21 @@
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 35%;">
+      <div class="row align-items-center" style="height: 40%;">
         <div class="col align-self-center">
           <Ticker :player="details.competitors[0]" 
                     :details="details"
-                    fontSize="23" 
+                    fontSize="40" 
                     colour="red"/>
         </div>
         <div class="col">
-          <Ticker :player="details.competitors[1]" 
+          <Ticker :player="details.competitors[1]"
                     :details="details"
-                    fontSize="23" 
+                    fontSize="40" 
                     colour="black"/>
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 25%;">
-        <div class="col h-100 align-self-center">
-          <img class="add" src="../assets/adds/belle_property.png">
-        </div>
-      </div>
     </div>
   </div>
 
