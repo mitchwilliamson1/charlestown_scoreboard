@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="count text-align-center h-100" :style="addstyle"> 
-      <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
-      <div v-if="typeof score !== 'undefined'">{{score}}</div>
+      <div v-if="typeof ends !== 'undefined'">58</div>
+      <div v-if="typeof score !== 'undefined'">57</div>
     </div>
 <!-- <button v-if="typeof ends !== 'undefined'" @click="endsUp(ends)">Increase</button>
       <button v-if="typeof ends !== 'undefined'" @click="endsDown(ends)">Decrease</button> -->

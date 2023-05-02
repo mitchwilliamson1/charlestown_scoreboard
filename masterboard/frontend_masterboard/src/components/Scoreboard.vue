@@ -1,36 +1,36 @@
 <template>
   <div v-if="this.details" class="container-fluid h-100 w-100 p-0" style="background-color: black;">
     <div class="container-fluid h-100 w-100">
-      <div class="row align-items-center" style="height: 60%;">
-        <div class="col h-100">
+      <div class="row align-items-center justify-content-center" style="height: 50%;">
+        <div class="col-4 h-100">
           <!-- <img v-if="p1Logo" class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+p1Logo"> -->
           <img class="logo"  :src="'http://127.0.0.1:8083/charls.jpeg'">
           <!-- <div class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div> -->
         </div>
-        <div class="col">
+        <div class="col-3">
           <Ticker :player="details.competitors[1]" 
                     :details="details"
-                    fontSize="18" 
+                    fontSize="30" 
                     fontColour="white"/>
         </div>
-        <div class="col h-100">
+        <div class="col-4 h-100">
           <!-- <img v-if="p2Logo" class="logo"  :src="'http://127.0.0.1:8000/players/get_logo/'+p2Logo"> -->
           <img class="logo"  :src="'http://127.0.0.1:8083/merelogo.jpeg'">
           <!-- <div class="txt">{{details.competitors[0].first_name.charAt(0)}}{{details.competitors[1].last_name.charAt(0)}}</div> -->
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 40%;">
-        <div class="col align-self-center">
+      <div class="row justify-content-between align-items-center" style="height: 50%;">
+        <div class="col-5 align-self-center">
           <Ticker :player="details.competitors[0]" 
                     :details="details"
-                    fontSize="40" 
+                    fontSize="52" 
                     colour="red"/>
         </div>
-        <div class="col">
+        <div class="col-5">
           <Ticker :player="details.competitors[1]"
                     :details="details"
-                    fontSize="40" 
+                    fontSize="52" 
                     colour="black"/>
         </div>
       </div>
