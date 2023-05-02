@@ -1,6 +1,7 @@
 <template>
   <div class="edit">
     <div v-if="gameOptions">
+      {{gameOptions['rink']}}
       <form class="row">
         <div class="col-6">
           <label for="inputEmail4" class="form-label">Game Name</label>

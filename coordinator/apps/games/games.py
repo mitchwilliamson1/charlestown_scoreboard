@@ -250,7 +250,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        games = cursor.execute('''SELECT * FROM games''').fetchall()
+        games = cursor.execute('''SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id ''').fetchall()
 
         for game in games:
             sql = f'''SELECT player_id, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
@@ -280,7 +280,7 @@ class Games:
                 "round": game["round"],
                 "level": game["level"],
                 "grade": game["grade"],
-                "rink": game["rink"],
+                "rink": {'rink':game["rink_name"], 'rink_id':game["rink_id"], 'rink_ip':game["ip"]},
                 "ends": game["ends"],
                 "start_time": game["start_time"],
                 "finish_time": game["finish_time"],

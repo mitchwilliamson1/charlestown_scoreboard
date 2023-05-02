@@ -18,7 +18,7 @@
               <div class="col" v-for="player in game.competitors">{{player.first_name}} - {{player.score}}</div>
             </div>
           </div>
-          <div class="col">{{game.rink}}</div>
+          <div class="col">{{game.rink.rink}}</div>
         </div>
         <div class="row p-2">
           <div class="col collapse"
