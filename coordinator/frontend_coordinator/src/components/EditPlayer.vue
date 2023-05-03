@@ -1,31 +1,33 @@
 <template>
   <div class="edit">
+    <div class="card p-2 pt-0 shadow">
     <form class="row g-3">
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label for="inputEmail4" class="form-label">First Name</label>
         <input class="form-control" id="inputEmail4" v-model="player.first_name">
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label for="inputPassword4" class="form-label">Last Name</label>
         <input class="form-control" id="inputPassword4" v-model="player.last_name">
       </div>
-      <div class="col-12">
-        <label for="inputAddress" class="form-label">Address</label>
-        <input type="text" class="form-control" id="inputAddress" v-model="player.address">
-      </div>
-      <div class="col-12">
+      <div class="col-4">
         <label for="inputAddress2" class="form-label">Team</label>
         <select class="form-select" v-model="player.team">
           <option v-for="team in teams" :value="team.team_id">{{team.team_name}}</option>
         </select>
       </div>
-      <div class="col-md-12">
+      <div class="col-6">
+        <label for="inputAddress" class="form-label">Address</label>
+        <input type="text" class="form-control" id="inputAddress" v-model="player.address">
+      </div>
+      <div class="col-6">
         <label for="inputCity" class="form-label">Email</label>
         <input type="text" class="form-control" id="inputCity" v-model="player.email">
       </div>
-    </form>
     <div class="col-12">
       <button type="submit" @click="updatePlayer" class="btn btn-primary">Update</button>
+    </div>
+    </form>
     </div>
 
   </div>

@@ -1,18 +1,17 @@
 <template>
   <div class="hello">
-  <div class="container">
-
-    <div v-for="team, i in teams" :key="i">
-      <div class="row shadow p-2 mb-1 bg-body rounded"
+  <div class="container row">
+    <div v-for="team, i in teams" :key="i" class="col-3">
+      <div class="shadow p-2 mb-1 bg-body rounded"
         data-bs-toggle="collapse" 
         :data-bs-target="'#collapseTeam'+i" 
         aria-expanded="false" 
         aria-controls="collapseOne">
-        <div class="col">
+        <div class="">
           <img class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+team.logo" >
         </div>
       </div>
-      <div class="row p-2">
+      <div class="p-2">
         <div class="col collapse"
           :id="'collapseTeam'+i"
           data-parent="#accordion">
@@ -118,11 +117,14 @@ export default {
 }
 
 .logo {
-  width: 10%;
+  aspect-ratio: 4/3;
+  width: 50%;
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
+
+
 
 input {
   width: 90%;

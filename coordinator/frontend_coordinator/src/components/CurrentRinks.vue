@@ -3,30 +3,29 @@
   <div class="container">
     <div class="row">
       <div class="col fw-bold">Rinks</div>
-      <div class="col fw-bold">Ip Address</div>
     </div>
 
-    <div v-for="rink, i in rinks" :key="i">
-      <div class="row shadow p-2 mb-1 bg-body rounded"
-        data-bs-toggle="collapse" 
-        :data-bs-target="'#collapseTeam'+i+'rink'" 
-        aria-expanded="false" 
-        aria-controls="collapseOne">
-        <div class="col">{{rink.rink}}</div>
-        <div class="col">{{rink.ip}}</div>
-      </div>
-      <div class="row p-2">
-        <div class="col collapse"
-          :id="'collapseTeam'+i+'rink'"
-          data-parent="#accordion">
-          <edit-rink :rinks="rink"/>
+    <div class="row">
+      <div v-for="rink, i in rinks" :key="i" class="col-6">
+        <div class="shadow p-2 mb-1 bg-body rounded"
+          data-bs-toggle="collapse" 
+          :data-bs-target="'#collapseTeam'+i+'rink'" 
+          aria-expanded="false" 
+          aria-controls="collapseOne">
+          <div class="col">{{rink.rink}}</div>
+        </div>
+        <div class="row p-2">
+          <div class="col collapse"
+            :id="'collapseTeam'+i+'rink'"
+            data-parent="#accordion">
+            <edit-rink :rinks="rink"/>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="row">
       <div class="col fw-bold">Masterboards</div>
-      <div class="col fw-bold">Ip Address</div>
     </div>
 
     <div v-for="masterboard, i in masterboards" :key="i">
@@ -36,7 +35,6 @@
         aria-expanded="false" 
         aria-controls="collapseOne">
         <div class="col">{{masterboard.masterboard}}</div>
-        <div class="col">{{masterboard.ip}}</div>
       </div>
       <div class="row p-2">
         <div class="col collapse"

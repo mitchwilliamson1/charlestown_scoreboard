@@ -130,17 +130,24 @@ class Players:
             pass
 
         sql = f''' INSERT INTO teams (team_name, logo, address, contact_details) 
-        VALUES('{team['name']}', "{logo.filename}", "{team['address']}", '{team['contact']}');'''
+        VALUES('{team['name']}', "{logo.filename}", "{team['address']}", '{team['contact_details']}');'''
 
         cursor.execute(sql)
         con.commit()
 
-    def update_team(self, js):
+    def update_team(self, js, logo):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"UPDATE team SET team_name = '{js['team_name']}', logo = '{js['logo']}', address = '{js['address']}', contact = '{js['contact']}' WHERE team_id = {js['team_id']}"
+        try:
+            logo.save("./assets/"+logo.filename)
+            logo_update = logo.filename
+        except:
+            logo_update = js['logo']
+            pass
+
+        cmd = f"UPDATE teams SET team_name = '{js['team_name']}', logo = '{logo_update}', address = '{js['address']}', contact_details = '{js['contact_details']}' WHERE team_id = {js['team_id']}"
         res = cursor.execute(cmd)
         if res.fetchone() is None:
             con.commit()

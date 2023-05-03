@@ -1,25 +1,30 @@
 <template>
   <div class="edit">
-    <form class="row g-3">
-      <div class="col-md-6">
-        <label for="inputEmail4" class="form-label">Rink</label>
-        <input type="text" class="form-control" id="inputEmail4" v-model="masterboard.masterboard">
-      </div>
-      <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Ip Address</label>
-        <input type="text" class="form-control" id="inputPassword4" v-model="masterboard.ip">
-      </div>
-    </form>
-    <br>
-    <div>Linked Rinks</div>
-    <div v-for="ip, i in state.ips" class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" v-model="ip.show">
-        <label class="form-check-label" for="inlineCheckbox1">{{ip.rink}}</label>
-    </div>
+    <div class="card p-2 pt-0 shadow">
 
-    <div class="col-12">
-      <button @click="updateMasterboard" type="submit" class="btn btn-primary">Update</button>
+      <form class="row g-3">
+        <div class="col-md-4">
+          <label for="inputEmail4" class="form-label">Rink</label>
+          <input type="text" class="form-control" id="inputEmail4" v-model="masterboard.masterboard">
+        </div>
+        <div class="col-md-4">
+          <label for="inputPassword4" class="form-label">Ip Address</label>
+          <input type="text" class="form-control" id="inputPassword4" v-model="masterboard.ip">
+        </div>
+        <div class="col-4">
+          <div>Linked Rinks</div>
+          <div v-for="ip, i in state.ips" class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="inlineCheckbox1" v-model="ip.show">
+              <label class="form-check-label" for="inlineCheckbox1">{{ip.rink}}</label>
+          </div>
+
+          <div class="col-12">
+            <button @click="updateMasterboard" type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </div>
+      </form>
     </div>
+    <br>
     
 
   </div>

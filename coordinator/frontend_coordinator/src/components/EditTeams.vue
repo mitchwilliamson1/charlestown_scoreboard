@@ -1,30 +1,32 @@
 <template>
   <div class="edit">
-    <form class="row g-3">
-      <div class="col-md-6">
-        <label for="inputEmail4" class="form-label">Name</label>
-        <input type="text" class="form-control" id="inputEmail4" v-model="team.team_name">
-      </div>
-      <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Address</label>
-        <input type="text" class="form-control" id="inputPassword4" v-model="team.address">
-      </div>
-      <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Contact</label>
-        <input type="text" class="form-control" id="inputPassword4" v-model="team.contact_details">
-      </div>
-      <div class="col-md-6">
-          <label for="inputPassword4" class="form-label w-100">Logo</label>
-        <div class="row border rounded p-1">
-          <div class="col">{{team.logo}}</div>
-          <input type="file" ref="file" @change="onChange($event)" class="col">
+    <div class="card p-2 pt-0 shadow">
+
+      <form class="row">
+        <div class="">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" v-model="team.team_name">
         </div>
-      </div>
-    </form>
+        <div class="">
+          <label class="form-label">Address</label>
+          <input type="text" class="form-control" v-model="team.address">
+        </div>
+        <div class="">
+          <label class="form-label">Contact</label>
+          <input type="text" class="form-control" v-model="team.contact_details">
+        </div>
+        <div class="">
+            <label class="form-label w-100">Logo</label>
+          <div class="row border rounded p-1">
+            <div class="col">{{team.logo}}</div>
+            <input type="file" ref="file" @change="onChange($event)" class="col">
+          </div>
+        </div>
+      </form>
       <div class="col-12">
         <button @click="updateTeam(team)" class="btn btn-primary">Update</button>
       </div>
-
+    </div>
   </div>
 </template>
 
@@ -64,9 +66,10 @@ export default {
 
     function updateTeam(team) {
       let data = new FormData();
-      data.append('file', team.logo);
+      data.append('file', createTeam.logo);
       data.append('team', JSON.stringify(team));
 
+      console.log("name:")
       console.log("name: ", JSON.stringify(team))
 
       axios.post(path+'players/update_team',

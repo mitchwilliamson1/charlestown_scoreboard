@@ -24,13 +24,13 @@
         <div class="col-5 align-self-center">
           <Ticker :player="details.competitors[0]" 
                     :details="details"
-                    fontSize="52" 
+                    fontSize="30" 
                     colour="red"/>
         </div>
         <div class="col-5">
           <Ticker :player="details.competitors[1]"
                     :details="details"
-                    fontSize="52" 
+                    fontSize="30" 
                     colour="black"/>
         </div>
       </div>

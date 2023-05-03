@@ -1,19 +1,21 @@
 <template>
   <div class="edit">
-    <form class="row g-3">
-      <div class="col-md-6">
-        <label for="inputEmail4" class="form-label">Rink</label>
-        <input type="text" class="form-control" id="inputEmail4" v-model="rinks.rink" >
-      </div>
-      <div class="col-md-6">
-        <label for="inputPassword4" class="form-label">Ip Address</label>
-        <input type="text" class="form-control" id="inputPassword4"  v-model="rinks.ip">
-      </div>
-    </form>
+    <div class="card p-2 pt-0 shadow">
+
+      <form class="row g-3">
+        <div class="col-md-6">
+          <label for="inputEmail4" class="form-label">Rink</label>
+          <input type="text" class="form-control" id="inputEmail4" v-model="rinks.rink" >
+        </div>
+        <div class="col-md-6">
+          <label for="inputPassword4" class="form-label">Ip Address</label>
+          <input type="text" class="form-control" id="inputPassword4"  v-model="rinks.ip">
+        </div>
       <div class="col-12">
         <button @click="updateRink" type="submit" class="btn btn-primary">Update</button>
       </div>
-
+      </form>
+    </div>
   </div>
 </template>
 

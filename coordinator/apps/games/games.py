@@ -280,7 +280,7 @@ class Games:
                 "round": game["round"],
                 "level": game["level"],
                 "grade": game["grade"],
-                "rink": {'rink':game["rink_name"], 'rink_id':game["rink_id"], 'rink_ip':game["ip"]},
+                "rink": {'rink':game["rink_name"], 'rink_id':game["rink_id"], 'ip':game["ip"]},
                 "ends": game["ends"],
                 "start_time": game["start_time"],
                 "finish_time": game["finish_time"],
