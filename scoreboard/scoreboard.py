@@ -2,7 +2,6 @@ from bottle import Bottle, route, run, template, static_file, TEMPLATE_PATH, JSO
 import urllib
 import json
 import os
-import config
 import ipaddress
 import socket
 
@@ -38,7 +37,6 @@ def get_logo(logo):
     import os 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     logo = static_file(logo, root="./assets")
-    print("!!!!!! ", logo)
     return logo
 
 
@@ -46,8 +44,11 @@ def get_logo(logo):
 def create_game():
     if request.method == "OPTIONS":
         return
+
+    client_ip = request.environ.get('REMOTE_ADDR')
+    print('!!!!!!!! ', client_ip)
     request_params = json.loads(request.body.getvalue())
-    Game().create_game(request_params)
+    Game().create_game(request_params, client_ip)
     return request.json
 
 
