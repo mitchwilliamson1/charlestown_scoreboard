@@ -47,11 +47,7 @@ export default {
     });
 
     var path = ""
-    if (process.env.NODE_ENV == 'development'){
-      path = 'http://127.0.0.1:8000/games'
-    }else{
-      path = window.location.toString();
-    }
+    path = 'http://127.0.0.1:8000/games'
 
     onMounted(async () => {
       // getMasterboard()

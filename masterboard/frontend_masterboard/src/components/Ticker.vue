@@ -1,8 +1,7 @@
 <template>
   <div>
     <div class="count text-align-center h-100" :style="addstyle"> 
-      <div v-if="typeof ends !== 'undefined'">58</div>
-      <div v-if="typeof score !== 'undefined'">55</div>
+      <div v-if="typeof score !== 'undefined'">{{score}}</div>
     </div>
 <!-- <button v-if="typeof ends !== 'undefined'" @click="endsUp(ends)">Increase</button>
       <button v-if="typeof ends !== 'undefined'" @click="endsDown(ends)">Decrease</button> -->
@@ -17,7 +16,7 @@ export default {
   props: {
     player: Object,
     details: Object,
-    endsProp: Number,
+    endsProp: Object,
     colour: String,
     fontSize: String,
     fontColour: String,
@@ -29,7 +28,7 @@ export default {
   },
   computed: {
     score() {
-      return this.player.score
+      return this.player
     },
     ends() {
       return this.endsProp

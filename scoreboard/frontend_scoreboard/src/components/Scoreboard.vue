@@ -12,33 +12,33 @@
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 22%; padding-bottom: 100px;">
+      <div class="row align-items-center" style="height: 25%; padding-bottom: 100px;">
         <div class="col align-self-center">
           <Ticker :player="details.competitors[0]" 
                     :details="details"
-                    fontSize="23" 
+                    fontSize="21" 
                     colour="red"/>
         </div>
         <div class="col">
           <Ticker :player="details.competitors[1]" 
                     :details="details"
-                    fontSize="23" 
+                    fontSize="21" 
                     colour="black"/>
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 28%;">
+      <div class="row align-items-center" style="height: 25%;">
         <div class="col h-100 align-self-center">
           <img class="add" src="../assets/adds/belle_property.png">
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 25%;">
+      <div class="row align-items-center overflow-hidden" style="height: 25%;">
         <div class="col">
           <Ticker :details="details"
                   :endsProp="ends"
                   player="ends" 
-                  fontSize="20" 
+                  fontSize="21" 
                   fontColour="white" 
                   colour="black"/>
         </div>
@@ -117,7 +117,7 @@ export default {
 .txt {
   font-family: bigText;
   color: white;
-  font-size: 12vh;
+  font-size: 16vh;
   text-align: center;
   line-height: 1.0;
 }

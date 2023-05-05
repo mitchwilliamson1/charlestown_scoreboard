@@ -54,11 +54,7 @@ export default {
       });
 
     var path = ""
-    if (process.env.NODE_ENV == 'development'){
-      path = 'http://127.0.0.1:8000/'
-    }else{
-      path = window.location.toString();
-    }
+    path = 'http://127.0.0.1:8000/'
 
     function onChange(event) {
       createTeam.logo = event.target.files[0]

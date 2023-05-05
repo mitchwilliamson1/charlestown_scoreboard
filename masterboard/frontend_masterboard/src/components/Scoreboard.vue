@@ -1,14 +1,14 @@
 <template>
   <div v-if="this.details" class="container-fluid h-100 w-100 p-0" style="background-color: black;">
     <div class="container-fluid h-100 w-100">
-      <div class="row align-items-center justify-content-center" style="height: 45%;">
+      <div class="row align-items-center" style="height: 45%;">
         <div class="col-4 h-100">
           <!-- <img v-if="p1Logo" class="logo" :src="'http://127.0.0.1:8000/players/get_logo/'+p1Logo"> -->
           <img class="logo"  :src="'http://127.0.0.1:8083/charls.jpeg'">
           <!-- <div class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div> -->
         </div>
-        <div class="col-3">
-          <Ticker :player="details.competitors[1]" 
+        <div class="col-4">
+          <Ticker :player="details.ends" 
                     :details="details"
                     fontSize="30" 
                     fontColour="white"/>
@@ -20,17 +20,18 @@
         </div>
       </div>
 
-      <div class="row justify-content-between align-items-center overflow-hidden" style="height:55%; width: 100%;">
-        <div class="col-6 align-self-center w-50">
-          <Ticker :player="details.competitors[0]" 
+      <div class="row justify-content-between overflow-hidden" style="height:55%; width: 100%;">
+        <div class="col align-self-center w-50">
+          <Ticker :player="details.competitors[0].score" 
                     :details="details"
-                    fontSize="50" 
+                    fontSize="45" 
                     colour="red"/>
         </div>
-        <div class="col-6 align-self-center w-50">
-          <Ticker :player="details.competitors[1]"
+        <div class="col"></div>
+        <div class="col align-self-center w-50">
+          <Ticker :player="details.competitors[1].score"
                     :details="details"
-                    fontSize="50" 
+                    fontSize="45" 
                     colour="black"/>
         </div>
       </div>

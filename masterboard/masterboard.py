@@ -2,7 +2,6 @@ from bottle import Bottle, route, run, template, static_file, TEMPLATE_PATH, JSO
 import urllib
 import json
 import os
-import config
 import ipaddress
 import socket
 
