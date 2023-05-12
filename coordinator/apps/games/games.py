@@ -40,6 +40,11 @@ class Games:
                      level text, "")''')
         conn.commit()
 
+        c.execute('''CREATE TABLE IF NOT EXISTS competitior_displays
+                     (competitior_display_id INTEGER PRIMARY KEY,
+                     competitior_display text, "")''')
+        conn.commit()
+
         c.execute('''CREATE TABLE IF NOT EXISTS grades
                      (grade_id INTEGER PRIMARY KEY,
                      grade text, "")''')
@@ -176,6 +181,22 @@ class Games:
 
         return parsed_rows
 
+    def get_competitior_displays(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        parsed_rows = []
+        competitior_displays = cursor.execute('''SELECT * FROM competitior_displays''').fetchall()
+
+        for competitior_display in competitior_displays:
+            parsed_rows.append({
+                "competitior_display": competitior_display["competitior_display"],
+                "competitior_display_id": competitior_display["competitior_display_id"],
+            })
+
+        return parsed_rows
+
     def get_grades(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
@@ -253,7 +274,7 @@ class Games:
         games = cursor.execute('''SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id ''').fetchall()
 
         for game in games:
-            sql = f'''SELECT player_id, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
+            sql = f'''SELECT player_id, competitior_display, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN teams AS t

@@ -47,6 +47,11 @@ class Players:
                      player text NOT NULL DEFAULT "No Player",
                      score text NOT NULL DEFAULT "",
                      game INTEGER NOT NULL DEFAULT "No Game",
+                     competitior_display INTEGER NOT NULL DEFAULT 1,
+                     FOREIGN KEY (competitior_display)
+                        REFERENCES competitior_displays (competitior_display_id)
+                            ON UPDATE CASCADE
+                            ON DELETE SET DEFAULT,
                      FOREIGN KEY (game)
                         REFERENCES games (game_id)
                             ON UPDATE CASCADE

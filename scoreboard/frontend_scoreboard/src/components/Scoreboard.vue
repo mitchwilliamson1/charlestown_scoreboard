@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 25%;">
+      <div v-if="!isMobile()" class="row align-items-center" style="height: 28%;">
         <div class="col h-100 align-self-center">
           <img class="add" src="../assets/adds/belle_property.png">
         </div>
@@ -96,6 +96,13 @@ export default {
     }
   },
   methods: {
+    isMobile() {
+     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+       return true
+     } else {
+       return false
+     }
+   }
     // updateGame() {
     //   this.game = this details
     // },
