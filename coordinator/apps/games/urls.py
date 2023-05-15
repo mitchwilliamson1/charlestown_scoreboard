@@ -27,7 +27,7 @@ def init():
     initialise["round"] = Games().get_rounds()
     initialise["grade"] = Games().get_grades()
     initialise["level"] = Games().get_levels()
-    initialise["competitior_display"] = Games().get_competitior_displays()
+    initialise["competitor_display"] = Games().get_competitor_displays()
     initialise["rink"] = Games().get_rinks()
     initialise["masterboard"] = Games().get_masterboards()
     return json.dumps(initialise)

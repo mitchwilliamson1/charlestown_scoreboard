@@ -40,9 +40,9 @@ class Games:
                      level text, "")''')
         conn.commit()
 
-        c.execute('''CREATE TABLE IF NOT EXISTS competitior_displays
-                     (competitior_display_id INTEGER PRIMARY KEY,
-                     competitior_display text, "")''')
+        c.execute('''CREATE TABLE IF NOT EXISTS competitor_displays
+                     (competitor_display_id INTEGER PRIMARY KEY,
+                     competitor_display text, "")''')
         conn.commit()
 
         c.execute('''CREATE TABLE IF NOT EXISTS grades
@@ -181,18 +181,18 @@ class Games:
 
         return parsed_rows
 
-    def get_competitior_displays(self):
+    def get_competitor_displays(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
         parsed_rows = []
-        competitior_displays = cursor.execute('''SELECT * FROM competitior_displays''').fetchall()
+        competitor_displays = cursor.execute('''SELECT * FROM competitor_displays''').fetchall()
 
-        for competitior_display in competitior_displays:
+        for competitor_display in competitor_displays:
             parsed_rows.append({
-                "competitior_display": competitior_display["competitior_display"],
-                "competitior_display_id": competitior_display["competitior_display_id"],
+                "competitor_display": competitor_display["competitor_display"],
+                "competitor_display_id": competitor_display["competitor_display_id"],
             })
 
         return parsed_rows
@@ -274,26 +274,25 @@ class Games:
         games = cursor.execute('''SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id ''').fetchall()
 
         for game in games:
-            sql = f'''SELECT player_id, cd.competitior_display, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
+            sql = f'''SELECT player_id, cd.competitor_display, cd.competitor_display_id, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN teams AS t
                     ON p.team = t.team_id
-                    INNER JOIN competitior_displays AS cd
-                    ON c.competitior_display = cd.competitior_display_id
+                    INNER JOIN competitor_displays AS cd
+                    ON c.competitor_display = cd.competitor_display_id
                     WHERE c.game = {game['game_id']}'''
             
             players = cursor.execute(sql).fetchall()
 
             competitors = []
             for player in players:
-                print("PLAYER: ", player)
                 competitors.append({
                     "player_id": player['player_id'],
                     "first_name": player['first_name'],
                     "last_name": player['last_name'],
                     "score": player['score'],
-                    "competitior_display": player['competitior_display'],
+                    "competitor_display": {'competitor_display':player['competitor_display'],'competitor_display_id':player['competitor_display_id']},
                     "logo": player['logo']
                  })
             
@@ -465,8 +464,9 @@ class Games:
         res = cursor.execute(cmd, params)
 
         for competitor in js['competitors']:
-            cmd = "UPDATE competitors SET score = ? WHERE player = ? AND game = ?"
-            params = (competitor['score'], competitor['player_id'], js['game_id'])
+            print(competitor)
+            cmd = "UPDATE competitors SET score = ?,competitor_display = ? WHERE player = ? AND game = ?"
+            params = (competitor['score'], competitor['competitor_display']['competitor_display_id'], competitor['player_id'], js['game_id'])
             res = cursor.execute(cmd, params)
 
         if res.fetchone() is None:

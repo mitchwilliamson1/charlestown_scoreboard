@@ -1,6 +1,6 @@
 <template>
   <div class="edit">
-    <div v-if="gameOptions">
+    <div v-if="gameOptions && details">
     <div class="card p-2 pt-0 shadow">
 
         <form class="row">
@@ -44,17 +44,18 @@
           <div class="col-3">
           </div>
           <div class="col-3">
-            <label class="form-label">Scoreboard Dispaly</label>
-            <select class="form-select" v-model="details['competitors'][0]['competitior_display']">
-              <option v-for="display in gameOptions['competitior_display']" :value="display.competitior_display">{{display.competitior_display}}</option>
+            <label class="form-label">Scoreboard Display</label>
+            <select class="form-select" v-model="details['competitors'][0]['competitor_display']">
+              <option v-for="display in gameOptions['competitor_display']" :value="display">{{display.competitor_display}}</option>
             </select>
           </div>
           <div class="col-3">
-            <label class="form-label">Scoreboard Dispaly</label>
-            <select class="form-select" v-model="details['competitors'][1]['competitior_display']">
-              <option v-for="display in gameOptions['competitior_display']" :value="display.competitior_display">{{display.competitior_display}}</option>
+            <label class="form-label">Scoreboard Display</label>
+            <select class="form-select" v-model="details['competitors'][1]['competitor_display']">
+              <option v-for="display in gameOptions['competitor_display']" :value="display">{{display.competitor_display}}</option>
             </select>
           </div>
+
           <!-- <div class="col-6">
             <label class="form-label">Gender</label>
             <select class="form-select" v-model="details.gender">
