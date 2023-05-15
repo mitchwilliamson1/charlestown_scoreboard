@@ -45,7 +45,6 @@
       <div class="row p-3">
         <div class="col-12">
           <h3>Current Games</h3>
-          {{state.games}}
           <current-games :games="state.games" :gameOptions="state.init"/>
         </div>
       </div>

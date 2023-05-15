@@ -39,6 +39,22 @@
               <option v-for="n, index in 100" :value="index">{{index}}</option>
             </select>
           </div>
+          <div class="col-3">
+          </div>
+          <div class="col-3">
+          </div>
+          <div class="col-3">
+            <label class="form-label">Scoreboard Dispaly</label>
+            <select class="form-select" v-model="details['competitors'][0]['competitior_display']">
+              <option v-for="display in gameOptions['competitior_display']" :value="display.competitior_display">{{display.competitior_display}}</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="form-label">Scoreboard Dispaly</label>
+            <select class="form-select" v-model="details['competitors'][1]['competitior_display']">
+              <option v-for="display in gameOptions['competitior_display']" :value="display.competitior_display">{{display.competitior_display}}</option>
+            </select>
+          </div>
           <!-- <div class="col-6">
             <label class="form-label">Gender</label>
             <select class="form-select" v-model="details.gender">

@@ -274,23 +274,27 @@ class Games:
         games = cursor.execute('''SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id ''').fetchall()
 
         for game in games:
-            sql = f'''SELECT player_id, competitior_display, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
+            sql = f'''SELECT player_id, cd.competitior_display, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN teams AS t
-                    ON p.team = t.team_id 
+                    ON p.team = t.team_id
+                    INNER JOIN competitior_displays AS cd
+                    ON c.competitior_display = cd.competitior_display_id
                     WHERE c.game = {game['game_id']}'''
             
             players = cursor.execute(sql).fetchall()
 
             competitors = []
             for player in players:
+                print("PLAYER: ", player)
                 competitors.append({
-                    "player_id": player[0],
-                    "first_name": player[1],
-                    "last_name": player[2],
-                    "score": player[3],
-                    "logo": player[4]
+                    "player_id": player['player_id'],
+                    "first_name": player['first_name'],
+                    "last_name": player['last_name'],
+                    "score": player['score'],
+                    "competitior_display": player['competitior_display'],
+                    "logo": player['logo']
                  })
             
             parsed_rows.append({
