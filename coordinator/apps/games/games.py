@@ -4,6 +4,7 @@ import json
 import pickle
 import pytz
 import requests
+import threading
 
 
 local_tz = pytz.timezone("Australia/Sydney")
@@ -114,7 +115,7 @@ class Games:
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT)''')
         conn.commit()
-    
+
     def get_types(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
@@ -380,7 +381,7 @@ class Games:
         js['game_id'] = game_id[0]
 
 
-        response = self.write_scoreboard(js)
+        response = asyncio.run(self.write_scoreboard(js))
         if response == 500:
             #remmove rink from above
             print('5000000000000')
@@ -408,8 +409,14 @@ class Games:
 
 
     def write_scoreboard(self, js):
-        response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js)
-        return response.status_code
+        import time
+        time.sleep(5)
+        try:
+            response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js)
+            return response.status_code
+        except:
+            print('HAHAHAHAHAAHAH')
+            return "fail"
 
 
 
@@ -464,17 +471,18 @@ class Games:
         res = cursor.execute(cmd, params)
 
         for competitor in js['competitors']:
-            print(competitor)
             cmd = "UPDATE competitors SET score = ?,competitor_display = ? WHERE player = ? AND game = ?"
             params = (competitor['score'], competitor['competitor_display']['competitor_display_id'], competitor['player_id'], js['game_id'])
             res = cursor.execute(cmd, params)
 
         if res.fetchone() is None:
+            print("RES: ", res.fetchone())
             con.commit()
-            self.write_scoreboard(js)
-        return {
-                "status": "ok",
-        }
+            con.close()
+
+            x = threading.Thread(target=self.write_scoreboard, args=(js,))
+            x.start()
+            return
 
 
     def update_rink(self, js):

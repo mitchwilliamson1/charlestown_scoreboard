@@ -90,8 +90,10 @@ def update_game():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    print(request_params)
+    print("here!!!!")
     Games().update_game(request_params)
+    print("AFTER!!!!!")
+
     return request.json
 
 
