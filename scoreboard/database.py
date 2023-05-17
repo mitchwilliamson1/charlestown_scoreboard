@@ -8,8 +8,8 @@ import os
 
 
 DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
-                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'logo':'', 'team': '1'},
-                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'logo':'', 'team': '2'}],
+                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'logo':'charls.jpeg', 'competitor_display':{'competitor_display': 'default', 'competitor_display_id': 4}, 'team': '1'},
+                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'logo':'away.jpeg', 'competitor_display':{'competitor_display': 'default', 'competitor_display_id': 4} ,'team': '2'}],
                 }
 
 
@@ -41,12 +41,22 @@ class Game:
                      last_name text DEFAULT "",
                      score text DEFAULT "",
                      logo text DEFAULT "",
+                     competitor_display INTEGER NOT NULL DEFAULT 4,
                      game INTEGER NOT NULL DEFAULT "No Game",
+                     FOREIGN KEY (competitor_display)
+                        REFERENCES competitor_displays (competitor_display_id)
+                            ON UPDATE CASCADE
+                            ON DELETE SET DEFAULT,
                      FOREIGN KEY (game)
                         REFERENCES games (game_id)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT)''')
 
+        conn.commit()
+
+        c.execute('''CREATE TABLE IF NOT EXISTS competitor_displays
+                     (competitor_display_id INTEGER PRIMARY KEY,
+                     competitor_display text, "")''')
         conn.commit()
 
     def encode_if_required(self, str_val):
@@ -96,19 +106,24 @@ class Game:
             for game in games:
                 if game['ends'] < 0:
                     self.create_game(DEFAULT_GAME, "127.0.0.1")
-                sql = "SELECT competitor_id, player_id, first_name, last_name, score, logo FROM competitors WHERE game = ?"
+                sql = """SELECT competitor_id, player_id, first_name, last_name, score, logo, cd.competitor_display FROM competitors as c
+                        INNER JOIN competitor_displays AS cd
+                        ON c.competitor_display = cd.competitor_display_id
+                        where game = ?"""
                 params = (game['game_id'],)
                 # print("PARAMS ", type(params))
                 players = cursor.execute(sql, params).fetchall()
                 competitors = []
                 for player in players:
+                    print(player['competitor_display'])
                     competitors.append({
                         "competitor_id": player['competitor_id'],
                         "player_id": player['player_id'],
                         "first_name": player['first_name'],
                         "last_name": player['last_name'],
                         "score": player['score'],
-                        "logo": player['logo']
+                        "logo": player['logo'],
+                        "competitor_display": player['competitor_display'],
                      })
                 
                 parsed_rows.append({
@@ -157,8 +172,9 @@ class Game:
         game_id = cursor.execute(sql, params)
 
         for competitor in js['competitors']:
-            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, game) VALUES(?,?,?,?,?,?);"
-            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], js['game_id'])
+            print('COMPETITOR: ', competitor)
+            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, competitor_display, game) VALUES(?,?,?,?,?,?,?);"
+            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], competitor['competitor_display']['competitor_display_id'], js['game_id'])
             cursor.execute(sql, params)
         con.commit()
 
@@ -214,68 +230,4 @@ class Game:
         return response.status_code
 
 
-    def edit_blast(self, js):
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
 
-        now = datetime.datetime.utcnow()
-
-        # Extract data from form
-        uuid = js["uuid"]
-        operation = js["operation"]
-        site_blast_id = js["site_blast_id"]
-        scheduled = datetime.datetime.strptime(js["scheduled_date"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        pits = pickle.dumps(js.get("pits", None))
-        activity = pickle.dumps(js.get("activity", None))
-        initiation = pickle.dumps(js.get("initiation", None))
-        affected_units = pickle.dumps(js.get("affected_units", None))
-        roads = pickle.dumps(js.get("roads", []))
-
-        # Create the edited blast
-        cursor.execute('''INSERT INTO blasts (created, operation, site_blast_id,
-                                                scheduled, pits, activity, 
-                                                initiation, affected_units, roads, parent)
-                                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (now, operation, site_blast_id, scheduled, pits, activity, 
-                    initiation, affected_units, roads, uuid)
-            )
-
-        con.commit()
-
-        return {
-                "uuid": uuid,
-                "site_blast_id": site_blast_id,
-                "operation": operation,
-                "scheduled_date": scheduled.isoformat(),
-                "activity": pickle.loads(activity),
-                "pits": pickle.loads(pits),
-                "affected_units": pickle.loads(affected_units),
-                "initiation": pickle.loads(initiation),
-                "roads": pickle.loads(roads),
-            }
-
-    def add_recipient(self, phone):
-        if not phone.startswith("+61"):
-            raise Exception("Malformed phone number")
-        if len(phone) != 12:
-            raise Exception("Malformed phone number")
-
-        # Connect to DB
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        # See if number already exists
-        subs = cursor.execute('''SELECT * FROM subscribers WHERE phone_number = ?''', (phone,)).fetchall()
-
-        if len(subs) != 0:
-            raise Exception("Number already subscribed")
-
-        # Alright ass number into database
-        cursor.execute('''INSERT INTO subscribers (phone_number, subscribed_on) VALUES (?, ?)''', (phone, datetime.datetime.utcnow(),))
-        cursor.execute('''INSERT INTO jobs (phone_number, job_type) VALUES (?, ?)''',
-                                (phone, 
-                                "subscribe"))
-
-        con.commit()

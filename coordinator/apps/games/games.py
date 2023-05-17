@@ -380,8 +380,7 @@ class Games:
 
         js['game_id'] = game_id[0]
 
-
-        response = asyncio.run(self.write_scoreboard(js))
+        response = self.write_scoreboard(js)
         if response == 500:
             #remmove rink from above
             print('5000000000000')
@@ -409,13 +408,10 @@ class Games:
 
 
     def write_scoreboard(self, js):
-        import time
-        time.sleep(5)
         try:
             response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js)
             return response.status_code
         except:
-            print('HAHAHAHAHAAHAH')
             return "fail"
 
 

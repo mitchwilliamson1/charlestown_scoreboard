@@ -3,12 +3,30 @@
     <div class="container-fluid h-100 w-100">
       <div class="row align-items-center" style="height: 25%;">
         <div class="col h-100">
-          <img v-if="coordinator_running" class="logo" :src="'http://'+coordinator+'/players/get_logo/'+p1Logo">
-          <div v-else class="txt">{{details.competitors[0].first_name.charAt(0)}}{{details.competitors[0].last_name.charAt(0)}}</div>
+          <div v-if="coordinator_running" class="h-100" >
+            <img v-if="p1.competitor_display == 'logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p1Logo">
+            <div v-else-if="p1.competitor_display == 'first name'" class="txt">{{p1.first_name.charAt(0)}}</div>
+            <div v-else-if="p1.competitor_display == 'first and last names'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
+            <img v-else="p1.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/'+p1Logo"> 
+          </div>
+          <div v-else class="h-100">
+            <img v-if="p1.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/'+p1Logo">
+            <div v-else-if="p1.competitor_display == 'first name'" class="txt">{{p1.first_name.charAt(0)}}</div>
+            <div v-else="p1.competitor_display == 'first and last names'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
+          </div>
         </div>
         <div class="col h-100">
-          <img v-if="coordinator_running" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p2Logo">
-          <div v-else class="txt">{{details.competitors[1].first_name.charAt(0)}}{{details.competitors[1].last_name.charAt(0)}}</div>
+          <div v-if="coordinator_running" class="h-100" >
+            <img v-if="p2.competitor_display == 'logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p2Logo">
+            <div v-else-if="p2.competitor_display == 'first name'" class="txt">{{p2.first_name.charAt(0)}}</div>
+            <div v-else-if="p2.competitor_display == 'first and last names'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
+            <img v-else="p2.competitor_display == 'default'"  class="logo" :src="'http://127.0.0.1:8081/'+p2Logo">
+          </div>
+          <div v-else class="h-100">
+            <img v-if="p2.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/'+p2Logo">
+            <div v-else-if="p2.competitor_display == 'first name'" class="txt">{{p2.first_name.charAt(0)}}</div>
+            <div v-else="p2.competitor_display == 'first and last names'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
+          </div>
         </div>
       </div>
 
@@ -73,6 +91,12 @@ export default {
     // },
   },
   computed: {
+    p1() {
+      return this.detail.competitors[0]
+    },
+    p2() {
+      return this.detail.competitors[1]
+    },
     details() {
       return this.detail
     },
