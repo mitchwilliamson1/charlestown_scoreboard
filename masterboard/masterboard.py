@@ -7,7 +7,7 @@ import socket
 
 import sys
 
-from database import Masterboard
+from db_interface import Masterboard
 
 
 
@@ -37,7 +37,6 @@ def get_logo(logo):
     import os 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     logo = static_file(logo, root="./assets")
-    print("!!!!!! ", logo)
     return logo
 
 

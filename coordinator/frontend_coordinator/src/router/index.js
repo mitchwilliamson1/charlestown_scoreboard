@@ -23,14 +23,14 @@ const routes = [
     component: () => import('../views/RinkManager.vue')
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue')
+    path: '/support',
+    name: 'Support',
+    component: () => import('../views/Support.vue')
   },
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.NODE_ENV),
+  history: createWebHistory('/'),
   routes
 })
 

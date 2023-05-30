@@ -13,7 +13,6 @@ COORDINATOR_IP = "10.0.0.41:8000"
 
 local_tz = pytz.timezone("Australia/Sydney")
 db_path = "/home/scoreboard/scoreboard/scoreboard.db"
-#db_path = "/home/scoreboard/Desktop/scoreboard/game.db"
 
 plyr_a_up = Button(2)
 plyr_a_dn = Button(3)
@@ -24,15 +23,14 @@ plyr_b_dn = Button(6)
 ends_up = Button(17)
 ends_dn = Button(27)
 
-print("running")
 
 def write_coordinator_score(js):
-        response = requests.post('http://'+COORDINATOR_IP+'/games/add_score', json = js, timeout=5)
+        response = requests.post('http://'+COORDINATOR_IP+'/games/add_score', json = js, timeout=10)
         return response.status_code
     
 
 def write_coordinator_ends(js):
-        response = requests.post('http://'+COORDINATOR_IP+'/games/add_ends', json = js)
+        response = requests.post('http://'+COORDINATOR_IP+'/games/add_ends', json = js, timeout=10)
         print(response)
         return response.status_code
 
@@ -43,15 +41,10 @@ def commit_score(competitor):
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
 
-    cmd = f'UPDATE competitors SET score = {competitor["score"]} WHERE competitor_id={competitor["competitor_id"]}'
-    print(cmd)
-    res = cursor.execute(cmd)
+    cmd = f'UPDATE competitors SET score = ? WHERE competitor_id=?'
+    params = [competitor["score"], competitor["competitor_id"]]
+    res = cursor.execute(cmd, params)
     con.commit()
- #   if res.fetchone() is None:
- #       try:
- #           r_code = write_coordinator_score(competitor)
- #       except:
- #           pass
     return {
             "status": "ok",
     }
@@ -103,16 +96,10 @@ def commit_ends(js):
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
 
-    cmd = f'UPDATE games SET ends = {js["ends"]} WHERE game_id = {js["game_id"]}'
-    
-    print(cmd)
-    res = cursor.execute(cmd)
-#    if res.fetchone() is None:
-#        try:
-#            r_code = write_coordinator_ends(js)
-#        except:
-#            pass
-    
+    cmd = f'UPDATE games SET ends = ? WHERE game_id = ?'
+    params = [js["ends"], js["game_id"]]
+    res = cursor.execute(cmd, params)
+
     con.commit()
     return {
             "status": "ok",
@@ -125,8 +112,7 @@ def update_ends(button):
     parsed_rows = []
     
     games = cursor.execute('''SELECT * FROM games WHERE finish_time is NULL''').fetchall()
-    
-    print(games)
+
     current_game = []
     for game in games:
         current_game.append({
@@ -139,7 +125,6 @@ def update_ends(button):
          })  
 
     for i in current_game:
-        print(i)
         ends = int(i['ends'])
         if button.pin.number == 17:
             ends += 1
@@ -148,9 +133,6 @@ def update_ends(button):
         i['ends'] = str(ends)
         commit_ends(i)
 
-
-def get(button):
-    print(button.pin.number)
 
 while True:
     plyr_a_up.when_pressed = update_score
@@ -161,6 +143,5 @@ while True:
     
     ends_up.when_pressed = update_ends
     ends_dn.when_pressed = update_ends
-#     plyr_a_dn.when_pressed = get_game(plyr_a_dn, 1, "down")
 
 

@@ -18,8 +18,6 @@
           </div>
           <div class="row">
             <div class="col-4">Logo</div>
-            <!-- <input class="col" v-model="createTeam.logo" type="text"> -->
-            <!-- <input type="file" ref="file" v-on:change="handleFileUpload()"  class="col"> -->
             <input type="file" ref="file" @change="onChange($event)" class="col">
           </div>
           <div class="row">
@@ -28,11 +26,11 @@
           </div>
           <div class="row">
             <div class="col-4">Contact</div>
-            <input class="col" v-model="createTeam.contact" type="text">
+            <input class="col" v-model="createTeam.contact_details" type="text">
           </div>
 
           <div class="">
-            <button type="button" @click="createTeamButton(createTeam)" class="btn btn-success">Create Team</button>
+            <button type="button" @click="createTeamButton(createTeam)" data-bs-dismiss="offcanvas" class="btn btn-success">Create Team</button>
           </div>
         </div>
       </div>
@@ -112,8 +110,6 @@ export default {
       data.append('file', team.logo);
       data.append('team', JSON.stringify(team));
 
-      console.log("name: ", JSON.stringify(team))
-
       axios.post(path+'players/create_team',
       data,
       {headers: {
@@ -121,7 +117,6 @@ export default {
         }
       })
       .then(function (response) {
-        console.log(response);
         getTeams()
       })
       .catch(function (error) {
@@ -133,7 +128,6 @@ export default {
       create_player: player,
       })
       .then(function (response) {
-        console.log(response);
         getPlayers()
       })
       .catch(function (error) {

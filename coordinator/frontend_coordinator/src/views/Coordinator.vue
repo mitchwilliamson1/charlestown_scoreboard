@@ -48,6 +48,13 @@
           <current-games :games="state.games" :gameOptions="state.init"/>
         </div>
       </div>
+
+      <div class="row p-3">
+        <div class="col-12">
+          <h3>Finished Games</h3>
+          <current-games :games="state.finishedGames" :gameOptions="state.init"/>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +93,7 @@ export default {
   setup() {
     const state = reactive({
       games: null,
+      finishedGames: null,
       players: null,
       teams: null,
       init: null,
@@ -96,6 +104,7 @@ export default {
     
     onMounted(async () => { 
       getGames()
+      getFinishedGames()
       getPlayers()
       getTeams()
       initialise()
@@ -119,6 +128,20 @@ export default {
       .then(function (response) {
         if (response.status == 200){
           state.games = response.data
+        }
+      })
+      .catch(function (error) {
+        console.log("ERROR ", error);
+      })
+      .then(function () {
+        // always executed
+      });
+    }
+    function getFinishedGames() {
+      axios.get(path+'games/get_finished_games')
+      .then(function (response) {
+        if (response.status == 200){
+          state.finishedGames = response.data
         }
       })
       .catch(function (error) {
@@ -163,6 +186,7 @@ export default {
       path,
       state,
       getGames,
+      getFinishedGames,
       getPlayers
     };
   },

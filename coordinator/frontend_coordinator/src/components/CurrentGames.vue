@@ -9,7 +9,7 @@
       <div v-for="game, i in games" :key="i">
         <div class="row shadow p-2 mb-1 bg-body rounded"
           data-bs-toggle="collapse" 
-          :data-bs-target="'#collapse'+i" 
+          :data-bs-target="'#collapse'+game.game_id" 
           aria-expanded="false" 
           aria-controls="collapseOne">
           <div class="col">{{game.name}}</div>
@@ -22,7 +22,7 @@
         </div>
         <div class="row p-2">
           <div class="col collapse"
-            :id="'collapse'+i"
+            :id="'collapse'+game.game_id"
             data-parent="#accordion">
             <edit-games :details="game" :gameOptions="gameOptions"/>
           </div>

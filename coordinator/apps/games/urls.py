@@ -35,7 +35,12 @@ def init():
 
 @gamesapp.route("/get_games")
 def get_games():
-    return Games().get_games()
+    return Games().get_games(True)
+
+
+@gamesapp.route("/get_finished_games")
+def get_finished_games():
+    return Games().get_games(False)
 
 
 @gamesapp.route("/get_rinks")

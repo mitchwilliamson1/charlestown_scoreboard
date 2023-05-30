@@ -184,9 +184,10 @@ class Game:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f'UPDATE games SET ends = {js["ends"]} WHERE game_id = {js["game_id"]}'
+        cmd = f'UPDATE games SET ends = ? WHERE game_id = ?'
+        params = [js["ends"], js["game_id"]]
 
-        res = cursor.execute(cmd)
+        res = cursor.execute(cmd, params)
         con.commit()
         if res.fetchone() is None:
             try:
@@ -204,7 +205,8 @@ class Game:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f'UPDATE competitors SET score = {js["score"]} WHERE player_id={js["player_id"]} and game = {js["game_id"]}'
+        cmd = f'UPDATE competitors SET score = ? WHERE player_id=? and game = ?'
+        params = [js["score"], js["player_id"], js["game_id"]]
 
         res = cursor.execute(cmd)
         if res.fetchone() is None:

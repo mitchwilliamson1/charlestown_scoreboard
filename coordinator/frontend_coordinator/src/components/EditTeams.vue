@@ -53,8 +53,7 @@ export default {
         contact: null,
       });
 
-    var path = ""
-    path = 'http://127.0.0.1:8000/'
+    var path = 'http://127.0.0.1:8000/'
 
     function onChange(event) {
       createTeam.logo = event.target.files[0]

@@ -7,7 +7,7 @@ import socket
 
 import sys
 
-from database import Game
+from db_interface import Game
 
 
 
@@ -46,7 +46,6 @@ def create_game():
         return
 
     client_ip = request.environ.get('REMOTE_ADDR')
-    print('!!!!!!!! ', client_ip)
     request_params = json.loads(request.body.getvalue())
     Game().create_game(request_params, client_ip)
     return request.json

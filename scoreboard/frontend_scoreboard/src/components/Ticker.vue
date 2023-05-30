@@ -4,8 +4,11 @@
       <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
       <div v-if="typeof score !== 'undefined'">{{score}}</div>
     </div>
-<!--       <button v-if="typeof ends !== 'undefined'" @click="endsUp(ends)">Increase</button>
-      <button v-if="typeof ends !== 'undefined'" @click="endsDown(ends)">Decrease</button> -->
+    <div v-if="isMobile()" class="bg-primary h-100">helloo</div>
+      <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsUp(ends)">Increase</button>
+      <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsDown(ends)">Decrease</button>
+      <button v-if="isMobile() && (typeof score !== 'undefined')" @click="scoreUp(score)">Increase</button>
+      <button v-if="isMobile() && (typeof score !== 'undefined')" @click="scoreDown(score)">Decrease</button>
   </div>
 </template>
 
@@ -39,19 +42,37 @@ export default {
     }
   },
   methods: {
-    scoreUp() {
-      if(typeof this.score !== "undefined") {
-        this.player.score++
-        axios.post('http://127.0.0.1:8081/add_score', {
-        update: {score: parseInt(this.score), player_id: this.player.player_id, game_id:this.details.game_id}
-        })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      }
+    isMobile() {
+     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+       return true
+     } else {
+       return false
+     }
+   },
+    scoreUp(score) {
+      score++
+      console.log(score)
+      axios.post('http://127.0.0.1:8081/add_ends', {
+      update: {score: parseInt(score), game_id:this.details.game_id}
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    scoreDown(score) {
+      score--
+      axios.post('http://127.0.0.1:8081/add_ends', {
+      update: {score: parseInt(score), game_id:this.details.game_id}
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     },
     endsUp(ends) {
       ends++

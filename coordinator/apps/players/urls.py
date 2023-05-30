@@ -12,8 +12,6 @@ def enable_cors():
     response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
-PASS = "nicetry"
-
 
 @playersapp.route("/", method=["OPTIONS", "POST"])
 def slash():
@@ -85,8 +83,4 @@ def save():
     Players().save(json_obj) 
     return request.json
 
-@playersapp.route("/create_bill", method="POST")
-def create_bill():
-    Players().create_bill(request.json)
-    return request.json
 

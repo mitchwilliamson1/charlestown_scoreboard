@@ -7,12 +7,13 @@
             <img v-if="p1.competitor_display == 'logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p1Logo">
             <div v-else-if="p1.competitor_display == 'first name'" class="txt">{{p1.first_name.charAt(0)}}</div>
             <div v-else-if="p1.competitor_display == 'first and last names'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
-            <img v-else="p1.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/'+p1Logo"> 
+            <img v-else="p1.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/charls.jpeg'"> 
           </div>
           <div v-else class="h-100">
-            <img v-if="p1.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/'+p1Logo">
-            <div v-else-if="p1.competitor_display == 'first name'" class="txt">{{p1.first_name.charAt(0)}}</div>
-            <div v-else="p1.competitor_display == 'first and last names'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
+            <div v-if="p1.competitor_display == 'first name'" class="txt">{{p1.first_name.charAt(0)}}</div>
+            <div v-else-if="p1.competitor_display == 'first and last names'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
+            <img v-else="p1.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/charls.jpeg'">
+
           </div>
         </div>
         <div class="col h-100">
@@ -20,12 +21,12 @@
             <img v-if="p2.competitor_display == 'logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p2Logo">
             <div v-else-if="p2.competitor_display == 'first name'" class="txt">{{p2.first_name.charAt(0)}}</div>
             <div v-else-if="p2.competitor_display == 'first and last names'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
-            <img v-else="p2.competitor_display == 'default'"  class="logo" :src="'http://127.0.0.1:8081/'+p2Logo">
+            <img v-else="p2.competitor_display == 'default'"  class="logo" :src="'http://127.0.0.1:8081/AWAY.png'">
           </div>
           <div v-else class="h-100">
-            <img v-if="p2.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/'+p2Logo">
-            <div v-else-if="p2.competitor_display == 'first name'" class="txt">{{p2.first_name.charAt(0)}}</div>
-            <div v-else="p2.competitor_display == 'first and last names'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
+            <div v-if="p2.competitor_display == 'first name'" class="txt">{{p2.first_name.charAt(0)}}</div>
+            <div v-else-if="p2.competitor_display == 'first and last names'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
+            <img v-else="p2.competitor_display == 'default'" class="logo" :src="'http://127.0.0.1:8081/AWAY.png'">
           </div>
         </div>
       </div>
@@ -47,7 +48,7 @@
 
       <div v-if="!isMobile()" class="row align-items-center" style="height: 28%;">
         <div class="col h-100 align-self-center">
-          <img class="add" src="../assets/adds/belle_property.png">
+          <img class="add" src="http://127.0.0.1:8081/belle.png">
         </div>
       </div>
 

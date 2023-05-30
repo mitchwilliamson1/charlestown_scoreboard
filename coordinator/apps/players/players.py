@@ -75,7 +75,7 @@ class Players:
         cursor = con.cursor()
 
         parsed_rows = []
-        players = cursor.execute('''SELECT * FROM players''').fetchall()
+        players = cursor.execute("SELECT * FROM players").fetchall()
 
         for player in players:
             parsed_rows.append({
@@ -95,7 +95,7 @@ class Players:
         cursor = con.cursor()
 
         parsed_rows = []
-        teams = cursor.execute('''SELECT * FROM teams''').fetchall()
+        teams = cursor.execute("SELECT * FROM teams").fetchall()
 
         for team in teams:
             parsed_rows.append({
@@ -109,18 +109,34 @@ class Players:
         return json.dumps(parsed_rows)
 
 
+    def update_team(self, js, logo):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        try:
+            logo.save("./assets/"+logo.filename)
+        except:
+            pass
+
+        cmd = "UPDATE teams SET team_name = ?, address = ?, contact_details = ? WHERE team_id = ?"
+        params = [js['team_name'], js['address'], js['contact_details'], js['team_id']]
+        res = cursor.execute(cmd, params)
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
     def create_player(self, player):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        print(player)
-
-        sql = f''' INSERT INTO players (first_name, last_name, team, address, email) 
-        VALUES("{player['first_name']}", "{player['last_name']}", "{player['team']}", '{player['address']}', '{player['email']}');'''
-
-        print(sql)
-        cursor.execute(sql)
+        sql = 'INSERT INTO players (first_name, last_name, team, address, email) VALUES(?, ?, ?, ?, ?);'
+        params = [player['first_name'], player['last_name'], player['team'], player['address'], player['email']]
+        cursor.execute(sql, params)
         con.commit()
 
 
@@ -134,155 +150,9 @@ class Players:
         except:
             pass
 
-        sql = f''' INSERT INTO teams (team_name, logo, address, contact_details) 
-        VALUES('{team['name']}', "{logo.filename}", "{team['address']}", '{team['contact_details']}');'''
+        sql = 'INSERT INTO teams (team_name, logo, address, contact_details) VALUES(?, ?, ?, ?);'
+        params = [team['name'], logo.filename, team['address'], team['contact_details']]
 
-        cursor.execute(sql)
+        cursor.execute(sql, params)
         con.commit()
 
-    def update_team(self, js, logo):
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        try:
-            logo.save("./assets/"+logo.filename)
-            logo_update = logo.filename
-        except:
-            logo_update = js['logo']
-            pass
-
-        cmd = f"UPDATE teams SET team_name = '{js['team_name']}', logo = '{logo_update}', address = '{js['address']}', contact_details = '{js['contact_details']}' WHERE team_id = {js['team_id']}"
-        res = cursor.execute(cmd)
-        if res.fetchone() is None:
-            con.commit()
-        return {
-                "status": "ok",
-        }
-
-
-    def save(self, js):
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        now = datetime.datetime.utcnow()
-
-        # Extract data from form
-        for table_name in js:
-            for column in js[table_name]:
-                # if len(column['details']) is 0:
-                #     column['details'] = None
-
-                sql_string = f"UPDATE {table_name} SET name='{column['name']}', cost={column['cost']}, details='{column['details']}' WHERE name IS '{column['name']}';"
-                print(sql_string)
-                cursor.execute(sql_string)
-                # cursor.execute('''UPDATE ? SET name= ?, cost= ?, details= ? WHERE name IS ? ''',
-                #         (table_name, column['name'], column['cost'], column['details'], column['name']))
-                con.commit()
-
-
-
-    def create_blast(self, js):
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        now = datetime.datetime.utcnow()
-
-        # Extract data from form
-        operation = js["operation"]
-        site_blast_id = js["site_blast_id"]
-        scheduled = datetime.datetime.strptime(js["scheduled_date"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        pits = pickle.dumps(js.get("pits", None))
-        activity = pickle.dumps(js.get("activity", None))
-        initiation = pickle.dumps(js.get("initiation", None))
-        affected_units = pickle.dumps(js.get("affected_units", None))
-        roads = pickle.dumps(js["roads"])
-
-        cursor.execute('''INSERT INTO blasts (created, operation, site_blast_id,
-                                                scheduled, pits, activity, 
-                                                initiation, affected_units, roads)
-                                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (now, operation, site_blast_id, scheduled, pits, activity, 
-                    initiation, affected_units, roads)
-            )
-        con.commit()
-
-    def cancel_blast(self, js):
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        cursor.execute('''UPDATE blasts SET status=? WHERE site_blast_id=?''', (-99, js["site_blast_id"]))
-        con.commit()
-
-        return {
-                "status": "ok",
-        }
-
-    def edit_blast(self, js):
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        now = datetime.datetime.utcnow()
-
-        # Extract data from form
-        uuid = js["uuid"]
-        operation = js["operation"]
-        site_blast_id = js["site_blast_id"]
-        scheduled = datetime.datetime.strptime(js["scheduled_date"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        pits = pickle.dumps(js.get("pits", None))
-        activity = pickle.dumps(js.get("activity", None))
-        initiation = pickle.dumps(js.get("initiation", None))
-        affected_units = pickle.dumps(js.get("affected_units", None))
-        roads = pickle.dumps(js.get("roads", []))
-
-        # Create the edited blast
-        cursor.execute('''INSERT INTO blasts (created, operation, site_blast_id,
-                                                scheduled, pits, activity, 
-                                                initiation, affected_units, roads, parent)
-                                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (now, operation, site_blast_id, scheduled, pits, activity, 
-                    initiation, affected_units, roads, uuid)
-            )
-
-        con.commit()
-
-        return {
-                "uuid": uuid,
-                "site_blast_id": site_blast_id,
-                "operation": operation,
-                "scheduled_date": scheduled.isoformat(),
-                "activity": pickle.loads(activity),
-                "pits": pickle.loads(pits),
-                "affected_units": pickle.loads(affected_units),
-                "initiation": pickle.loads(initiation),
-                "roads": pickle.loads(roads),
-            }
-
-    def add_recipient(self, phone):
-        if not phone.startswith("+61"):
-            raise Exception("Malformed phone number")
-        if len(phone) != 12:
-            raise Exception("Malformed phone number")
-
-        # Connect to DB
-        con = sqlite3.connect(self.blast_notif_db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        # See if number already exists
-        subs = cursor.execute('''SELECT * FROM subscribers WHERE phone_number = ?''', (phone,)).fetchall()
-
-        if len(subs) != 0:
-            raise Exception("Number already subscribed")
-
-        # Alright ass number into database
-        cursor.execute('''INSERT INTO subscribers (phone_number, subscribed_on) VALUES (?, ?)''', (phone, datetime.datetime.utcnow(),))
-        cursor.execute('''INSERT INTO jobs (phone_number, job_type) VALUES (?, ?)''',
-                                (phone, 
-                                "subscribe"))
-
-        con.commit()

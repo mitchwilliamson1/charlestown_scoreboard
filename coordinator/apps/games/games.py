@@ -122,7 +122,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        types = cursor.execute('''SELECT * FROM types''').fetchall()
+        types = cursor.execute("SELECT * FROM types").fetchall()
 
         for game_type in types:
             parsed_rows.append({
@@ -140,7 +140,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        genders = cursor.execute('''SELECT * FROM genders''').fetchall()
+        genders = cursor.execute("SELECT * FROM genders").fetchall()
 
         for gender in genders:
             parsed_rows.append({
@@ -156,7 +156,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        rounds = cursor.execute('''SELECT * FROM rounds''').fetchall()
+        rounds = cursor.execute("SELECT * FROM rounds").fetchall()
 
         for _round in rounds:
             parsed_rows.append({
@@ -172,7 +172,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        levels = cursor.execute('''SELECT * FROM levels''').fetchall()
+        levels = cursor.execute("SELECT * FROM levels").fetchall()
 
         for level in levels:
             parsed_rows.append({
@@ -188,7 +188,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        competitor_displays = cursor.execute('''SELECT * FROM competitor_displays''').fetchall()
+        competitor_displays = cursor.execute("SELECT * FROM competitor_displays").fetchall()
 
         for competitor_display in competitor_displays:
             parsed_rows.append({
@@ -204,7 +204,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        grades = cursor.execute('''SELECT * FROM grades''').fetchall()
+        grades = cursor.execute("SELECT * FROM grades").fetchall()
 
         for grade in grades:
             parsed_rows.append({
@@ -220,7 +220,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        rinks = cursor.execute('''SELECT * FROM rinks''').fetchall()
+        rinks = cursor.execute("SELECT * FROM rinks").fetchall()
 
         for rink in rinks:
             parsed_rows.append({
@@ -237,7 +237,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        masterboards = cursor.execute('''SELECT * FROM masterboards''').fetchall()
+        masterboards = cursor.execute("SELECT * FROM masterboards").fetchall()
 
         for masterboard in masterboards:
             sql = f'''SELECT r.rink, r.ip, r.rink_id from master_link ml
@@ -245,9 +245,9 @@ class Games:
                     on ml.masterboard = m.masterboard_id
                     inner join rinks r 
                     on ml.rink = r.rink_id
-                    where m.masterboard_id = {masterboard['masterboard_id']}'''
-            
-            rink_ips = cursor.execute(sql).fetchall()
+                    where m.masterboard_id = ?'''
+            params = [masterboard['masterboard_id']]
+            rink_ips = cursor.execute(sql, params).fetchall()
             rinks = []
             for rink_ip in rink_ips:
                 rinks.append({
@@ -266,13 +266,19 @@ class Games:
         return parsed_rows
 
 
-    def get_games(self):
+    def get_games(self, get_current):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
         parsed_rows = []
-        games = cursor.execute('''SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id ''').fetchall()
+        print('!!!!!!!', get_current)
+        if get_current:
+            sql = 'SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id WHERE finish_time IS NULL'
+        else:
+            sql = 'SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id WHERE finish_time IS NOT NULL'
+    
+        games = cursor.execute(sql).fetchall()
 
         for game in games:
             sql = f'''SELECT player_id, cd.competitor_display, cd.competitor_display_id, p.first_name, p.last_name, c.score, t.logo FROM competitors AS c
@@ -282,9 +288,9 @@ class Games:
                     ON p.team = t.team_id
                     INNER JOIN competitor_displays AS cd
                     ON c.competitor_display = cd.competitor_display_id
-                    WHERE c.game = {game['game_id']}'''
-            
-            players = cursor.execute(sql).fetchall()
+                    WHERE c.game = ?'''
+            params = [game['game_id']]
+            players = cursor.execute(sql, params).fetchall()
 
             competitors = []
             for player in players:
@@ -322,7 +328,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        players = cursor.execute('''SELECT * FROM players''').fetchall()
+        players = cursor.execute("SELECT * FROM players").fetchall()
 
         for player in players:
             parsed_rows.append({
@@ -342,7 +348,7 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        teams = cursor.execute('''SELECT * FROM teams''').fetchall()
+        teams = cursor.execute("SELECT * FROM teams").fetchall()
 
         for team in teams:
             parsed_rows.append({
@@ -363,27 +369,25 @@ class Games:
 
         utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
 
-        sql = f'''INSERT INTO games (name, type, gender, round, level, grade, rink, start_time) 
-            VALUES("{js["name"]}", "{js["type"]["type_id"]}", "{js["gender"]["gender_id"]}", "{js["round"]["round_id"]}", "{js["level"]["level_id"]}", "{js["grade"]["grade_id"]}", "{js["rink"]["rink_id"]}", '{utc}')
-            RETURNING game_id;'''
-        game_id = cursor.execute(sql)
+        sql = "INSERT INTO games (name, type, gender, round, level, grade, rink, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING game_id;"
 
-        print(js)
+        params = [js["name"], js["type"]["type_id"], js["gender"]["gender_id"], js["round"]["round_id"], js["level"]["level_id"], js["grade"]["grade_id"], js["rink"]["rink_id"], utc]
+        game_id = cursor.execute(sql, params)
+
 
         for i in game_id:
             game_id = i
         for player in js['players']:
-            sql = f'''INSERT INTO competitors (player, score, game) 
-                    VALUES({js['players'][player]['player_id']},'0', {game_id[0]});'''
-            cursor.execute(sql)
+            sql = "INSERT INTO competitors (player, score, game) VALUES(?, ?, ?);"
+            params = [js['players'][player]['player_id'], 0, game_id[0]]
+            cursor.execute(sql, params)
         con.commit()
 
         js['game_id'] = game_id[0]
 
         response = self.write_scoreboard(js)
         if response == 500:
-            #remmove rink from above
-            print('5000000000000')
+            print('500 RESPONSE')
         else:
             print(response)
             for i in response:
@@ -420,7 +424,7 @@ class Games:
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
-        masterboard = cursor.execute('''SELECT * FROM masterboards WHERE masterboard_id = ?''', (masterboard_id, )).fetchone()
+        masterboard = cursor.execute("SELECT * FROM masterboards WHERE masterboard_id = ?", (masterboard_id, )).fetchone()
         
         return masterboard
 
@@ -430,7 +434,7 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"INSERT INTO rinks (ip, rink) VALUES (?, ?)"
+        cmd = "INSERT INTO rinks (ip, rink) VALUES (?, ?)"
         params = (js['ip'], js['rink'])
         
         res = cursor.execute(cmd,params)
@@ -446,7 +450,7 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"INSERT INTO masterboards (ip, masterboard) VALUES (?, ?)"
+        cmd = "INSERT INTO masterboards (ip, masterboard) VALUES (?, ?)"
         params = (js['ip'], js['masterboard'])
         
         res = cursor.execute(cmd,params)
@@ -486,8 +490,9 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"UPDATE rinks SET ip = '{js['ip']}', rink = '{js['rink']}' WHERE rink_id = {js['rink_id']}"
-        res = cursor.execute(cmd)
+        cmd = "UPDATE rinks SET ip = ?, rink = ? WHERE rink_id = ?"
+        params = [js['ip'], js['rink'], js['rink_id']]
+        res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
         return {
@@ -500,8 +505,9 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"UPDATE masterboards SET ip = '{js['ip']}', masterboard = '{js['masterboard']}' WHERE masterboard_id = {js['masterboard_id']}"
-        res = cursor.execute(cmd)
+        cmd = "UPDATE masterboards SET ip = ?, masterboard = ? WHERE masterboard_id = ?"
+        params = [js['ip'], js['masterboard'], js['masterboard_id']]
+        res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
         return {
@@ -514,13 +520,15 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"DELETE from master_link WHERE masterboard = '{master_id}'"
-        res = cursor.execute(cmd)
+        cmd = "DELETE from master_link WHERE masterboard = ?"
+        params = [master_id]
+        res = cursor.execute(cmd, params)
 
         for rink in js:
             if rink['show'] is True:
-                cmd = f"INSERT INTO master_link (masterboard,  rink) values ({master_id}, {rink['rink_id']})"
-                res = cursor.execute(cmd)
+                cmd = "INSERT INTO master_link (masterboard,  rink) values (?, ?)"
+                params = [master_id, rink['rink_id']]
+                res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
             self.write_masterboard(js, master_id)
@@ -538,7 +546,6 @@ class Games:
         masterboard_ip = self.get_masterboard(master_id)
 
         response = requests.post('http://'+masterboard_ip['ip']+'/setup', json = ips)
-        print(response)
         return response.status_code
 
 
@@ -547,8 +554,9 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"UPDATE teams SET team_name = '{js['team_name']}', address = '{js['address']}', contact_details = '{js['contact_details']}' WHERE team_id = {js['team_id']}"
-        res = cursor.execute(cmd)
+        cmd = "UPDATE teams SET team_name = ?, address = ?, contact_details = ? WHERE team_id = ?"
+        params = [js['team_name'], js['address'], js['contact_details'], js['team_id']]
+        res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
         return {
@@ -560,8 +568,9 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f"UPDATE players SET first_name = '{js['first_name']}', last_name = '{js['last_name']}', team = '{js['team']}', address = '{js['address']}', email = '{js['email']}' WHERE player_id = {js['player_id']}"
-        res = cursor.execute(cmd)
+        cmd = "UPDATE players SET first_name = ?, last_name = ?, team = ?, address = ?, email = ? WHERE player_id = ?"
+        params = [js['first_name'], js['last_name'], js['team'], js['address'], js['email'], js['player_id']]
+        res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
         return {

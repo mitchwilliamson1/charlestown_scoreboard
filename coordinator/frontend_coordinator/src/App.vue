@@ -16,7 +16,7 @@
             <router-link class="link" to="/rinkmanager">Manage Rinks </router-link>
           </div>
           <div class="row p-3">
-            <router-link class="link" to="/about">About </router-link>
+            <router-link class="link" to="/support">Support </router-link>
           </div>
         </div>
       </div>

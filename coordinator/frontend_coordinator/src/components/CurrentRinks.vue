@@ -73,17 +73,9 @@ export default {
       someData: null,
     });
 
-    var path = ""
-    if (process.env.NODE_ENV == 'development'){
-      path = 'http://127.0.0.1:8000/budget'
-    }else{
-      path = window.location.toString();
-    }
-
     onMounted(async () => {});
 
     return {
-      path,
       state
     };
   },
@@ -104,7 +96,7 @@ export default {
   methods:{
     post() {
       (async () => {
-      const rawResponse = await fetch(this.path+'/save', {
+      const rawResponse = await fetch('http://127.0.0.1:8000/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

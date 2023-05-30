@@ -110,8 +110,7 @@ export default {
       someData: null,
     });
 
-    var path = ""
-    path = 'http://127.0.0.1:8000/games'
+    var path = 'http://127.0.0.1:8000/games'
 
     onMounted(async () => {});
 
