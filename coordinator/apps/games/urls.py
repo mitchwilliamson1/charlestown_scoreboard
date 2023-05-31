@@ -99,6 +99,15 @@ def update_game():
     return request.json
 
 
+@gamesapp.route("/finish_game", method=["POST", "OPTIONS"])
+def finish_game():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Games().finish_game(request_params)
+    return request.json
+
+
 @gamesapp.route("/update_rink", method=["POST", "OPTIONS"])
 def update_rink():
     if request.method == "OPTIONS":

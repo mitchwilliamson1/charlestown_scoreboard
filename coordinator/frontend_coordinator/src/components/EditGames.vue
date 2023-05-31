@@ -85,7 +85,7 @@
               <button type="submit" @click="updateGame" class="btn btn-primary">Update</button>
             </div>
             <div class="col-6">
-              <button type="submit" @click="finishGame" class="btn btn-primary">Finsih Game</button>
+              <button type="submit" @click="finishGame" class="btn btn-primary">Finish Game</button>
             </div>
           </div>
         </form>
@@ -139,6 +139,20 @@ export default {
     updateGame() {
       (async () => {
       const rawResponse = await fetch(this.path+'/update_game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'no-cors',
+        body: JSON.stringify(this.details)
+      })
+      const content = await rawResponse.json();
+      console.log(content);
+      })();
+    },
+    finishGame() {
+      (async () => {
+      const rawResponse = await fetch(this.path+'/finish_game', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
