@@ -272,7 +272,6 @@ class Games:
         cursor = con.cursor()
 
         parsed_rows = []
-        print('!!!!!!!', get_current)
         if get_current:
             sql = 'SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id WHERE finish_time IS NULL'
         else:
@@ -474,6 +473,29 @@ class Games:
             cmd = "UPDATE competitors SET score = ?,competitor_display = ? WHERE player = ? AND game = ?"
             params = (competitor['score'], competitor['competitor_display']['competitor_display_id'], competitor['player_id'], js['game_id'])
             res = cursor.execute(cmd, params)
+
+        if res.fetchone() is None:
+            print("RES: ", res.fetchone())
+            con.commit()
+            con.close()
+
+            x = threading.Thread(target=self.write_scoreboard, args=(js,))
+            x.start()
+            return
+
+
+    def finish_game(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        cursor = con.cursor()
+
+        utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
+        js['finish_time'] = utc
+
+
+        cmd = "UPDATE games SET finish_time = ?,winner = ? WHERE game_id = ?"
+        params = (js['finish_time'], js['winner'], js['game_id'] )
+
+        res = cursor.execute(cmd, params)
 
         if res.fetchone() is None:
             print("RES: ", res.fetchone())

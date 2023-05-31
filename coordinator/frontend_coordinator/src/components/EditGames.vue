@@ -10,7 +10,6 @@
           </div>
           <div class="col-6">
             <label class="form-label">Rink</label>
-            <!-- fix this: needs to v-model the whole object to start with not just the number 1 -->
             <select class="form-select" v-model="details.rink">
               <option v-for="rink in gameOptions['rink']" :value="rink">{{rink.rink}}</option>
             </select>
@@ -24,7 +23,7 @@
           <div class="col-3">
             <label class="form-label">Winner</label>
             <select class="form-select" v-model="details.winner">
-              <option v-for="game in details['competitors']" :value="game">{{game.first_name}}</option>
+              <option v-for="game in details['competitors']" :value="game.first_name">{{game.first_name}}</option>
             </select>
           </div>
           <div class="col-3">

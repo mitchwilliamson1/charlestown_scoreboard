@@ -15,7 +15,7 @@
           <div class="col">{{game.name}}</div>
           <div class="col">
             <div class='row'>
-              <div class="col" v-for="player in game.competitors">{{player.first_name}} - {{player.score}}</div>
+              <div class="col" :class="winner(player.first_name, game.winner)" v-for="player in game.competitors">{{player.first_name}} - {{player.score}}</div>
             </div>
           </div>
           <div class="col">{{game.rink.rink}}</div>
@@ -75,10 +75,19 @@ export default {
   },
 
   computed: {
-
+    
   },
 
   methods:{
+    winner(name, winner) {
+      if (name == winner){
+        return {
+          rounded:true,
+          border: true,
+          'border-success': true
+        }
+      }
+    },
     post() {
       (async () => {
       const rawResponse = await fetch(this.path+'/save', {
