@@ -9,7 +9,6 @@ import pickle
 import pytz
 import requests
 
-COORDINATOR_IP = "10.0.0.41:8000"
 
 local_tz = pytz.timezone("Australia/Sydney")
 db_path = "/home/scoreboard/scoreboard/scoreboard.db"
@@ -24,14 +23,18 @@ ends_up = Button(17)
 ends_dn = Button(27)
 
 
+def coordinator_ip(self):
+    con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+    cursor = con.cursor()
+    return cursor.execute('''SELECT coordinator_ip FROM games''').fetchone()
+
 def write_coordinator_score(js):
-        response = requests.post('http://'+COORDINATOR_IP+'/games/add_score', json = js, timeout=10)
+        response = requests.post('http://'+coordinator_ip()+'/games/add_score', json = js, timeout=10)
         return response.status_code
     
 
 def write_coordinator_ends(js):
-        response = requests.post('http://'+COORDINATOR_IP+'/games/add_ends', json = js, timeout=10)
-        print(response)
+        response = requests.post('http://'+coordinator_ip()+'/games/add_ends', json = js, timeout=10)
         return response.status_code
 
 
@@ -41,7 +44,7 @@ def commit_score(competitor):
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
 
-    cmd = f'UPDATE competitors SET score = ? WHERE competitor_id=?'
+    cmd = "UPDATE competitors SET score = ? WHERE competitor_id=?"
     params = [competitor["score"], competitor["competitor_id"]]
     res = cursor.execute(cmd, params)
     con.commit()
@@ -54,10 +57,9 @@ def update_score(button):
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
     parsed_rows = []
-    
-    sql = f'''SELECT competitor_id, player_id, first_name, last_name, score, game FROM competitors'''
+
+    sql = "SELECT competitor_id, player_id, first_name, last_name, score, game FROM competitors"
     players = cursor.execute(sql).fetchall()
-    
 
     competitors = []
     for player in players:
@@ -75,7 +77,6 @@ def update_score(button):
         if i['competitor_id'] == 1:
             score = int(i['score'])
             if button.pin.number == 2:
-                print(i['competitor_id'])
                 score += 1
             if button.pin.number == 3:
                 score -= 1            
@@ -84,7 +85,6 @@ def update_score(button):
         if i['competitor_id'] == 2:
             score = int(i['score'])
             if button.pin.number == 5:
-                print(i)
                 score += 1
             if button.pin.number == 6:
                 score -= 1            
@@ -96,7 +96,7 @@ def commit_ends(js):
     con.row_factory = sqlite3.Row
     cursor = con.cursor()
 
-    cmd = f'UPDATE games SET ends = ? WHERE game_id = ?'
+    cmd = "UPDATE games SET ends = ? WHERE game_id = ?"
     params = [js["ends"], js["game_id"]]
     res = cursor.execute(cmd, params)
 
@@ -111,7 +111,7 @@ def update_ends(button):
     cursor = con.cursor()
     parsed_rows = []
     
-    games = cursor.execute('''SELECT * FROM games WHERE finish_time is NULL''').fetchall()
+    games = cursor.execute("SELECT * FROM games WHERE finish_time is NULL").fetchall()
 
     current_game = []
     for game in games:

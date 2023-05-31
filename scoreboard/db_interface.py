@@ -111,11 +111,9 @@ class Game:
                         ON c.competitor_display = cd.competitor_display_id
                         where game = ?"""
                 params = (game['game_id'],)
-                # print("PARAMS ", type(params))
                 players = cursor.execute(sql, params).fetchall()
                 competitors = []
                 for player in players:
-                    print(player['competitor_display'])
                     competitors.append({
                         "competitor_id": player['competitor_id'],
                         "player_id": player['player_id'],
@@ -125,7 +123,6 @@ class Game:
                         "logo": player['logo'],
                         "competitor_display": player['competitor_display'],
                      })
-                
                 parsed_rows.append({
                     "game_id": game["game_id"],
                     "name": game["name"],
@@ -146,9 +143,9 @@ class Game:
             con.row_factory = sqlite3.Row
             cursor = con.cursor()
 
-            sql = f'''DELETE FROM games '''
+            sql = "DELETE FROM games"
             cursor.execute(sql)
-            sql = f'''DELETE FROM competitors '''
+            sql = "DELETE FROM competitors"
             cursor.execute(sql)
             con.commit()
         except:
@@ -166,13 +163,11 @@ class Game:
 
         coordinator_ip += ':8000'
 
-
         sql = "INSERT INTO games (game_id, name, start_time, coordinator_ip) VALUES(?,?,?,?);"
         params = (js['game_id'], js['name'], utc, coordinator_ip)
         game_id = cursor.execute(sql, params)
 
         for competitor in js['competitors']:
-            print('COMPETITOR: ', competitor)
             sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, competitor_display, game) VALUES(?,?,?,?,?,?,?);"
             params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], competitor['competitor_display']['competitor_display_id'], js['game_id'])
             cursor.execute(sql, params)
@@ -184,7 +179,7 @@ class Game:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f'UPDATE games SET ends = ? WHERE game_id = ?'
+        cmd = "UPDATE games SET ends = ? WHERE game_id = ?"
         params = [js["ends"], js["game_id"]]
 
         res = cursor.execute(cmd, params)
@@ -194,7 +189,6 @@ class Game:
                 r_code = self.write_coordinator_ends(js)
             except:
                 pass
-        
         return {
                 "status": "ok",
         }
@@ -205,7 +199,7 @@ class Game:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = f'UPDATE competitors SET score = ? WHERE player_id=? and game = ?'
+        cmd = "UPDATE competitors SET score = ? WHERE player_id=? and game = ?"
         params = [js["score"], js["player_id"], js["game_id"]]
 
         res = cursor.execute(cmd)
@@ -220,16 +214,18 @@ class Game:
                 "status": "ok",
         }
 
+
+    def coordinator_ip(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        cursor = con.cursor()
+        return cursor.execute('''SELECT coordinator_ip FROM games''').fetchone()
+
+
     def write_coordinator_score(self, js):
-        response = requests.post('http://'+COORDINATOR_IP+'/games/add_score', json = js)
-        print(response)
+        response = requests.post('http://'+self.coordinator_ip()+'/games/add_score', json = js)
         return response.status_code
 
 
     def write_coordinator_ends(self, js):
-        response = requests.post('http://'+COORDINATOR_IP+'/games/add_ends', json = js)
-        print(response)
+        response = requests.post('http://'+self.coordinator_ip()+'/games/add_ends', json = js)
         return response.status_code
-
-
-

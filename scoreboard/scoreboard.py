@@ -9,8 +9,6 @@ import sys
 
 from db_interface import Game
 
-
-
 TEMPLATE_PATH.append("dist/")
 bott = Bottle()
 
@@ -80,9 +78,7 @@ def add_score():
 
 @bott.route('/<filename:path>')
 def send_static(filename):
-    print("filename: ", filename)
     return static_file(filename, root='dist/')
-
 
 
 if __name__ == '__main__':

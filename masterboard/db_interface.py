@@ -32,7 +32,6 @@ class Masterboard:
 
 
     def setup(self, js):
-        print(js)
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()

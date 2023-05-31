@@ -6,7 +6,6 @@ import json
 import datetime
 from bottle import Bottle, route, run, template, static_file, TEMPLATE_PATH, JSONPlugin, response, request
 
-
 from players.urls import playersapp
 from games.urls import gamesapp
 
@@ -15,11 +14,9 @@ TEMPLATE_PATH.append("dist/")
 sys.path.append("apps/players/")
 sys.path.append("apps/games/")
 
-
 bott = Bottle()
 bott.mount("/players", playersapp)
 bott.mount("/games", gamesapp)
-
 
 
 @bott.hook('after_request')
