@@ -183,12 +183,13 @@ class Game:
         params = [js["ends"], js["game_id"]]
 
         res = cursor.execute(cmd, params)
+
         con.commit()
-        if res.fetchone() is None:
-            try:
-                r_code = self.write_coordinator_ends(js)
-            except:
-                pass
+        # if res.fetchone() is None:
+        #     try:
+        #         r_code = self.write_coordinator_ends(js)
+        #     except:
+        #         pass
         return {
                 "status": "ok",
         }
@@ -199,17 +200,22 @@ class Game:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        cmd = "UPDATE competitors SET score = ? WHERE player_id=? and game = ?"
-        params = [js["score"], js["player_id"], js["game_id"]]
+        cmd = "UPDATE competitors SET score = ? WHERE player_id=?"
+        params = [js["score"], js["player"]["player_id"]]
 
-        res = cursor.execute(cmd)
-        if res.fetchone() is None:
-            try:
-                r_code = self.write_coordinator_score(js)
-            except:
-                pass
+        print('!!!!!!!!!!!!!!!!\n\n', cmd)
+        print(params)
 
+
+        res = cursor.execute(cmd, params)
         con.commit()
+
+        # if res.fetchone() is None:
+        #     try:
+        #         r_code = self.write_coordinator_score(js)
+        #     except:
+        #         pass
+
         return {
                 "status": "ok",
         }

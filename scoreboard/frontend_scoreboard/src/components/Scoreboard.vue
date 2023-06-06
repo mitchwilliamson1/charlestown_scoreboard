@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div v-if="!isMobile()" class="row align-items-center" style="height: 28%;">
+      <div v-if="!isMobile()" class="row align-items-center" style="height: 25%;">
         <div class="col h-100 align-self-center">
           <img class="add" src="http://127.0.0.1:8081/belle.png">
         </div>

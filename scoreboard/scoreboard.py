@@ -68,7 +68,7 @@ def add_score():
 
 
 @bott.route("/add_ends", method=["POST", "OPTIONS"])
-def add_score():
+def add_ends():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())

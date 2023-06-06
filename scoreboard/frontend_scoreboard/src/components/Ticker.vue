@@ -1,14 +1,16 @@
 <template>
   <div>
+    <!-- <div class="bg-light"> {{player}}</div> -->
     <div class="count text-align-center h-100" :style="addstyle"> 
       <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
       <div v-if="typeof score !== 'undefined'">{{score}}</div>
     </div>
-    <div v-if="isMobile()" class="bg-primary h-100">helloo</div>
+    <div class="text-align-center">
       <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsUp(ends)">Increase</button>
       <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsDown(ends)">Decrease</button>
       <button v-if="isMobile() && (typeof score !== 'undefined')" @click="scoreUp(score)">Increase</button>
       <button v-if="isMobile() && (typeof score !== 'undefined')" @click="scoreDown(score)">Decrease</button>
+    </div>
   </div>
 </template>
 
@@ -52,8 +54,8 @@ export default {
     scoreUp(score) {
       score++
       console.log(score)
-      axios.post('http://127.0.0.1:8081/add_ends', {
-      update: {score: parseInt(score), game_id:this.details.game_id}
+      axios.post('http://127.0.0.1:8081/add_score', {
+      update: {score: parseInt(score), player:this.player}
       })
       .then(function (response) {
         console.log(response);
@@ -64,8 +66,8 @@ export default {
     },
     scoreDown(score) {
       score--
-      axios.post('http://127.0.0.1:8081/add_ends', {
-      update: {score: parseInt(score), game_id:this.details.game_id}
+      axios.post('http://127.0.0.1:8081/add_score', {
+      update: {score: parseInt(score), player:this.player}
       })
       .then(function (response) {
         console.log(response);

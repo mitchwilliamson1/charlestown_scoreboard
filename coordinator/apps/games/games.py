@@ -368,7 +368,7 @@ class Games:
 
         utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
 
-        sql = "INSERT INTO games (name, type, gender, round, level, grade, rink, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING game_id;"
+        sql = "INSERT INTO games (name, type, gender, round, level, grade, rink, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?);"
 
         params = [js["name"], js["type"]["type_id"], js["gender"]["gender_id"], js["round"]["round_id"], js["level"]["level_id"], js["grade"]["grade_id"], js["rink"]["rink_id"], utc]
         game_id = cursor.execute(sql, params)
