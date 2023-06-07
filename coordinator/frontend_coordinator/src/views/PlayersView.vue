@@ -41,14 +41,12 @@
         </div>
       </div>
 
-
-
-        <div class="row">
-          <div class="col-12">
-            <div>Current Players</div>
-            <current-players :players="state.players" :teams="state.teams"/>
-          </div>
+      <div class="row">
+        <div class="col-12">
+          <h3 class="p-3">Current Players</h3>
+          <current-players :players="state.players" :teams="state.teams"/>
         </div>
+      </div>
         
       </div>
     </div>

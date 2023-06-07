@@ -37,7 +37,7 @@
 
         <div class="row">
           <div v-if="state.teams" class="col-12">
-            <div>Current Teams</div>
+            <h3 class="p-3">Current Teams</h3>
             <current-teams :teams="state.teams"/>
           </div>
         </div>

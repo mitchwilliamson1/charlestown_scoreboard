@@ -371,26 +371,25 @@ class Games:
         sql = "INSERT INTO games (name, type, gender, round, level, grade, rink, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?);"
 
         params = [js["name"], js["type"]["type_id"], js["gender"]["gender_id"], js["round"]["round_id"], js["level"]["level_id"], js["grade"]["grade_id"], js["rink"]["rink_id"], utc]
-        game_id = cursor.execute(sql, params)
+        cursor.execute(sql, params)
 
+        sql = "SELECT game_id FROM games ORDER BY start_time DESC LIMIT 1 "
+        game_id = cursor.execute(sql).fetchone()
 
-        for i in game_id:
-            game_id = i
-        for player in js['players']:
-            sql = "INSERT INTO competitors (player, score, game) VALUES(?, ?, ?);"
-            params = [js['players'][player]['player_id'], 0, game_id[0]]
-            cursor.execute(sql, params)
-        con.commit()
+        for _game_id in game_id:
+            for player in js['players']:
+                sql = "INSERT INTO competitors (player, score, game) VALUES(?, ?, ?);"
+                params = [js['players'][player]['player_id'], 0, _game_id]
+                cursor.execute(sql, params)
+            con.commit()
 
-        js['game_id'] = game_id[0]
+            js['game_id'] = _game_id
 
         response = self.write_scoreboard(js)
         if response == 500:
             print('500 RESPONSE')
         else:
             print(response)
-            for i in response:
-                print(i)
 
 
     def add_score(self, js):

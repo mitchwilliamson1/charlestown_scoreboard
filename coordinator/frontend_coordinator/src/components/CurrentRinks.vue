@@ -2,7 +2,7 @@
   <div class="hello">
   <div class="container">
     <div class="row">
-      <div class="col fw-bold">Rinks</div>
+      <h3 class="p-3">Rinks</h3>
     </div>
 
     <div class="row">
@@ -25,7 +25,7 @@
     </div>
 
     <div class="row">
-      <div class="col fw-bold">Masterboards</div>
+      <h3 class="p-3">Masterboards</h3>
     </div>
 
     <div v-for="masterboard, i in masterboards" :key="i">

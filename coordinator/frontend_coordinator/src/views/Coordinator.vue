@@ -3,7 +3,7 @@
     <div class="container">
       <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Make Game</div>
 
-      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+      <div class="offcanvas offcanvas-end w-50" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
           <h5 id="offcanvasRightLabel">New Game</h5>
           <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -44,14 +44,14 @@
 
       <div class="row p-3">
         <div class="col-12">
-          <h3>Current Games</h3>
+          <h3 class="p-3">Current Games</h3>
           <current-games :games="state.games" :gameOptions="state.init"/>
         </div>
       </div>
 
       <div class="row p-3">
         <div class="col-12">
-          <h3>Finished Games</h3>
+          <h3 class="p-3">Finished Games</h3>
           <current-games :games="state.finishedGames" :gameOptions="state.init"/>
         </div>
       </div>
@@ -225,7 +225,8 @@ export default {
   },
   methods:{
     capitalise(key) {
-      return key.charAt(0).toUpperCase() + key.slice(1);
+      key = key.replace("_", " ")
+      return key.charAt(0).toUpperCase().replace("_", " ") + key.slice(1);
     },
     selectPlayers(teamName){
       console.log(teamName)
