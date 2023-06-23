@@ -23,13 +23,12 @@ def slash():
 def init():
     initialise = {}
     initialise["gender"] = Games().get_genders()
-    initialise["type"] = Games().get_types()
+    initialise["competition"] = Games().get_competitions()
+    initialise["game_type"] = Games().get_game_types()
     initialise["round"] = Games().get_rounds()
     initialise["grade"] = Games().get_grades()
-    initialise["level"] = Games().get_levels()
-    initialise["competitor_display"] = Games().get_competitor_displays()
+    initialise["display"] = Games().get_displays()
     initialise["rink"] = Games().get_rinks()
-    initialise["masterboard"] = Games().get_masterboards()
     return json.dumps(initialise)
 
 
@@ -95,7 +94,7 @@ def update_game():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Games().update_game(request_params)
+    Games().update_game(request_params['update_game']) 
     return request.json
 
 
@@ -104,7 +103,7 @@ def finish_game():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Games().finish_game(request_params)
+    Games().finish_game(request_params['finish_game'])
     return request.json
 
 
@@ -128,12 +127,12 @@ def update_masterboards():
 
 
 
-@gamesapp.route("/update_team", method=["POST", "OPTIONS"])
-def update_team():
+@gamesapp.route("/update_club", method=["POST", "OPTIONS"])
+def update_club():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Games().update_team(request_params)
+    Games().update_club(request_params)
     return request.json
 
 

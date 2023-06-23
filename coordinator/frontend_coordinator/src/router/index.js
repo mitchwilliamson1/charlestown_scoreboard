@@ -13,9 +13,9 @@ const routes = [
     component: () => import('../views/PlayersView.vue')
   },
   {
-    path: '/teams',
-    name: 'Teams',
-    component: () => import('../views/TeamsView.vue')
+    path: '/clubs',
+    name: 'Clubs',
+    component: () => import('../views/ClubsView.vue')
   },
   {
     path: '/rinkmanager',
@@ -30,7 +30,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/'),
+  mode: 'history',
+  history: createWebHistory('/#'),
   routes
 })
 

@@ -30,13 +30,13 @@ def get_players():
     return Players().get_players()
 
 
-@playersapp.route("/get_teams")
-def get_players():
-    return Players().get_teams()
+@playersapp.route("/get_clubs")
+def get_clubs():
+    return Players().get_clubs()
 
 
 @playersapp.route("/get_logo/<logo>")
-def get_players(logo):
+def get_logo(logo):
     import os 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     logo = static_file(logo, root="./assets")
@@ -53,27 +53,27 @@ def create_player():
     return request.json
 
 
-@playersapp.route("/create_team", method=["POST", "OPTIONS"])
-def create_team():
+@playersapp.route("/create_club", method=["POST", "OPTIONS"])
+def create_club():
     if request.method == "OPTIONS":
         return
 
     logo = request.files.get('file')
-    team = request.forms.get('team')
+    club = request.forms.get('club')
 
-    Players().create_team(json.loads(team), logo)
+    Players().create_club(json.loads(club), logo)
     return request.json
 
 
-@playersapp.route("/update_team", method=["POST", "OPTIONS"])
-def update_team():
+@playersapp.route("/update_club", method=["POST", "OPTIONS"])
+def update_club():
     if request.method == "OPTIONS":
         return
 
     logo = request.files.get('file')
-    team = request.forms.get('team')
+    club = request.forms.get('club')
 
-    Players().update_team(json.loads(team), logo)
+    Players().update_club(json.loads(club), logo)
     return request.json
 
 

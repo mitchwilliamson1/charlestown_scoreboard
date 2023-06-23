@@ -1,7 +1,7 @@
 <template>
-  <div v-if="state" class="coordinator">
+  <div v-if="getGames" class="coordinator">
     <div class="container">
-      <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Make Game</div>
+      <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Create New Game</div>
 
       <div class="offcanvas offcanvas-end w-50" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
@@ -9,11 +9,7 @@
           <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-          <div class="row">
-            <div class="col-4">Name</div>
-            <input v-model="createGame.name" class="form-control col" type="text" name="">
-          </div>
-          <div class="row" v-for="item, key in state.init">
+          <div class="row p-1" v-for="item, key in state.init">
               <div class="col-4">{{capitalise(key)}}</div>
               <select v-model="createGame[key]" class="form-select col">
                 <option v-for="type in item" :value="type">{{type[key]}}</option>
@@ -21,38 +17,37 @@
           </div>
 
           <div class="row">
-            <div v-if="createGame['type']" v-for="teamNumber in 2" class="col">
-              <div class="">Team {{teamNumber}}</div>
-                <select v-model="createGame.teams[teamNumber]" class="form-select">
-                  <option v-for="team in state.teams" :value="team">{{team.team_name}}</option>
+            <div v-if="createGame['game_type']" v-for="clubNumber in 2" class="col">
+              <div class="">Club {{clubNumber}}</div>
+                <select v-model="createGame.clubs[clubNumber]" class="form-select">
+                  <option v-for="club in state.clubs" :value="club">{{club.club_name}}</option>
                 </select>            
-              <div class="col" v-for="number in parseInt(createGame['type']['players']/2)">
-                <div v-if="createGame.teams[teamNumber]">
+              <div class="col" v-for="number in parseInt(createGame['game_type']['players']/2)">
+                <div v-if="createGame.clubs[clubNumber]">
                   <div class="">Player {{number}}</div>
-                  <select v-model="createGame.players[teamNumber]" class="form-select">
-                    <option v-for="player in selectPlayers(createGame.teams[teamNumber].team_id)" :value="player">{{player.first_name}} {{player.last_name}}</option>
+                  <select v-model="createGame.competitors[clubNumber][number]" class="form-select">
+                    <option v-for="player in selectPlayers(createGame.clubs[clubNumber].club_id)" :value="player">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
                   </select>
                 </div>
               </div>
             </div>
           </div>
           <div class="col p-5">
-            <button type="button" @click="create" class="btn btn-success">Create Game</button>
+            <button type="button" @click="create(this.createGame)" class="btn btn-success">Create Game</button>
           </div>
         </div>
       </div>
-
       <div class="row p-3">
         <div class="col-12">
           <h3 class="p-3">Current Games</h3>
-          <current-games :games="state.games" :gameOptions="state.init"/>
+          <current-games v-for="game in state.games" @reload="getGames" :game="game" :gameOptions="state.init"/>
         </div>
       </div>
 
       <div class="row p-3">
         <div class="col-12">
           <h3 class="p-3">Finished Games</h3>
-          <current-games :games="state.finishedGames" :gameOptions="state.init"/>
+          <current-games v-for="game in state.finishedGames" @reload="getGames" :game="game" :gameOptions="state.init"/>
         </div>
       </div>
     </div>
@@ -76,14 +71,14 @@ export default {
       rinks: 12,
       createGame: {
         'name': null,
-        'type': null,
+        'game_type': null,
         'round': {},
         'grade': {},
         'level': {},
-        'competitior_display': {},
+        'display': {},
         'rink': {},
-        'teams': {},
-        'players': {},
+        'clubs': {},
+        'competitors': {'1':{}, '2':{}},
       }
     }
   },
@@ -95,7 +90,7 @@ export default {
       games: null,
       finishedGames: null,
       players: null,
-      teams: null,
+      clubs: null,
       init: null,
     });
 
@@ -106,7 +101,7 @@ export default {
       getGames()
       getFinishedGames()
       getPlayers()
-      getTeams()
+      getClubs()
       initialise()
     });
     function initialise() {
@@ -137,6 +132,20 @@ export default {
         // always executed
       });
     }
+    function create(createGame) {
+      createGame.start_time = DateTime.utc().toISO()
+      axios.post(path+'games/create_game', {
+      create_game: createGame,
+      })
+      .then(function (response) {
+        console.log("GET GAMES: ", response);
+        getGames()
+      })
+      .catch(function (error) {
+        console.log("ERROR: ", error);
+      });
+      
+    }
     function getFinishedGames() {
       axios.get(path+'games/get_finished_games')
       .then(function (response) {
@@ -151,11 +160,11 @@ export default {
         // always executed
       });
     }
-    function getTeams() {
-      axios.get(path+'players/get_teams')
+    function getClubs() {
+      axios.get(path+'players/get_clubs')
       .then(function (response) {
         if (response.status == 200){
-          state.teams = response.data
+          state.clubs = response.data
         }
       })
       .catch(function (error) {
@@ -186,6 +195,7 @@ export default {
       path,
       state,
       getGames,
+      create,
       getFinishedGames,
       getPlayers
     };
@@ -193,69 +203,19 @@ export default {
   created () {
   },
   computed: {
-    amalgame() {
-      // this.state.games.filter(i => console.log(i))
-      // var data = this.state.games
-      // return data
-      var games = []
-
-      this.state.games.forEach(game => {
-        var teams = []
-        var players = []
-
-        game.players.forEach(player => {
-          players.push(this.state.players.find(p => p.id = player.player_id))
-        })
-
-        game.teams.forEach(team => {
-          teams.push(this.state.teams.find(t => t.id = team.team_id))
-        })
-
-        games.push({
-          ...game,
-          playersInfo: players,
-          teamsInfo: teams,
-        })
-
-      })
-
-      return games
-    },
 
   },
   methods:{
+    playerObj(number, player) {
+      console.log('Number: ', number)
+      return {number:player}
+    },
     capitalise(key) {
       key = key.replace("_", " ")
-      return key.charAt(0).toUpperCase().replace("_", " ") + key.slice(1);
+      return key.charAt(0).toUpperCase() + key.slice(1);
     },
-    selectPlayers(teamName){
-      console.log(teamName)
-      console.log(this.state.players.filter(i => i.team == teamName))
-      return this.state.players.filter(i => i.team == teamName)
-    },
-    create() {
-      this.createGame.start_time = DateTime.utc().toISO()
-      axios.post(this.path+'games/create_game', {
-      create_game: this.createGame,
-      })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-      this.getGames()
-      axios.post('http://127.0.0.1:8081/create_game', {
-      create_game: this.createGame,
-      })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-      this.getGames()
-      
+    selectPlayers(clubName){
+      return this.state.players.filter(i => i.club == clubName)
     },
 
   },

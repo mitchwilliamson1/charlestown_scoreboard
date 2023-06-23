@@ -8,8 +8,8 @@ import os
 
 
 DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competitors':
-                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'logo':'charls.jpeg', 'competitor_display':{'competitor_display': 'default', 'competitor_display_id': 4}, 'team': '1'},
-                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'logo':'away.jpeg', 'competitor_display':{'competitor_display': 'default', 'competitor_display_id': 4} ,'team': '2'}],
+                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'logo':'charls.jpeg', 'display':{'display': 'Default', 'display_id': 1}, 'team': '1'},
+                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'logo':'away.jpeg', 'display':{'display': 'Default', 'display_id': 1} ,'team': '2'}],
                 }
 
 
@@ -41,10 +41,10 @@ class Game:
                      last_name text DEFAULT "",
                      score text DEFAULT "",
                      logo text DEFAULT "",
-                     competitor_display INTEGER NOT NULL DEFAULT 4,
+                     display INTEGER NOT NULL DEFAULT 1,
                      game INTEGER NOT NULL DEFAULT "No Game",
-                     FOREIGN KEY (competitor_display)
-                        REFERENCES competitor_displays (competitor_display_id)
+                     FOREIGN KEY (display)
+                        REFERENCES displays (display_id)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT,
                      FOREIGN KEY (game)
@@ -54,9 +54,9 @@ class Game:
 
         conn.commit()
 
-        c.execute('''CREATE TABLE IF NOT EXISTS competitor_displays
-                     (competitor_display_id INTEGER PRIMARY KEY,
-                     competitor_display text, "")''')
+        c.execute('''CREATE TABLE IF NOT EXISTS displays
+                     (display_id INTEGER PRIMARY KEY,
+                     display text, "")''')
         conn.commit()
 
     def encode_if_required(self, str_val):
@@ -106,9 +106,9 @@ class Game:
             for game in games:
                 if game['ends'] < 0:
                     self.create_game(DEFAULT_GAME, "127.0.0.1")
-                sql = """SELECT competitor_id, player_id, first_name, last_name, score, logo, cd.competitor_display FROM competitors as c
-                        INNER JOIN competitor_displays AS cd
-                        ON c.competitor_display = cd.competitor_display_id
+                sql = """SELECT competitor_id, player_id, first_name, last_name, score, logo, d.display FROM competitors as c
+                        INNER JOIN displays AS d
+                        ON c.display = d.display_id
                         where game = ?"""
                 params = (game['game_id'],)
                 players = cursor.execute(sql, params).fetchall()
@@ -121,7 +121,7 @@ class Game:
                         "last_name": player['last_name'],
                         "score": player['score'],
                         "logo": player['logo'],
-                        "competitor_display": player['competitor_display'],
+                        "competitor_display": player['display'],
                      })
                 parsed_rows.append({
                     "game_id": game["game_id"],
@@ -168,9 +168,10 @@ class Game:
         game_id = cursor.execute(sql, params)
 
         for competitor in js['competitors']:
-            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, competitor_display, game) VALUES(?,?,?,?,?,?,?);"
-            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], competitor['competitor_display']['competitor_display_id'], js['game_id'])
-            cursor.execute(sql, params)
+            if competitor['is_skipper'] == 1:
+                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], competitor['display']['display_id'], js['game_id'])
+                cursor.execute(sql, params)
         con.commit()
 
 

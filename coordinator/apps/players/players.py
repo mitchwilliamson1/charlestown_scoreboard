@@ -17,39 +17,47 @@ class Players:
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
-        c.execute('''PRAGMA foreign_keys = ON;''')
+        c.execute('''CREATE TABLE IF NOT EXISTS clubs
+                     (club_id INTEGER PRIMARY KEY,
+                     club_name TEXT NOT NULL DEFAULT "",
+                     logo TEXT NOT NULL, 
+                     address TEXT NOT NULL,
+                     contact_details TEXT NOT NULL DEFAULT "")''')
         conn.commit()
-
-        c.execute('''CREATE TABLE IF NOT EXISTS teams
-                     (team_id INTEGER PRIMARY KEY,
-                     team_name text NOT NULL DEFAULT "",
-                     logo blob NOT NULL, 
-                     address text NOT NULL,
-                     contact_details text NOT NULL DEFAULT "")''')
-
+        c.execute('''INSERT into clubs (club_id, club_name, logo, address, contact_details)
+                    VALUES (1, 'Merewether', 'merelogo.jpeg', 'burwood street', 'None'),
+                            (2, 'Charlestown', 'charls.jpeg', 'Cardiff street', 'None') 
+                            ON CONFLICT DO NOTHING;''')
         conn.commit()
 
         c.execute('''CREATE TABLE IF NOT EXISTS players
                      (player_id INTEGER PRIMARY KEY,
-                     first_name text NOT NULL,
-                     last_name text NOT NULL DEFAULT "",
-                     team text NOT NULL DEFAULT "No Team",
-                     address text,
-                     email text,
-                     FOREIGN KEY (team)
-                        REFERENCES teams (team_id)
+                     first_name TEXT NOT NULL,
+                     last_name TEXT NOT NULL DEFAULT "",
+                     club INTEGER NOT NULL DEFAULT "No Team",
+                     bowls_number TEXT,
+                     grade TEXT,
+                     FOREIGN KEY (club)
+                        REFERENCES clubs (club_id)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT)''')
+        conn.commit()
+        c.execute('''INSERT into players (player_id, first_name, last_name, club, bowls_number, grade)
+                    VALUES (1, 'Mitchell', 'Williamson', 1, '12453', 'None'),
+                            (2, 'Dave', 'King', 2, '2134', 'None') 
+                            ON CONFLICT DO NOTHING;''')
         conn.commit()
 
         c.execute('''CREATE TABLE IF NOT EXISTS competitors
                      (competitor_id INTEGER NOT NULL PRIMARY KEY,
-                     player text NOT NULL DEFAULT "No Player",
-                     score text NOT NULL DEFAULT "",
+                     player TEXT NOT NULL DEFAULT "No Player",
+                     score TEXT NOT NULL DEFAULT "",
                      game INTEGER NOT NULL DEFAULT "No Game",
-                     competitior_display INTEGER NOT NULL DEFAULT 1,
-                     FOREIGN KEY (competitior_display)
-                        REFERENCES competitior_displays (competitior_display_id)
+                     display INTEGER NOT NULL DEFAULT 1,
+                     team TEXT NOT NULL DEFAULT "",
+                     is_skipper BOOL NOT NULL DEFAULT FALSE,
+                     FOREIGN KEY (display)
+                        REFERENCES displays (display_id)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT,
                      FOREIGN KEY (game)
@@ -82,34 +90,34 @@ class Players:
                 "player_id": player["player_id"],
                 "first_name": player["first_name"],
                 "last_name": player["last_name"],
-                "team": player["team"],
-                "address": player["address"],
-                "email": player["email"],
+                "club": player["club"],
+                "bowls_number": player["bowls_number"],
+                "grade": player["grade"],
             })
 
         return json.dumps(parsed_rows)
 
-    def get_teams(self):
+    def get_clubs(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
         parsed_rows = []
-        teams = cursor.execute("SELECT * FROM teams").fetchall()
+        clubs = cursor.execute("SELECT * FROM clubs").fetchall()
 
-        for team in teams:
+        for club in clubs:
             parsed_rows.append({
-                "team_id": team["team_id"],
-                "team_name": team["team_name"],
-                "logo": team["logo"],
-                "address": team["address"],
-                "contact_details": team["contact_details"],
+                "club_id": club["club_id"],
+                "club_name": club["club_name"],
+                "logo": club["logo"],
+                "address": club["address"],
+                "contact_details": club["contact_details"],
             })
 
         return json.dumps(parsed_rows)
 
 
-    def update_team(self, js, logo):
+    def update_club(self, js, logo):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -119,8 +127,8 @@ class Players:
         except:
             pass
 
-        cmd = "UPDATE teams SET team_name = ?, address = ?, contact_details = ? WHERE team_id = ?"
-        params = [js['team_name'], js['address'], js['contact_details'], js['team_id']]
+        cmd = "UPDATE clubs SET club_name = ?, address = ?, contact_details = ? WHERE club_id = ?"
+        params = [js['club_name'], js['address'], js['contact_details'], js['club_id']]
         res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
@@ -134,13 +142,13 @@ class Players:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        sql = 'INSERT INTO players (first_name, last_name, team, address, email) VALUES(?, ?, ?, ?, ?);'
-        params = [player['first_name'], player['last_name'], player['team'], player['address'], player['email']]
+        sql = 'INSERT INTO players (first_name, last_name, club, bowls_number, grade) VALUES(?, ?, ?, ?, ?);'
+        params = [player['first_name'], player['last_name'], player['club'], player['bowls_number'], player['grade']]
         cursor.execute(sql, params)
         con.commit()
 
 
-    def create_team(self, team, logo):
+    def create_club(self, club, logo):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -150,8 +158,8 @@ class Players:
         except:
             pass
 
-        sql = 'INSERT INTO teams (team_name, logo, address, contact_details) VALUES(?, ?, ?, ?);'
-        params = [team['name'], logo.filename, team['address'], team['contact_details']]
+        sql = 'INSERT INTO clubs (club_name, logo, address, contact_details) VALUES(?, ?, ?, ?);'
+        params = [club['name'], logo.filename, club['address'], club['contact_details']]
 
         cursor.execute(sql, params)
         con.commit()

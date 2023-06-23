@@ -10,7 +10,7 @@
             <router-link class="link" to="/players">Players</router-link>
           </div>
           <div class="row p-3">
-            <router-link class="link" to="/teams">Teams</router-link>
+            <router-link class="link" to="/clubs">Clubs</router-link>
           </div>
           <div class="row p-3">
             <router-link class="link" to="/rinkmanager">Manage Rinks </router-link>

@@ -7,22 +7,25 @@
         <input class="form-control" id="inputEmail4" v-model="player.first_name">
       </div>
       <div class="col-md-4">
-        <label for="inputPassword4" class="form-label">Last Name</label>
+        <label class="form-label">Last Name</label>
         <input class="form-control" id="inputPassword4" v-model="player.last_name">
       </div>
       <div class="col-4">
-        <label for="inputAddress2" class="form-label">Team</label>
-        <select class="form-select" v-model="player.team">
-          <option v-for="team in teams" :value="team.team_id">{{team.team_name}}</option>
+        <label  class="form-label">Club</label>
+        <select class="form-select" v-model="player.club">
+          <option v-for="club in clubs" :value="club.club_id">{{club.club_name}}</option>
         </select>
       </div>
       <div class="col-6">
-        <label for="inputAddress" class="form-label">Address</label>
-        <input type="text" class="form-control" id="inputAddress" v-model="player.address">
+        <label class="form-label">Bowls Number</label>
+        <input type="text" class="form-control" id="inputAddress" v-model="player.bowls_number">
       </div>
       <div class="col-6">
-        <label for="inputCity" class="form-label">Email</label>
-        <input type="text" class="form-control" id="inputCity" v-model="player.email">
+        <label class="form-label">Grade</label>
+        <select class="form-control" v-model="player.grade" type="text">
+          <option v-for="num in 7" :value="num">{{num}}</option>
+          <option :value="'None'">None</option>
+        </select>
       </div>
     <div class="col-12">
       <button type="submit" @click="updatePlayer" class="btn btn-primary">Update</button>
@@ -40,7 +43,7 @@ export default {
   name: 'EditGames',
   props: {
     player: Object,
-    teams: Object,
+    clubs: Object,
   },
 
   setup() {
@@ -72,11 +75,9 @@ export default {
   },
 
   methods:{
-    teamName(playerTeam){
-      console.log("!!!!!!!!", playerTeam)
-      console.log(this.teams.filter(i => i.team_id == playerTeam))
-      var team = this.teams.filter(i => i.team_id == playerTeam)
-      return team[0]['team_name']
+    clubName(playerClub){
+      var club = this.clubs.filter(i => i.club_id == playerClub)
+      return club[0]['club_name']
     },
     updatePlayer() {
       (async () => {

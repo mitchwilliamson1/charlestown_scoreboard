@@ -5,18 +5,18 @@
       <div class="col">
         <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">New Board</div>
 
-      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+      <div class="offcanvas offcanvas-end w-50" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
           <h5 id="offcanvasRightLabel">New Rink</h5>
           <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
           
-          <div class="row">
+          <div class="row p-1">
             <div class="col-4">Rink Name</div>
             <input class="col" v-model="createRink.rink" type="text">
           </div>
-          <div class="row">
+          <div class="row p-1">
             <div class="col-4">IP Address</div>
             <input class="col" v-model="createRink.ip" type="text">
           </div>
@@ -25,11 +25,14 @@
             <button @click="createRinkButton(this.createRink)" class="btn btn-success">Create Rink</button>
           </div>
 
-          <div class="row">
+          <br>
+          <br>
+
+          <div class="row p-1">
             <div class="col-4">Masterboard Name</div>
             <input class="col" v-model="createMasterboard.masterboard" type="text">
           </div>
-          <div class="row">
+          <div class="row p-1">
             <div class="col-4">IP Address</div>
             <input class="col" v-model="createMasterboard.ip" type="text">
           </div>

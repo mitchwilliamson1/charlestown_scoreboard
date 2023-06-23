@@ -1,30 +1,32 @@
 <template>
-  <div class="currentGames">
+  <div v-if="game && gameOptions" class="currentGames">
     <div class="container">
       <div class="row">
-        <div class="col fw-bold">Game</div>
-        <div class="col fw-bold">Players</div>
-        <div class="col fw-bold">Rink</div>
+        <div class="col-2 fw-bold">Game</div>
+        <div class="col-4 fw-bold">Team 1</div>
+        <div class="col-4 fw-bold">Team 2</div>
+        <div class="col-2 fw-bold">Rink</div>
       </div>
-      <div v-for="game, i in games" :key="i">
+      <div >
         <div class="row shadow p-2 mb-1 bg-body rounded"
           data-bs-toggle="collapse" 
           :data-bs-target="'#collapse'+game.game_id" 
           aria-expanded="false" 
           aria-controls="collapseOne">
-          <div class="col">{{game.name}}</div>
-          <div class="col">
-            <div class='row'>
-              <div class="col" :class="winner(player.first_name, game.winner)" v-for="player in game.competitors">{{player.first_name}} - {{player.score}}</div>
+          <div class="col-2">{{gameType(game)}}</div>
+          <div :class="winner(n, game.winner)" class="col-4" v-for="n, index in 2">
+            <div v-for="player in game.competitors">
+              <div class="p-1" v-if="player.is_skipper && player.team == n " >Skipper: {{player.first_name[0]}}.{{player.last_name}} - Score: {{player.score}}</div>
             </div>
           </div>
-          <div class="col">{{game.rink.rink}}</div>
+
+          <div class="col-2">{{game.rink.rink}}</div>
         </div>
         <div class="row p-2">
           <div class="col collapse"
             :id="'collapse'+game.game_id"
             data-parent="#accordion">
-            <edit-games :details="game" :gameOptions="gameOptions"/>
+            <edit-games @reload="$emit('reload')" :details="game" :gameOptions="gameOptions"/>
           </div>
           
         </div>
@@ -36,7 +38,7 @@
 <script>
 import { reactive, onMounted } from "vue";
 import EditGames from '../components/EditGames.vue'
-
+import axios from 'axios'
 
 export default {
   name: 'CurrentGames',
@@ -44,14 +46,13 @@ export default {
     EditGames
   },
   props: {
-    games: Object,
-    teams: Object,
+    game: Object,
     gameOptions: Object,
   },
 
   setup() {
     const state = reactive({
-      someData: null,
+      myGames: Object,
     });
 
     var path = ""
@@ -79,31 +80,20 @@ export default {
   },
 
   methods:{
-    winner(name, winner) {
-      if (name == winner){
+    gameType(game){
+      var gender = this.gameOptions.gender.filter(i => i.gender_id == game.gender)[0].gender
+      var competition = this.gameOptions.competition.filter(i => i.competition_id == game.competition)[0].competition
+      var game = this.gameOptions.game_type.filter(i => i.game_type_id == game.game_type)[0].game_type
+      return gender +" "+ competition +" " + game
+    },
+    winner(team, winner) {
+      if (team == winner){
         return {
           rounded:true,
           border: true,
           'border-success': true
         }
       }
-    },
-    post() {
-      (async () => {
-      const rawResponse = await fetch(this.path+'/save', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-        body: JSON.stringify(this.state)
-      })
-      const content = await rawResponse.json();
-      console.log(content);
-      })();
-    },
-    edit(game) {
-      console.log(game)
     },
   },
 }

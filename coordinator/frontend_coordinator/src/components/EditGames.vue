@@ -4,55 +4,41 @@
     <div class="card p-2 pt-0 shadow">
 
         <form class="row">
-          <div class="col-6">
-            <label class="form-label">Game Name</label>
-            <input class="form-control" v-model="details.name">
+          <div class="col-3">
+            <label class="form-label">Winner</label>
+            <select class="form-select" v-model="details.winner">
+              <option value="1">Team 1</option>
+              <option value="2">Team 2</option>
+            </select>
           </div>
-          <div class="col-6">
+          <div class="col-3" v-for="n, index in 2">
+            <label class="form-label">Team {{n}} Score</label>
+            <div v-for="player in details['competitors']">
+              <div v-if="player.is_skipper && player.team == n ">
+                <select class="form-select" v-model="player.score">
+                  <option v-for="n, index in 100" :value="index">{{index}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-3">
             <label class="form-label">Rink</label>
             <select class="form-select" v-model="details.rink">
               <option v-for="rink in gameOptions['rink']" :value="rink">{{rink.rink}}</option>
             </select>
           </div>
           <div class="col-3">
-            <label class="form-label">Type</label>
-            <select class="form-select" v-model="details.type">
-              <option v-for="game in gameOptions['type']" :value="game.type_id">{{game.type}}</option>
-            </select>
           </div>
-          <div class="col-3">
-            <label class="form-label">Winner</label>
-            <select class="form-select" v-model="details.winner">
-              <option v-for="game in details['competitors']" :value="game.first_name">{{game.first_name}}</option>
-            </select>
-          </div>
-          <div class="col-3">
-            <label class="form-label">{{details['competitors'][0]['first_name']}}'s Score</label>
-            <select class="form-select" v-model="details['competitors'][0]['score']">
-              <option v-for="n, index in 100" :value="index">{{index}}</option>
-            </select>
-          </div>
-          <div class="col-3">
-            <label class="form-label">{{details['competitors'][1]['first_name']}}'s Score</label>
-            <select class="form-select" v-model="details['competitors'][1]['score']">
-              <option v-for="n, index in 100" :value="index">{{index}}</option>
-            </select>
-          </div>
-          <div class="col-3">
-          </div>
-          <div class="col-3">
-          </div>
-          <div class="col-3">
-            <label class="form-label">Scoreboard Display</label>
-            <select class="form-select" v-model="details['competitors'][0]['competitor_display']">
-              <option v-for="display in gameOptions['competitor_display']" :value="display">{{display.competitor_display}}</option>
-            </select>
-          </div>
-          <div class="col-3">
-            <label class="form-label">Scoreboard Display</label>
-            <select class="form-select" v-model="details['competitors'][1]['competitor_display']">
-              <option v-for="display in gameOptions['competitor_display']" :value="display">{{display.competitor_display}}</option>
-            </select>
+          <div class="col-3" v-for="n, index in 2">
+            <label class="form-label">Team {{n}} Score</label>
+            <div v-for="player in details['competitors']">
+              <div v-if="player.is_skipper && player.team == n ">
+                <select class="form-select" v-model="player.display">
+                  <option v-for="display in gameOptions['display']" :value="display">{{display.display}}</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <!-- <div class="col-6">
@@ -96,6 +82,7 @@
 
 <script>
 import { reactive, onMounted } from "vue";
+import axios from 'axios'
 
 export default {
   name: 'EditGames',
@@ -136,32 +123,28 @@ export default {
       return key.charAt(0).toUpperCase() + key.slice(1);
     },
     updateGame() {
-      (async () => {
-      const rawResponse = await fetch(this.path+'/update_game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-        body: JSON.stringify(this.details)
+      axios.post(this.path+'/update_game', {
+      update_game: this.details,
       })
-      const content = await rawResponse.json();
-      console.log(content);
-      })();
+      .then( (response) => {
+        console.log(response);
+        this.$emit('reload')
+      })
+      .catch( (error) => {
+        console.log(error);
+      });
     },
     finishGame() {
-      (async () => {
-      const rawResponse = await fetch(this.path+'/finish_game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'no-cors',
-        body: JSON.stringify(this.details)
+      axios.post(this.path+'/finish_game', {
+      finish_game: this.details,
       })
-      const content = await rawResponse.json();
-      console.log(content);
-      })();
+      .then( (response) => {
+        console.log(response);
+        this.$emit('reload')
+      })
+      .catch( (error) => {
+        console.log(error);
+      });
     },
   },
 }
