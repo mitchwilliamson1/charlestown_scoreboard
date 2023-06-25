@@ -349,11 +349,13 @@ class Games:
         games = cursor.execute(sql).fetchall()
 
         for game in games:
-            sql = f'''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, c.team, c.is_skipper, c.score FROM competitors AS c
+            sql = f'''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, club.logo, c.team, c.is_skipper, c.score FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN displays AS cd
                     ON c.display = cd.display_id
+                    INNER JOIN clubs AS club
+                    ON p.club = club.club_id
                     WHERE c.game = ?'''
             params = [game['game_id']]
             players = cursor.execute(sql, params).fetchall()
@@ -365,6 +367,7 @@ class Games:
                     "first_name": player['first_name'],
                     "last_name": player['last_name'],
                     "score": player['score'],
+                    "logo": player['logo'],
                     "team": player['team'],
                     "is_skipper": player['is_skipper'],
                     "display": {'display':player['display'],'display_id':player['display_id']},
