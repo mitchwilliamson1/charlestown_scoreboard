@@ -40,9 +40,10 @@ def get_logo(logo):
 
 @bott.route("/create_game", method=["POST", "OPTIONS"])
 def create_game():
+    print('WHATTT')
+    
     if request.method == "OPTIONS":
         return
-
     client_ip = request.environ.get('REMOTE_ADDR')
     request_params = json.loads(request.body.getvalue())
     Game().create_game(request_params, client_ip)

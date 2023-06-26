@@ -489,10 +489,14 @@ class Games:
 
 
     def write_scoreboard(self, js):
+        print("!!!!!!!!!!!!!", 'http://'+js["rink"]["ip"]+'/create_game')
         try:
-            response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js)
+            response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js, timeout=2)
+            print('status code: ', response.status_code)
+
             return response.status_code
-        except:
+        except Exception as e:
+            print("FAIL", e)
             return "fail"
 
 
@@ -555,7 +559,6 @@ class Games:
                 res = cursor.execute(cmd, params)
 
         if res.fetchone() is None:
-            print("RES: ", res.fetchone())
             con.commit()
             con.close()
 
@@ -571,14 +574,14 @@ class Games:
         utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
         js['finish_time'] = utc
 
-
         cmd = "UPDATE games SET finish_time = ?,winner = ? WHERE game_id = ?"
         params = (js['finish_time'], js['winner'], js['game_id'] )
+
+        js['finish_time'] = json.dumps(js['finish_time'])
 
         res = cursor.execute(cmd, params)
 
         if res.fetchone() is None:
-            print("RES: ", res.fetchone())
             con.commit()
             con.close()
 
