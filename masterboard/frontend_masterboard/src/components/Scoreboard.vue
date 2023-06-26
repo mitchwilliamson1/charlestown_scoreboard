@@ -3,7 +3,7 @@
     <div class="container-fluid h-100 w-100">
       <div class="row align-items-center" style="height: 45%;">
         <div class="col-4 h-100">
-          <img class="logo"  :src="'http://127.0.0.1:8083/charls.jpeg'">
+          <img class="logo" :src="'http://'+detail.coordinator_ip+'/players/get_logo/'+detail.competitors[0].logo">
         </div>
         <div class="col-4">
           <Ticker :player="details.ends" 
@@ -12,7 +12,7 @@
                     fontColour="white"/>
         </div>
         <div class="col-4 h-100">
-          <img class="logo"  :src="'http://127.0.0.1:8083/AWAY.png'">
+          <img class="logo" :src="'http://'+detail.coordinator_ip+'/players/get_logo/'+detail.competitors[1].logo">
         </div>
       </div>
 
