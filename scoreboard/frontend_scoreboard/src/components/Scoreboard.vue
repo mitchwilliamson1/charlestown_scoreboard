@@ -21,12 +21,12 @@
             <img v-if="p2.competitor_display == 'Logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p2Logo">
             <div v-else-if="p2.competitor_display == 'First Initial'" class="txt">{{p2.first_name.charAt(0)}}</div>
             <div v-else-if="p2.competitor_display == 'Fist and Last Initial'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
-            <img v-else="p2.competitor_display == 'Default'"  class="logo" :src="'http://127.0.0.1:8081/AWAY.png'">
+            <img v-else="p2.competitor_display == 'Default'"  class="logo" :src="'http://127.0.0.1:8081/away.jpeg'">
           </div>
           <div v-else class="h-100">
             <div v-if="p2.competitor_display == 'First Initial'" class="txt">{{p2.first_name.charAt(0)}}</div>
             <div v-else-if="p2.competitor_display == 'Fist and Last Initial'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
-            <img v-else="p2.competitor_display == 'Default'" class="logo" :src="'http://127.0.0.1:8081/AWAY.png'">
+            <img v-else="p2.competitor_display == 'Default'" class="logo" :src="'http://127.0.0.1:8081/away.jpeg'">
           </div>
         </div>
       </div>

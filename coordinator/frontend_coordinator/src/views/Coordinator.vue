@@ -10,10 +10,12 @@
         </div>
         <div class="offcanvas-body">
           <div class="row p-1" v-for="item, key in state.init">
+            <div class="row" v-if="key != 'display'">
               <div class="col-4">{{capitalise(key)}}</div>
               <select v-model="createGame[key]" class="form-select col">
                 <option v-for="type in item" :value="type">{{type[key]}}</option>
               </select>
+            </div>
           </div>
 
           <div class="row">

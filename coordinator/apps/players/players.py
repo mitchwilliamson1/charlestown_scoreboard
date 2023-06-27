@@ -53,7 +53,7 @@ class Players:
                      player TEXT NOT NULL DEFAULT "No Player",
                      score TEXT NOT NULL DEFAULT "",
                      game INTEGER NOT NULL DEFAULT "No Game",
-                     display INTEGER NOT NULL DEFAULT 1,
+                     display INTEGER NOT NULL DEFAULT 2,
                      team TEXT NOT NULL DEFAULT "",
                      is_skipper BOOL NOT NULL DEFAULT FALSE,
                      FOREIGN KEY (display)

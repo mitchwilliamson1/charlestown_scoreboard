@@ -38,7 +38,7 @@ class Games:
         conn.commit()
         c.execute('''INSERT into competitions (competition_id, competition)
                     VALUES (1, 'Gala'),
-                            (2, 'Penants'),
+                            (2, 'Pennants'),
                             (3, 'Club')
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
@@ -102,20 +102,20 @@ class Games:
                      ip text, "")''')
         conn.commit()
         c.execute('''INSERT into rinks (rink_id, rink, ip)
-                    VALUES (1, 'Rink 1', '192.168.15.201'),
-                            (2, 'Rink 2', '192.168.15.202'),
-                            (3, 'Rink 3', '192.168.15.203'),
-                            (4, 'Rink 4', '192.168.15.204'),
-                            (5, 'Rink 5', '192.168.15.205'),
-                            (6, 'Rink 6', '192.168.15.206'),
-                            (7, 'Rink 7', '192.168.15.207'),
-                            (8, 'Rink 8', '192.168.15.208'),
-                            (9, 'Rink 9', '192.168.15.209'),
-                            (10, 'Rink 10', '192.168.15.210'),
-                            (11, 'Rink 11', '192.168.15.211'),
-                            (12, 'Rink 12', '192.168.15.212'),
-                            (13, 'Rink 13', '192.168.15.213'),                            
-                            (14, 'Rink 14', '192.168.15.214') 
+                    VALUES (1, 'Rink 1', '192.168.15.201:8081'),
+                            (2, 'Rink 2', '192.168.15.202:8081'),
+                            (3, 'Rink 3', '192.168.15.203:8081'),
+                            (4, 'Rink 4', '192.168.15.204:8081'),
+                            (5, 'Rink 5', '192.168.15.205:8081'),
+                            (6, 'Rink 6', '192.168.15.206:8081'),
+                            (7, 'Rink 7', '192.168.15.207:8081'),
+                            (8, 'Rink 8', '192.168.15.208:8081'),
+                            (9, 'Rink 9', '192.168.15.209:8081'),
+                            (10, 'Rink 10', '192.168.15.210:8081'),
+                            (11, 'Rink 11', '192.168.15.211:8081'),
+                            (12, 'Rink 12', '192.168.15.212:8081'),
+                            (13, 'Rink 13', '192.168.15.213:8081'),
+                            (14, 'Rink 14', '192.168.15.214:8081') 
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
 
@@ -125,10 +125,10 @@ class Games:
                      ip text, "")''')
         conn.commit()
         c.execute('''INSERT into masterboards (masterboard_id, masterboard, ip)
-                    VALUES (1, 'Masterboard 1', '192.168.15.215'),
-                            (2, 'Masterboard 2', '192.168.15.216'),
-                            (3, 'Masterboard 3', '192.168.15.217'),
-                            (4, 'Masterboard 4', '192.168.15.218') 
+                    VALUES (1, 'Masterboard 1', '192.168.15.215:8081'),
+                            (2, 'Masterboard 2', '192.168.15.216:8081'),
+                            (3, 'Masterboard 3', '192.168.15.217:8081'),
+                            (4, 'Masterboard 4', '192.168.15.218:8081') 
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
 
@@ -577,7 +577,7 @@ class Games:
         cmd = "UPDATE games SET finish_time = ?,winner = ? WHERE game_id = ?"
         params = (js['finish_time'], js['winner'], js['game_id'] )
 
-        js['finish_time'] = json.dumps(js['finish_time'])
+        js['finish_time'] = str(js['finish_time'])
 
         res = cursor.execute(cmd, params)
 
