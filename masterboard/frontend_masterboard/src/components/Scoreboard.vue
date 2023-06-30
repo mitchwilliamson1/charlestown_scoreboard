@@ -3,7 +3,7 @@
     <div class="container-fluid h-100 w-100">
       <div class="row align-items-center" style="height: 45%;">
         <div class="col-4 h-100">
-          <img class="logo" :src="'http://'+detail.coordinator_ip+'/players/get_logo/'+detail.competitors[0].logo">
+          <img class="logo" :src="P1Url">
         </div>
         <div class="col-4">
           <Ticker :player="details.ends" 
@@ -12,7 +12,7 @@
                     fontColour="white"/>
         </div>
         <div class="col-4 h-100">
-          <img class="logo" :src="'http://'+detail.coordinator_ip+'/players/get_logo/'+detail.competitors[1].logo">
+          <img class="logo" :src="P2Url">
         </div>
       </div>
 
@@ -40,7 +40,7 @@
 <script>
 import Ticker from './Ticker.vue'
 import { reactive, onMounted } from "vue";
-
+import axios from 'axios'
 
 export default {
   name: 'Board',
@@ -61,6 +61,12 @@ export default {
     // },
   },
   computed: {
+    P1Url() {
+      return 'http://'+this.detail.coordinator_ip+'/players/get_logo/'+this.detail.competitors[0].logo
+    },
+    P2Url() {
+      return 'http://'+this.detail.coordinator_ip+'/players/get_logo/'+this.detail.competitors[1].logo
+    },
     details() {
       return this.detail
     },
@@ -69,6 +75,12 @@ export default {
     }
   },
   methods: {
+    newsrc1() {
+      return "http://127.0.0.1:8083/charls.jpeg"
+    },
+    newsrc1() {
+      return "http://127.0.0.1:8083/away.jpeg"
+    },
     // updateGame() {
     //   this.game = this details
     // },

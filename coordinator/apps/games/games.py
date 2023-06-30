@@ -453,16 +453,19 @@ class Games:
             for team in js['competitors']:
                 for player in js['competitors'][team]:
                     if player == '1':
-                        is_skipper = True
+                        js['competitors'][team][player]['is_skipper'] = 1
                     else:
-                        is_skipper = False
+                        js['competitors'][team][player]['is_skipper'] = 0
+
+                    js['competitors'][team][player]['score'] = 0
         
-                    sql = "INSERT INTO competitors (player, score, game, team, is_skipper) VALUES(?, ?, ?, ?, ?);"
-                    params = [js['competitors'][team][player]['player_id'], 0, _game_id, team, is_skipper]
+                    sql = "INSERT INTO competitors (player, score, game, display, team, is_skipper) VALUES(?, ?, ?, ?, ?, ?);"
+                    params = [js['competitors'][team][player]['player_id'], js['competitors'][team][player]['score'], _game_id, js['competitors'][team][player]['display']['display_id'], team, js['competitors'][team][player]['is_skipper']]
                     cursor.execute(sql, params)
                 con.commit()
 
                 js['game_id'] = _game_id
+        print(js)
 
         x = threading.Thread(target=self.write_scoreboard, args=(js,))
         x.start()
@@ -489,11 +492,8 @@ class Games:
 
 
     def write_scoreboard(self, js):
-        print("!!!!!!!!!!!!!", 'http://'+js["rink"]["ip"]+'/create_game')
         try:
             response = requests.post('http://'+js["rink"]["ip"]+'/create_game', json = js, timeout=2)
-            print('status code: ', response.status_code)
-
             return response.status_code
         except Exception as e:
             print("FAIL", e)

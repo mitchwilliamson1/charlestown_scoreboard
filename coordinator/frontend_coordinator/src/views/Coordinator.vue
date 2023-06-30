@@ -17,18 +17,23 @@
               </select>
             </div>
           </div>
-
           <div class="row">
-            <div v-if="createGame['game_type']" v-for="clubNumber in 2" class="col">
-              <div class="">Club {{clubNumber}}</div>
-                <select v-model="createGame.clubs[clubNumber]" class="form-select">
+            <div v-if="createGame['game_type']" v-for="team in 2" class="col">
+              <div class="">Club {{team}}</div>
+                <select v-model="createGame.clubs[team]" class="form-select">
                   <option v-for="club in state.clubs" :value="club">{{club.club_name}}</option>
-                </select>            
+                </select>
+
+              <div>Display</div>
+                <select v-model="display[team]" class="form-select">
+                  <option v-for="display in state.init.display" :value="display">{{display.display}}</option>
+                </select>
+
               <div class="col" v-for="number in parseInt(createGame['game_type']['players']/2)">
-                <div v-if="createGame.clubs[clubNumber]">
+                <div v-if="createGame.clubs[team] && display[team]">
                   <div class="">Player {{number}}</div>
-                  <select v-model="createGame.competitors[clubNumber][number]" class="form-select">
-                    <option v-for="player in selectPlayers(createGame.clubs[clubNumber].club_id)" :value="player">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
+                  <select v-model="createGame.competitors[team][number]" class="form-select">
+                    <option v-for="player in selectPlayers(createGame.clubs[team].club_id, team)" :value="player">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
                   </select>
                 </div>
               </div>
@@ -70,6 +75,7 @@ export default {
   },
   data(){
     return{
+      display: {},
       rinks: 12,
       createGame: {
         'name': null,
@@ -216,8 +222,10 @@ export default {
       key = key.replace("_", " ")
       return key.charAt(0).toUpperCase() + key.slice(1);
     },
-    selectPlayers(clubName){
-      return this.state.players.filter(i => i.club == clubName)
+    selectPlayers(clubName, team){
+      var player = this.state.players.filter(i => i.club == clubName)
+      player[0].display = this.display[team]
+      return player
     },
 
   },

@@ -7,10 +7,15 @@ import requests
 import os
 
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", "finish_time":None, 'competitors':
-                    [{'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'logo':'charls.jpeg', 'display':{'display': 'Default', 'display_id': 1}, 'team': '1'},
-                    {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'logo':'away.jpeg', 'display':{'display': 'Default', 'display_id': 1} ,'team': '2'}],
-                }
+DEFAULT_GAME = {"game_id":-1, "name":"standard", "finish_time":None, 'competitors': {
+        '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+        '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+        },
+    'clubs': {
+        '1': {'club_id': 1, 'club_name': 'Merewether', 'logo': 'charls.jpeg'}, 
+        '2': {'club_id': 2, 'club_name': 'Charlestown', 'logo': 'away.jpeg'},
+        }
+    }
 
 
 local_tz = pytz.timezone("Australia/Sydney")
@@ -28,8 +33,8 @@ class Game:
         c.execute('''CREATE TABLE IF NOT EXISTS games
                      (game_id INTEGER PRIMARY KEY,
                      name text DEFAULT NULL,
-                     start_time text, 
-                     finish_time text, 
+                     start_time text DEFAULT NULL, 
+                     finish_time text DEFAULT NULL, 
                      ends int DEFAULT 0,
                      winner text DEFAULT "",
                      coordinator_ip text DEFAULT "127.0.0.1:8000")''')
@@ -155,8 +160,6 @@ class Game:
     def create_game(self, js, coordinator_ip):
         self.delete_all_games()
 
-        print("CREATE HGAEM: ")
-
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -164,16 +167,19 @@ class Game:
         utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
 
         coordinator_ip += ':8000'
+        js['finish_time'] = None
 
         sql = "INSERT INTO games (game_id, name, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?);"
         params = (js['game_id'], js['name'], utc, js['finish_time'], coordinator_ip)
         game_id = cursor.execute(sql, params)
 
-        for competitor in js['competitors']:
-            if competitor['is_skipper'] == 1:
-                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"
-                params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['logo'], competitor['display']['display_id'], js['game_id'])
-                cursor.execute(sql, params)
+        for teams in js['competitors']:
+            for player in js['competitors'][teams]:
+                competitor = js['competitors'][teams][player]
+                if competitor['is_skipper']:
+                    sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                    params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], js['clubs'][teams]['logo'], competitor['display']['display_id'], js['game_id'])
+                    cursor.execute(sql, params)
         con.commit()
 
 

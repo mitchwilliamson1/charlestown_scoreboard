@@ -60,6 +60,11 @@ class Masterboard:
         player_2_score=0
         ends=0
 
+        player_1_logo = 'charls.jpeg'
+        player_2_logo = 'away.jpeg'
+
+        coordinator_ip = '192.168.15.200:8000'
+
         summed = []
         ips = cursor.execute('''SELECT * FROM masterboard''').fetchall()
         for ip in ips:
