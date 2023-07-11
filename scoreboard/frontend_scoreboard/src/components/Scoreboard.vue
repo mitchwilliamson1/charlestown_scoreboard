@@ -1,8 +1,8 @@
 <template>
   <div v-if="this.details" class="container-fluid h-100 w-100 p-0" style="background-color: black;">
-    <div class="container-fluid h-100 w-100">
+    <div class="container-fluid w-100 d-flex flex-column" style="height: 100vh">
       <div class="row align-items-center" style="height: 25%;">
-        <div class="col h-100">
+        <div class="col p-0 h-100">
           <div v-if="coordinator_running" class="h-100" >
             <img v-if="p1.competitor_display == 'Logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p1Logo">
             <div v-else-if="p1.competitor_display == 'First Initial'" class="txt">{{p1.first_name.charAt(0)}}</div>
@@ -16,7 +16,7 @@
 
           </div>
         </div>
-        <div class="col h-100">
+        <div class="col p-0 h-100">
           <div v-if="coordinator_running" class="h-100" >
             <img v-if="p2.competitor_display == 'Logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p2Logo">
             <div v-else-if="p2.competitor_display == 'First Initial'" class="txt">{{p2.first_name.charAt(0)}}</div>
@@ -31,14 +31,14 @@
         </div>
       </div>
 
-      <div class="row align-items-center" style="height: 25%; padding-bottom: 100px;">
-        <div class="col align-self-center">
+      <div class="row align-items-center" style="min-height: 25%; padding-bottom: 30px;">
+        <div class="col p-0 align-self-center">
           <Ticker :player="details.competitors[0]" 
                     :details="details"
                     fontSize="21" 
                     colour="red"/>
         </div>
-        <div class="col">
+        <div class="col p-0">
           <Ticker :player="details.competitors[1]" 
                     :details="details"
                     fontSize="21" 
@@ -46,9 +46,10 @@
         </div>
       </div>
 
-      <div v-if="!isMobile()" class="row align-items-center" style="height: 25%;">
-        <div class="col h-100 align-self-center">
-          <img class="add" src="http://127.0.0.1:8081/belle.png">
+      <div v-if="!isMobile()" class="flex-fill">
+        <div class="h-100 align-self-center">
+          <!-- <div class="h-100" style="background: red" /> -->
+          <div class="add"/>
         </div>
       </div>
 
@@ -173,12 +174,19 @@ export default {
 }
 
 .add {
-  background-color: white;
+  /*background-color: white;*/
   position: relative;
-  height: 100%;
+  /*height: 100%;*/
   display: block;
   margin-left: auto;
   margin-right: auto;
+
+  background-image:url(http://127.0.0.1:8081/belle_whitebg.png);
+  background-size:contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100%;
+
 }
 
 
