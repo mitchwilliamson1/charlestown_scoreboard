@@ -39,7 +39,8 @@ class Games:
         c.execute('''INSERT into competitions (competition_id, competition)
                     VALUES (1, 'Gala'),
                             (2, 'Pennants'),
-                            (3, 'Club')
+                            (3, 'Club'),
+                            (4, 'BPL')
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
 
@@ -342,14 +343,22 @@ class Games:
 
         parsed_rows = []
         if get_current:
-            sql = 'SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id WHERE finish_time IS NULL'
+            sql = '''SELECT *, r.rink as rink_name, c.competition as comp_name FROM games g
+                    inner join rinks r
+                    on g.rink = r.rink_id
+                    inner join competitions c
+                    on g.competition = c.competition_id
+                    WHERE finish_time IS NULL'''
         else:
-            sql = 'SELECT *, r.rink as rink_name FROM games g inner join rinks r on g.rink = r.rink_id WHERE finish_time IS NOT NULL'
+            sql = '''SELECT *, r.rink as rink_name FROM games g
+                    inner join rinks r
+                    on g.rink = r.rink_id
+                    WHERE finish_time IS NOT NULL'''
     
         games = cursor.execute(sql).fetchall()
 
         for game in games:
-            sql = f'''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, club.logo, c.team, c.is_skipper, c.score FROM competitors AS c
+            sql = '''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, club.logo, c.team, c.is_skipper, c.score FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN displays AS cd
@@ -377,11 +386,11 @@ class Games:
                 "game_id": game["game_id"],
                 "name": game["name"],
                 "game_type": game["game_type"],
-                "competition": game["competition"],
+                "competition": {"competition":game["comp_name"], "competition_id":game["competition_id"]},
                 "gender": game["gender"],
                 "round": game["round"],
                 "grade": game["grade"],
-                "rink": {'rink':game["rink_name"], 'rink_id':game["rink_id"], 'ip':game["ip"]},
+                "rink": {"rink":game["rink_name"], "rink_id":game["rink_id"], "ip":game["ip"]},
                 "ends": game["ends"],
                 "start_time": game["start_time"],
                 "finish_time": game["finish_time"],
@@ -465,7 +474,6 @@ class Games:
                 con.commit()
 
                 js['game_id'] = _game_id
-        print(js)
 
         x = threading.Thread(target=self.write_scoreboard, args=(js,))
         x.start()
@@ -546,8 +554,8 @@ class Games:
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         cursor = con.cursor()
 
-        cmd = "UPDATE games SET name = ?,game_type = ?,gender = ?,round = ?,grade = ?,rink = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
-        params = (js['name'],js['game_type'], js['gender'], js['round'], js['grade'], js["rink"]["rink_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
+        cmd = "UPDATE games SET name = ?,game_type = ?,competition = ?,gender = ?,round = ?,grade = ?,rink = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
+        params = (js['name'],js['game_type'], js["competition"]["competition_id"], js['gender'], js['round'], js['grade'], js["rink"]["rink_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
 
         res = cursor.execute(cmd, params)
 

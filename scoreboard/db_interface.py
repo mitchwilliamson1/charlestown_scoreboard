@@ -7,7 +7,7 @@ import requests
 import os
 
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", "finish_time":None, 'competitors': {
+DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competition': {'competition_id': None}, "finish_time":None, 'competitors': {
         '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
         '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
         },
@@ -30,14 +30,43 @@ class Game:
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
+        c.execute('''CREATE TABLE IF NOT EXISTS displays
+                     (display_id INTEGER PRIMARY KEY,
+                     display text, "")''')
+        conn.commit()
+        c.execute('''INSERT into displays (display_id, display)
+                    VALUES (1, 'Default'),
+                            (2, 'Logo'),
+                            (3, 'First Initial'),
+                            (4, 'Fist and Last Initial') 
+                            ON CONFLICT DO NOTHING;''')
+        conn.commit()
+
+        c.execute('''CREATE TABLE IF NOT EXISTS competitions
+                     (competition_id INTEGER PRIMARY KEY,
+                     competition TEXT, "")''')
+        conn.commit()
+        c.execute('''INSERT into competitions (competition_id, competition)
+                    VALUES (1, 'Gala'),
+                            (2, 'Pennants'),
+                            (3, 'Club'),
+                            (4, 'BPL')
+                            ON CONFLICT DO NOTHING;''')
+        conn.commit()
+
         c.execute('''CREATE TABLE IF NOT EXISTS games
                      (game_id INTEGER PRIMARY KEY,
                      name text DEFAULT NULL,
+                     competition INTEGER DEFAULT NULL,
                      start_time text DEFAULT NULL, 
                      finish_time text DEFAULT NULL, 
                      ends int DEFAULT 0,
                      winner text DEFAULT "",
-                     coordinator_ip text DEFAULT "127.0.0.1:8000")''')
+                     coordinator_ip text DEFAULT "127.0.0.1:8000",
+                     FOREIGN KEY (competition)
+                        REFERENCES competitions (competition_id)
+                            ON UPDATE CASCADE
+                            ON DELETE SET DEFAULT)''')
 
         c.execute('''CREATE TABLE IF NOT EXISTS competitors
                      (competitor_id INTEGER NOT NULL PRIMARY KEY,
@@ -59,10 +88,6 @@ class Game:
 
         conn.commit()
 
-        c.execute('''CREATE TABLE IF NOT EXISTS displays
-                     (display_id INTEGER PRIMARY KEY,
-                     display text, "")''')
-        conn.commit()
 
     def encode_if_required(self, str_val):
         try:
@@ -169,12 +194,17 @@ class Game:
         coordinator_ip += ':8000'
         js['finish_time'] = None
 
-        sql = "INSERT INTO games (game_id, name, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?);"
-        params = (js['game_id'], js['name'], utc, js['finish_time'], coordinator_ip)
+        sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?,?);"
+        params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip)
         game_id = cursor.execute(sql, params)
 
+        print("FIRST: ", js)
+
         for teams in js['competitors']:
+            print("WHATTTT: ", teams)
+
             for player in js['competitors'][teams]:
+
                 competitor = js['competitors'][teams][player]
                 if competitor['is_skipper']:
                     sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"

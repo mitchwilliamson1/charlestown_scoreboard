@@ -81,8 +81,8 @@ export default {
 
   methods:{
     gameType(game){
+      var competition = game.competition.competition
       var gender = this.gameOptions.gender.filter(i => i.gender_id == game.gender)[0].gender
-      var competition = this.gameOptions.competition.filter(i => i.competition_id == game.competition)[0].competition
       var game = this.gameOptions.game_type.filter(i => i.game_type_id == game.game_type)[0].game_type
       return gender +" "+ competition +" " + game
     },
