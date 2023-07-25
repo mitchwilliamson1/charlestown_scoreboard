@@ -508,6 +508,15 @@ class Games:
             return "fail"
 
 
+    def update_scoreboard(self, js):
+        try:
+            response = requests.post('http://'+js["rink"]["ip"]+'/update_game', json = js, timeout=2)
+            return response.status_code
+        except Exception as e:
+            print("FAIL", e)
+            return "fail"
+
+
 
     def get_masterboard(self, masterboard_id):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -570,7 +579,7 @@ class Games:
             con.commit()
             con.close()
 
-            x = threading.Thread(target=self.write_scoreboard, args=(js,))
+            x = threading.Thread(target=self.update_scoreboard, args=(js,))
             x.start()
             return
 

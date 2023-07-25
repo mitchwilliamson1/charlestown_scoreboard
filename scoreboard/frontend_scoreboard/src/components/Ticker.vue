@@ -4,6 +4,7 @@
     <div class="count text-align-center h-100" :style="addstyle"> 
       <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
       <div v-if="typeof score !== 'undefined'">{{score}}</div>
+      <div v-if="typeof sets !== 'undefined'">{{sets}}</div>
     </div>
     <div class="text-align-center">
       <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsUp(ends)">Increase</button>
@@ -23,6 +24,7 @@ export default {
     player: Object,
     details: Object,
     endsProp: Number,
+    setsProp: String,
     colour: String,
     fontSize: String,
     fontColour: String,
@@ -38,6 +40,9 @@ export default {
     },
     ends() {
       return this.endsProp
+    },
+    sets() {
+      return this.setsProp
     },
     addstyle() {
       return "font-size:"+this.fontSize+"vh; color:"+this.fontColour+";"

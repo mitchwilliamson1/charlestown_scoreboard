@@ -7,7 +7,7 @@ import requests
 import os
 
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competition': {'competition_id': None}, "finish_time":None, 'competitors': {
+DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competition': {'competition_id': 3}, "finish_time":None, 'competitors': {
         '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
         '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
         },
@@ -128,7 +128,10 @@ class Game:
         cursor = con.cursor()
         parsed_rows = []
         
-        games = cursor.execute('''SELECT * FROM games WHERE finish_time is NULL''').fetchall()
+        games = cursor.execute('''SELECT *, c.competition as comp FROM games g
+                                INNER JOIN competitions c
+                                ON g.competition = c.competition_id
+                                WHERE finish_time is NULL''').fetchall()
 
         if not games:
             self.create_game(DEFAULT_GAME, "127.0.0.1")
@@ -156,6 +159,7 @@ class Game:
                 parsed_rows.append({
                     "game_id": game["game_id"],
                     "name": game["name"],
+                    "competition": game["comp"],
                     "start_time": game["start_time"],
                     "finish_time": game["finish_time"],
                     "ends": game["ends"],
@@ -198,11 +202,7 @@ class Game:
         params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip)
         game_id = cursor.execute(sql, params)
 
-        print("FIRST: ", js)
-
         for teams in js['competitors']:
-            print("WHATTTT: ", teams)
-
             for player in js['competitors'][teams]:
 
                 competitor = js['competitors'][teams][player]
@@ -212,6 +212,29 @@ class Game:
                     cursor.execute(sql, params)
         con.commit()
 
+
+    def update_game(self, js, coordinator_ip):
+        self.delete_all_games()
+
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
+
+        coordinator_ip += ':8000'
+        js['finish_time'] = None
+
+        sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?,?);"
+        params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip)
+        game_id = cursor.execute(sql, params)
+
+        for player in js['competitors']:
+            if player['is_skipper']:
+                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                params = (player['player_id'], player['first_name'], player['last_name'], player['score'], player['logo'], player['display']['display_id'], js['game_id'])
+                cursor.execute(sql, params)
+        con.commit()
 
     def add_ends(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)

@@ -52,8 +52,9 @@ def create_game():
 def update_game():
     if request.method == "OPTIONS":
         return
+    client_ip = request.environ.get('REMOTE_ADDR')
     request_params = json.loads(request.body.getvalue())
-    Game().update_game(request_params)
+    Game().update_game(request_params, client_ip)
     return request.json
 
 
