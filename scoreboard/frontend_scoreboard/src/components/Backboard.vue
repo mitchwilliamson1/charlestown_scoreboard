@@ -1,6 +1,6 @@
 <template>
   <div v-if="state.game" class="h-100 w-100">
-    <BPL v-if="state.game.competition = 'BPL'" class="h-100" :detail="state.game"/>
+    <BPL v-if="state.game.competition == 'BPL'" class="h-100" :detail="state.game"/>
     <Scoreboard v-else class="h-100" :detail="state.game"/>
   </div>
 </template>
@@ -10,7 +10,7 @@ import { reactive, onMounted } from "vue";
 import axios from 'axios'
 import Scoreboard from './Scoreboard.vue'
 import BPL from './BPL.vue'
-
+ 
 
 export default {
   name: 'Backboard',
