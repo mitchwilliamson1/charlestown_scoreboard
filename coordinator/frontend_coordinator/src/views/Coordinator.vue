@@ -75,7 +75,7 @@ export default {
   },
   data(){
     return{
-      display: {},
+      display: {1:{}, 2:{}},
       rinks: 12,
       createGame: {
         'name': null,
@@ -223,9 +223,9 @@ export default {
       return key.charAt(0).toUpperCase() + key.slice(1);
     },
     selectPlayers(clubName, team){
-      var player = this.state.players.filter(i => i.club == clubName)
-      player[0].display = this.display[team]
-      return player
+      var players = this.state.players.filter(i => i.club == clubName)
+      players.forEach(player => player.display = this.display[team])
+      return players
     },
 
   },
