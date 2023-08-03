@@ -19,6 +19,9 @@ plyr_a_dn = Button(3)
 plyr_b_up = Button(5)
 plyr_b_dn = Button(6)
 
+plyr_a_sets_up = Button(13)
+plyr_b_sets_up = Button(19)
+
 ends_up = Button(17)
 ends_dn = Button(27)
 
@@ -36,6 +39,57 @@ def write_coordinator_score(js):
 def write_coordinator_ends(js):
         response = requests.post('http://'+coordinator_ip()+'/games/add_ends', json = js, timeout=10)
         return response.status_code
+
+
+def commit_sets(competitor):
+    
+    con = sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+    con.row_factory = sqlite3.Row
+    cursor = con.cursor()
+
+    cmd = "UPDATE competitors SET sets = ? WHERE competitor_id=?"
+    params = [competitor["sets"], competitor["competitor_id"]]
+    res = cursor.execute(cmd, params)
+    con.commit()
+    return {
+            "status": "ok",
+    }
+
+def update_sets(button):
+    con = sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+    con.row_factory = sqlite3.Row
+    cursor = con.cursor()
+    parsed_rows = []
+
+    sql = "SELECT competitor_id, player_id, first_name, last_name, score, game, sets FROM competitors"
+    players = cursor.execute(sql).fetchall()
+
+    competitors = []
+    for player in players:
+        competitors.append({
+            "competitor_id": player['competitor_id'],
+            "player_id": player['player_id'],
+            "first_name": player['first_name'],
+            "last_name": player['last_name'],
+            "score": player['score'],
+            "game_id": player['game'],
+            "sets": player['sets']
+         })  
+
+    for i in competitors:
+        
+        if i['competitor_id'] == 1:
+            sets = int(i['sets'])
+            if button.pin.number == 13:
+                sets += 1           
+            i['sets'] = str(sets)
+            commit_sets(i)
+        if i['competitor_id'] == 2:
+            sets = int(i['sets'])
+            if button.pin.number == 19:
+                sets += 1       
+            i['sets'] = str(sets)
+            commit_sets(i)
 
 
 def commit_score(competitor):
@@ -140,6 +194,9 @@ while True:
     
     plyr_b_up.when_pressed = update_score
     plyr_b_dn.when_pressed = update_score
+
+    plyr_a_sets_up.when_pressed = update_sets
+    plyr_b_sets_up.when_pressed = update_sets
     
     ends_up.when_pressed = update_ends
     ends_dn.when_pressed = update_ends

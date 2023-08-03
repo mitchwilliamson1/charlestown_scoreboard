@@ -8,8 +8,8 @@ import os
 
 
 DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competition': {'competition_id': 3}, "finish_time":None, 'competitors': {
-        '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
-        '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+        '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+        '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
         },
     'clubs': {
         '1': {'club_id': 1, 'club_name': 'Merewether', 'logo': 'charls.jpeg'}, 
@@ -73,7 +73,8 @@ class Game:
                      player_id INTEGER DEFAULT "No Player",
                      first_name text DEFAULT "",
                      last_name text DEFAULT "",
-                     score text DEFAULT "",
+                     score text DEFAULT 0,
+                     sets text DEFAULT 0,
                      logo text DEFAULT "",
                      display INTEGER NOT NULL DEFAULT 1,
                      game INTEGER NOT NULL DEFAULT "No Game",
@@ -139,7 +140,7 @@ class Game:
             for game in games:
                 if game['ends'] < 0:
                     self.create_game(DEFAULT_GAME, "127.0.0.1")
-                sql = """SELECT competitor_id, player_id, first_name, last_name, score, logo, d.display FROM competitors as c
+                sql = """SELECT competitor_id, player_id, first_name, last_name, score, sets, logo, d.display FROM competitors as c
                         INNER JOIN displays AS d
                         ON c.display = d.display_id
                         where game = ?"""
@@ -153,6 +154,7 @@ class Game:
                         "first_name": player['first_name'],
                         "last_name": player['last_name'],
                         "score": player['score'],
+                        "sets": player['sets'],
                         "logo": player['logo'],
                         "competitor_display": player['display'],
                      })
@@ -207,8 +209,8 @@ class Game:
 
                 competitor = js['competitors'][teams][player]
                 if competitor['is_skipper']:
-                    sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"
-                    params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], js['clubs'][teams]['logo'], competitor['display']['display_id'], js['game_id'])
+                    sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                    params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['sets'], js['clubs'][teams]['logo'], competitor['display']['display_id'], js['game_id'])
                     cursor.execute(sql, params)
         con.commit()
 
@@ -231,10 +233,11 @@ class Game:
 
         for player in js['competitors']:
             if player['is_skipper']:
-                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, logo, display, game) VALUES(?,?,?,?,?,?,?);"
-                params = (player['player_id'], player['first_name'], player['last_name'], player['score'], player['logo'], player['display']['display_id'], js['game_id'])
+                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                params = (player['player_id'], player['first_name'], player['last_name'], player['score'], player['sets'], player['logo'], player['display']['display_id'], js['game_id'])
                 cursor.execute(sql, params)
         con.commit()
+
 
     def add_ends(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -265,9 +268,26 @@ class Game:
         cmd = "UPDATE competitors SET score = ? WHERE player_id=?"
         params = [js["score"], js["player"]["player_id"]]
 
-        print('!!!!!!!!!!!!!!!!\n\n', cmd)
-        print(params)
+        res = cursor.execute(cmd, params)
+        con.commit()
 
+        # if res.fetchone() is None:
+        #     try:
+        #         r_code = self.write_coordinator_score(js)
+        #     except:
+        #         pass
+
+        return {
+                "status": "ok",
+        }
+
+        def add_sets(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = "UPDATE competitors SET sets = ? WHERE player_id=?"
+        params = [js["sets"], js["player"]["player_id"]]
 
         res = cursor.execute(cmd, params)
         con.commit()
