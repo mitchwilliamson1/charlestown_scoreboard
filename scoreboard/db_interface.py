@@ -281,7 +281,7 @@ class Game:
                 "status": "ok",
         }
 
-        def add_sets(self, js):
+    def add_sets(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
