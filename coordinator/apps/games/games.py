@@ -468,8 +468,6 @@ class Games:
 
                     js['competitors'][team][player]['score'] = 0
 
-                    print("!!!!!!!!!!", js['competitors'][team][player]['display']['display_id'])
-        
                     sql = "INSERT INTO competitors (player, score, game, display, team, is_skipper) VALUES(?, ?, ?, ?, ?, ?);"
                     params = [js['competitors'][team][player]['player_id'], js['competitors'][team][player]['score'], _game_id, js['competitors'][team][player]['display']['display_id'], team, js['competitors'][team][player]['is_skipper']]
                     cursor.execute(sql, params)

@@ -154,7 +154,6 @@ class Game:
                         "first_name": player['first_name'],
                         "last_name": player['last_name'],
                         "score": player['score'],
-                        "sets": player['sets'],
                         "logo": player['logo'],
                         "competitor_display": player['display'],
                      })
@@ -165,6 +164,7 @@ class Game:
                     "start_time": game["start_time"],
                     "finish_time": game["finish_time"],
                     "ends": game["ends"],
+                    "sets": player['sets'],
                     "winner": game["winner"],
                     "coordinator": game["coordinator_ip"],
                     "coordinator_running": self.coordinator_running(),
@@ -206,10 +206,12 @@ class Game:
 
         for teams in js['competitors']:
             for player in js['competitors'][teams]:
-
                 competitor = js['competitors'][teams][player]
+
+                # FIX THIS
+                competitor['sets'] = 1
                 if competitor['is_skipper']:
-                    sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                    sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?,?);"
                     params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['sets'], js['clubs'][teams]['logo'], competitor['display']['display_id'], js['game_id'])
                     cursor.execute(sql, params)
         con.commit()
@@ -232,8 +234,10 @@ class Game:
         game_id = cursor.execute(sql, params)
 
         for player in js['competitors']:
+            # FIX THIS
+            player['sets'] = 1
             if player['is_skipper']:
-                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?);"
+                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?,?);"
                 params = (player['player_id'], player['first_name'], player['last_name'], player['score'], player['sets'], player['logo'], player['display']['display_id'], js['game_id'])
                 cursor.execute(sql, params)
         con.commit()
