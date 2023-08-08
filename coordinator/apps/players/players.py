@@ -52,6 +52,7 @@ class Players:
                      (competitor_id INTEGER NOT NULL PRIMARY KEY,
                      player TEXT NOT NULL DEFAULT "No Player",
                      score TEXT NOT NULL DEFAULT "",
+                     sets TEXT NOT NULL DEFAULT "",
                      game INTEGER NOT NULL DEFAULT "No Game",
                      display INTEGER NOT NULL DEFAULT 2,
                      team TEXT NOT NULL DEFAULT "",

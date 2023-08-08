@@ -358,7 +358,7 @@ class Games:
         games = cursor.execute(sql).fetchall()
 
         for game in games:
-            sql = '''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, club.logo, c.team, c.is_skipper, c.score FROM competitors AS c
+            sql = '''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, club.logo, c.team, c.is_skipper, c.score, c.sets FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN displays AS cd
@@ -376,6 +376,7 @@ class Games:
                     "first_name": player['first_name'],
                     "last_name": player['last_name'],
                     "score": player['score'],
+                    "sets": player['sets'],
                     "logo": player['logo'],
                     "team": player['team'],
                     "is_skipper": player['is_skipper'],
@@ -467,9 +468,10 @@ class Games:
                         js['competitors'][team][player]['is_skipper'] = 0
 
                     js['competitors'][team][player]['score'] = 0
+                    js['competitors'][team][player]['sets'] = 0
 
-                    sql = "INSERT INTO competitors (player, score, game, display, team, is_skipper) VALUES(?, ?, ?, ?, ?, ?);"
-                    params = [js['competitors'][team][player]['player_id'], js['competitors'][team][player]['score'], _game_id, js['competitors'][team][player]['display']['display_id'], team, js['competitors'][team][player]['is_skipper']]
+                    sql = "INSERT INTO competitors (player, score, sets, game, display, team, is_skipper) VALUES(?, ?, ?, ?, ?, ?, ?);"
+                    params = [js['competitors'][team][player]['player_id'], js['competitors'][team][player]['score'], js['competitors'][team][player]['sets'], _game_id, js['competitors'][team][player]['display']['display_id'], team, js['competitors'][team][player]['is_skipper']]
                     cursor.execute(sql, params)
                 con.commit()
 
