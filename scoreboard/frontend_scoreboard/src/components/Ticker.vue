@@ -5,12 +5,14 @@
       <div v-if="typeof ends !== 'undefined'">{{ends}}</div>
       <div v-if="typeof score !== 'undefined'">{{score}}</div>
       <div v-if="typeof sets !== 'undefined'">{{sets}}</div>
+      <!-- <div v-if="typeof sets !== 'undefined'">1&#189;</div> -->
     </div>
     <div class="text-align-center">
       <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsUp(ends)">Increase</button>
       <button v-if="isMobile() && (typeof ends !== 'undefined')" @click="endsDown(ends)">Decrease</button>
       <button v-if="isMobile() && (typeof score !== 'undefined')" @click="scoreUp(score)">Increase</button>
       <button v-if="isMobile() && (typeof score !== 'undefined')" @click="scoreDown(score)">Decrease</button>
+      <button v-if="isMobile() && (typeof sets !== 'undefined')" @click="setsUp(sets)">Increase</button>
     </div>
   </div>
 </template>
@@ -24,7 +26,7 @@ export default {
     player: Object,
     details: Object,
     endsProp: Number,
-    setsProp: String,
+    setsProp: Number,
     colour: String,
     fontSize: String,
     fontColour: String,
@@ -98,6 +100,20 @@ export default {
       ends--
       axios.post('http://127.0.0.1:8081/add_ends', {
       update: {ends: parseInt(ends), game_id:this.details.game_id}
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    setsUp(sets) {
+      var newSets = Number(sets) 
+      newSets+=0.5
+      var js = {"player_id": this.player}
+      axios.post('http://127.0.0.1:8081/add_sets', {
+      update: {sets: newSets, player:js}
       })
       .then(function (response) {
         console.log(response);

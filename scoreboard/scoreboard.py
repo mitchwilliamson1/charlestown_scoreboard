@@ -76,6 +76,15 @@ def add_ends():
     return request.json
 
 
+@bott.route("/add_sets", method=["POST", "OPTIONS"])
+def add_sets():
+    if request.method == "OPTIONS":
+        return
+    request_params = json.loads(request.body.getvalue())
+    Game().add_sets(request_params['update'])
+    return request.json
+
+
 @bott.route('/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='dist/')

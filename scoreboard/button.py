@@ -79,15 +79,15 @@ def update_sets(button):
     for i in competitors:
         
         if i['competitor_id'] == 1:
-            sets = int(i['sets'])
+            sets = float(i['sets'])
             if button.pin.number == 13:
-                sets += 1           
+                sets += 0.5          
             i['sets'] = str(sets)
             commit_sets(i)
         if i['competitor_id'] == 2:
-            sets = int(i['sets'])
+            sets = float(i['sets'])
             if button.pin.number == 19:
-                sets += 1       
+                sets += 0.5       
             i['sets'] = str(sets)
             commit_sets(i)
 

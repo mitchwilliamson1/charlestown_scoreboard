@@ -140,6 +140,7 @@ class Game:
             for game in games:
                 if game['ends'] < 0:
                     self.create_game(DEFAULT_GAME, "127.0.0.1")
+
                 sql = """SELECT competitor_id, player_id, first_name, last_name, score, sets, logo, d.display FROM competitors as c
                         INNER JOIN displays AS d
                         ON c.display = d.display_id
@@ -147,7 +148,15 @@ class Game:
                 params = (game['game_id'],)
                 players = cursor.execute(sql, params).fetchall()
                 competitors = []
+                tie_break = []
                 for player in players:
+                    # BPL RULES
+                    if game['comp'] == 'BPL':
+                        if float(player['sets']) > 2:
+                            reset = self.reset_sets()
+                        if player['sets'] == '1':
+                            tie_break.append(1)
+
                     competitors.append({
                         "competitor_id": player['competitor_id'],
                         "player_id": player['player_id'],
@@ -158,6 +167,12 @@ class Game:
                         "logo": player['logo'],
                         "competitor_display": player['display'],
                      })
+                # check if both players have sets == 1
+                if len(tie_break) == 2:
+                    tie = True
+                else:
+                    tie = False
+
                 parsed_rows.append({
                     "game_id": game["game_id"],
                     "name": game["name"],
@@ -165,6 +180,7 @@ class Game:
                     "start_time": game["start_time"],
                     "finish_time": game["finish_time"],
                     "ends": game["ends"],
+                    "tie_break": tie,
                     "winner": game["winner"],
                     "coordinator": game["coordinator_ip"],
                     "coordinator_running": self.coordinator_running(),
@@ -259,6 +275,21 @@ class Game:
                 "status": "ok",
         }
 
+    def reset_score(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = "UPDATE competitors SET score = 0"
+
+        res = cursor.execute(cmd)
+        con.commit()
+
+        if res.fetchone() is None:
+            return True
+        else:
+            return False
+
 
     def add_score(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -271,20 +302,33 @@ class Game:
         res = cursor.execute(cmd, params)
         con.commit()
 
-        # if res.fetchone() is None:
-        #     try:
-        #         r_code = self.write_coordinator_score(js)
-        #     except:
-        #         pass
-
         return {
                 "status": "ok",
         }
+
+    def reset_sets(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        cmd = "UPDATE competitors SET sets = 0"
+
+        res = cursor.execute(cmd)
+        con.commit()
+
+        if res.fetchone() is None:
+            self.reset_score()
+            return True
+        else:
+            return False
+
 
     def add_sets(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
+
+        print(js)
 
         cmd = "UPDATE competitors SET sets = ? WHERE player_id=?"
         params = [js["sets"], js["player"]["player_id"]]
@@ -292,15 +336,11 @@ class Game:
         res = cursor.execute(cmd, params)
         con.commit()
 
-        # if res.fetchone() is None:
-        #     try:
-        #         r_code = self.write_coordinator_score(js)
-        #     except:
-        #         pass
-
-        return {
-                "status": "ok",
-        }
+        if res.fetchone() is None:
+            reset = self.reset_score()
+            if reset:
+                return True
+        return False 
 
 
     def coordinator_ip(self):

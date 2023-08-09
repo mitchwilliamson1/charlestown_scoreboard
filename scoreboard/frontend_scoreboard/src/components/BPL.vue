@@ -46,33 +46,39 @@
         </div>
       </div>
 
-      <div class="row justify-content-center align-items-center" style="min-height: 25%; padding-bottom: 30px;">
-        <div class="col-3 p-0">
+      <div class="row align-items-center" style="min-height: 25%; padding-bottom: 30px;">
+        <div class="col p-0">
           <Ticker :details="details"
-                    player="sets"
-                    setsProp="1"
-                    fontSize="18" 
+                    :player="details.competitors[0].player_id"
+                    :setsProp="sets1"
+                    fontSize="20" 
                     fontColour="DeepSkyBlue"/>
         </div>
-        <div class="col-3 sets">SETS</div>
-        <div class="col-3 p-0">
+        <div class="col p-0">
           <Ticker :details="details"
-                    player="sets"
-                    setsProp="2"
-                    fontSize="18" 
+                    :player="details.competitors[1].player_id"
+                    :setsProp="sets2"
+                    fontSize="20" 
                     fontColour="DeepSkyBlue"/>
         </div>
       </div>
 
       <div class="row align-items-center overflow-hidden" style="height: 25%;">
-        <div class="col">
+        <div v-if="!details.tie_break" class="col">
           <Ticker :details="details"
                   :endsProp="ends"
                   player="ends"
-                  fontSize="18" 
+                  fontSize="20" 
                   fontColour="white" 
                   colour="black"/>
-          <div class="col sets">ENDS</div>
+        </div>
+        <div v-else class="col">
+          <Ticker :details="details"
+                  endsProp="TB"
+                  player="ends"
+                  fontSize="20" 
+                  fontColour="white" 
+                  colour="black"/>
         </div>
       </div>
     </div>
@@ -131,6 +137,12 @@ export default {
     },
     ends() {
       return this.detail.ends
+    },
+    sets1() {
+      return this.detail.competitors[0].sets
+    },
+    sets2() {
+      return this.detail.competitors[1].sets
     }
   },
   methods: {
