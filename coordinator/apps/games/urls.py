@@ -52,6 +52,11 @@ def get_masterboard():
     return json.dumps(Games().get_masterboards())
 
 
+@gamesapp.route("/get_sponsors")
+def get_sponsors():
+    return Games().get_sponsors()
+
+
 
 @gamesapp.route("/create_game", method=["POST", "OPTIONS"])
 def create_game():

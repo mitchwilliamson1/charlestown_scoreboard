@@ -97,6 +97,17 @@ class Games:
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
 
+        c.execute('''CREATE TABLE IF NOT EXISTS sponsors
+                     (sponsor_id INTEGER PRIMARY KEY,
+                     sponsor_name TEXT NOT NULL DEFAULT "",
+                     sponsor_logo TEXT NOT NULL)''')
+        conn.commit()
+        c.execute('''INSERT into sponsors (sponsor_id, sponsor_name, sponsor_logo)
+                    VALUES (1, 'Bell Property', 'belle_whitebg.png'),
+                            (2, 'XXXX', 'xxxx.png') 
+                            ON CONFLICT DO NOTHING;''')
+        conn.commit()
+
         c.execute('''CREATE TABLE IF NOT EXISTS rinks
                      (rink_id INTEGER PRIMARY KEY,
                      rink text,
@@ -152,6 +163,7 @@ class Games:
                      round INTEGER DEFAULT NULL,
                      grade INTEGER DEFAULT NULL,
                      rink INTEGER DEFAULT NULL,
+                     sponsor INTEGER DEFAULT NULL,
                      start_time text,
                      finish_time text,
                      ends INTEGER DEFAULT 0,
@@ -176,11 +188,15 @@ class Games:
                         REFERENCES grades (grade_id)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT,
-                     FOREIGN KEY (rink)
+                    FOREIGN KEY (rink)
                         REFERENCES rinks (rink_id)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT,
-                     FOREIGN KEY (winner)
+                    FOREIGN KEY (sponsor)
+                        REFERENCES sponsors (sponsor_id)
+                            ON UPDATE CASCADE
+                            ON DELETE SET DEFAULT,
+                    FOREIGN KEY (winner)
                         REFERENCES competitors (team)
                             ON UPDATE CASCADE
                             ON DELETE SET DEFAULT)''')
@@ -336,6 +352,24 @@ class Games:
         return parsed_rows
 
 
+    def get_sponsors(self):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        parsed_rows = []
+        sponsors = cursor.execute("SELECT * FROM sponsors").fetchall()
+
+        for sponsor in sponsors:
+            parsed_rows.append({
+                "sponsor_id": sponsor["sponsor_id"],
+                "sponsor_name": sponsor["sponsor_name"],
+                "sponsor_logo": sponsor["sponsor_logo"],
+            })
+
+        return json.dumps(parsed_rows)
+
+
     def get_games(self, get_current):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
@@ -346,6 +380,8 @@ class Games:
             sql = '''SELECT *, r.rink as rink_name, c.competition as comp_name FROM games g
                     inner join rinks r
                     on g.rink = r.rink_id
+                    inner join sponsors s
+                    on g.sponsor = s.sponsor_id
                     inner join competitions c
                     on g.competition = c.competition_id
                     WHERE finish_time IS NULL'''
