@@ -89,6 +89,7 @@ export default {
         'display': {},
         'rink': {},
         'clubs': {},
+        'sponsor': {},
         'competitors': {'1':{'1':{}}, '2':{'1':{}}},
       }
     }

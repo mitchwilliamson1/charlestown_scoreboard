@@ -99,10 +99,10 @@ class Games:
 
         c.execute('''CREATE TABLE IF NOT EXISTS sponsors
                      (sponsor_id INTEGER PRIMARY KEY,
-                     sponsor_name TEXT NOT NULL DEFAULT "",
+                     sponsor TEXT NOT NULL DEFAULT "",
                      sponsor_logo TEXT NOT NULL)''')
         conn.commit()
-        c.execute('''INSERT into sponsors (sponsor_id, sponsor_name, sponsor_logo)
+        c.execute('''INSERT into sponsors (sponsor_id, sponsor, sponsor_logo)
                     VALUES (1, 'Bell Property', 'belle_whitebg.png'),
                             (2, 'XXXX', 'xxxx.png') 
                             ON CONFLICT DO NOTHING;''')
@@ -363,11 +363,11 @@ class Games:
         for sponsor in sponsors:
             parsed_rows.append({
                 "sponsor_id": sponsor["sponsor_id"],
-                "sponsor_name": sponsor["sponsor_name"],
+                "sponsor": sponsor["sponsor"],
                 "sponsor_logo": sponsor["sponsor_logo"],
             })
 
-        return json.dumps(parsed_rows)
+        return parsed_rows
 
 
     def get_games(self, get_current):
@@ -384,6 +384,8 @@ class Games:
                     on g.sponsor = s.sponsor_id
                     inner join competitions c
                     on g.competition = c.competition_id
+                    inner join sponsors
+                    on g.sponsor = sponsors.sponsor_id
                     WHERE finish_time IS NULL'''
         else:
             sql = '''SELECT *, r.rink as rink_name FROM games g
@@ -428,6 +430,7 @@ class Games:
                 "round": game["round"],
                 "grade": game["grade"],
                 "rink": {"rink":game["rink_name"], "rink_id":game["rink_id"], "ip":game["ip"]},
+                "sponsor": {"sponsor":game["sponsor"], "sponsor_id":game["sponsor_id"], "sponsor_logo":game["sponsor_logo"]},
                 "ends": game["ends"],
                 "start_time": game["start_time"],
                 "finish_time": game["finish_time"],
@@ -485,9 +488,9 @@ class Games:
 
         utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
 
-        sql = "INSERT INTO games (name, game_type, gender, competition, round, grade, rink, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?);"
+        sql = "INSERT INTO games (name, game_type, gender, competition, round, grade, rink, sponsor, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);"
 
-        params = [js["name"], js["game_type"]["game_type_id"], js["gender"]["gender_id"], js["competition"]["competition_id"], js["round"]["round_id"], js["grade"]["grade_id"], js["rink"]["rink_id"], utc]
+        params = [js["name"], js["game_type"]["game_type_id"], js["gender"]["gender_id"], js["competition"]["competition_id"], js["round"]["round_id"], js["grade"]["grade_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
         cursor.execute(sql, params)
 
         sql = "SELECT game_id FROM games ORDER BY start_time DESC LIMIT 1 "

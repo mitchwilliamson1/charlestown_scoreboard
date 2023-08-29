@@ -29,6 +29,7 @@ def init():
     initialise["grade"] = Games().get_grades()
     initialise["display"] = Games().get_displays()
     initialise["rink"] = Games().get_rinks()
+    initialise["sponsor"] = Games().get_sponsors()
     return json.dumps(initialise)
 
 

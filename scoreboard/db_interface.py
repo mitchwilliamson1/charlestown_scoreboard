@@ -7,9 +7,14 @@ import requests
 import os
 
 
-DEFAULT_GAME = {"game_id":-1, "name":"standard", 'competition': {'competition_id': 3}, "finish_time":None, 'competitors': {
-        '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
-        '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+DEFAULT_GAME = {"game_id":-1, 
+        "name":"standard", 
+        'competition': {'competition_id': 3}, 
+        'sponsor': {'sponsor_logo': 'belle_whitebg.png'}, 
+        "finish_time":None, 
+        'competitors': {
+            '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+            '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
         },
     'clubs': {
         '1': {'club_id': 1, 'club_name': 'Merewether', 'logo': 'charls.jpeg'}, 
@@ -58,6 +63,7 @@ class Game:
                      (game_id INTEGER PRIMARY KEY,
                      name text DEFAULT NULL,
                      competition INTEGER DEFAULT NULL,
+                     sponsor TEXT NOT NULL DEFAULT "",
                      start_time text DEFAULT NULL, 
                      finish_time text DEFAULT NULL, 
                      ends int DEFAULT 0,
@@ -216,8 +222,8 @@ class Game:
         coordinator_ip += ':8000'
         js['finish_time'] = None
 
-        sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?,?);"
-        params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip)
+        sql = "INSERT INTO games (game_id, name, competition, sponsor, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?,?,?);"
+        params = (js['game_id'], js['name'], js["competition"]["competition_id"], js["sponsor"]["sponsor_logo"], utc, js['finish_time'], coordinator_ip)
         game_id = cursor.execute(sql, params)
 
         for teams in js['competitors']:
