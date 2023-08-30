@@ -51,14 +51,14 @@
           <Ticker :details="details"
                     :player="details.competitors[0].player_id"
                     :setsProp="sets1"
-                    fontSize="20" 
+                    fontSize="18" 
                     fontColour="DeepSkyBlue"/>
         </div>
         <div class="col p-0">
           <Ticker :details="details"
                     :player="details.competitors[1].player_id"
                     :setsProp="sets2"
-                    fontSize="20" 
+                    fontSize="18" 
                     fontColour="DeepSkyBlue"/>
         </div>
       </div>

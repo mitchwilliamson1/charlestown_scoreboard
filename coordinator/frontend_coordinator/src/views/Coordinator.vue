@@ -24,15 +24,11 @@
                   <option v-for="club in state.clubs" :value="club">{{club.club_name}}</option>
                 </select>
               <div class="col" v-for="number in parseInt(createGame['game_type']['players']/2)">
-                
                 <div v-if="createGame.clubs[team] && display[team]">
                   <div class="">Player {{number}}</div>
-                  <!-- <select v-model="createGame.competitors[team][number]" class="form-select"> -->
-                    <input v-model="createGame.competitors[team][number]" list="players">
-                    <datalist id="players">
-                      <option v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
-                    </datalist>
-                  <!-- </select> -->
+                  <select v-model="createGame.competitors[team][number]" class="form-select">
+                      <option :value="player" v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
+                  </select>
                 </div>
               <div>Display</div>
                 
@@ -228,7 +224,6 @@ export default {
     },
     selectPlayers(clubName, team){
       var players = this.state.players.filter(i => i.club == clubName)
-      // players.forEach(player => player.display = this.display[team])
       return players
     },
 
