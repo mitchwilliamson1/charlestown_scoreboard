@@ -29,7 +29,7 @@ def init():
     initialise["grade"] = Games().get_grades()
     initialise["display"] = Games().get_displays()
     initialise["rink"] = Games().get_rinks()
-    initialise["sponsor"] = Games().get_sponsors()
+    initialise["sponsor"] = Games().get_sponsors(False)
     return json.dumps(initialise)
 
 
@@ -55,7 +55,7 @@ def get_masterboard():
 
 @gamesapp.route("/get_sponsors")
 def get_sponsors():
-    return Games().get_sponsors()
+    return Games().get_sponsors(True)
 
 
 

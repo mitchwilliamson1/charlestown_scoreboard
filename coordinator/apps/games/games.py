@@ -352,7 +352,7 @@ class Games:
         return parsed_rows
 
 
-    def get_sponsors(self):
+    def get_sponsors(self, dump):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -366,8 +366,10 @@ class Games:
                 "sponsor": sponsor["sponsor"],
                 "sponsor_logo": sponsor["sponsor_logo"],
             })
-
-        return parsed_rows
+        if dump:
+            return json.dumps(parsed_rows)
+        else:
+            return parsed_rows
 
 
     def get_games(self, get_current):
@@ -377,7 +379,7 @@ class Games:
 
         parsed_rows = []
         if get_current:
-            sql = '''SELECT *, r.rink as rink_name, c.competition as comp_name FROM games g
+            sql = '''SELECT *, r.rink as rink_name, s.sponsor as sponsor_name, c.competition as comp_name FROM games g
                     inner join rinks r
                     on g.rink = r.rink_id
                     inner join sponsors s
@@ -430,7 +432,7 @@ class Games:
                 "round": game["round"],
                 "grade": game["grade"],
                 "rink": {"rink":game["rink_name"], "rink_id":game["rink_id"], "ip":game["ip"]},
-                "sponsor": {"sponsor":game["sponsor"], "sponsor_id":game["sponsor_id"], "sponsor_logo":game["sponsor_logo"]},
+                "sponsor": {"sponsor":game["sponsor_name"], "sponsor_id":game["sponsor_id"], "sponsor_logo":game["sponsor_logo"]},
                 "ends": game["ends"],
                 "start_time": game["start_time"],
                 "finish_time": game["finish_time"],
@@ -604,8 +606,8 @@ class Games:
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         cursor = con.cursor()
 
-        cmd = "UPDATE games SET name = ?,game_type = ?,competition = ?,gender = ?,round = ?,grade = ?,rink = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
-        params = (js['name'],js['game_type'], js["competition"]["competition_id"], js['gender'], js['round'], js['grade'], js["rink"]["rink_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
+        cmd = "UPDATE games SET name = ?,game_type = ?,competition = ?,gender = ?,round = ?,grade = ?,rink = ?,sponsor = ?,ends = ?,start_time = ?,finish_time = ?,winner = ? WHERE game_id = ?"
+        params = (js['name'],js['game_type'], js["competition"]["competition_id"], js['gender'], js['round'], js['grade'], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"],js['ends'], js['start_time'], js['finish_time'], js['winner'], js['game_id'] )
 
         res = cursor.execute(cmd, params)
 

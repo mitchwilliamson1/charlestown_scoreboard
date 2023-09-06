@@ -49,7 +49,7 @@
       <div v-if="!isMobile()" class="flex-fill">
         <div class="h-100 align-self-center">
           <!-- <div class="h-100" style="background: red" /> -->
-          <div class="add"/>
+          <div :style="getBackgroundImage" class="add"/>
         </div>
       </div>
 
@@ -93,6 +93,9 @@ export default {
     // },
   },
   computed: {
+    getBackgroundImage() {
+      return 'background-image:url(http://127.0.0.1:8081/'+this.detail.sponsor+');'
+    },
     p1() {
       return this.detail.competitors[0]
     },
@@ -181,7 +184,6 @@ export default {
   margin-left: auto;
   margin-right: auto;
 
-  background-image:url(http://127.0.0.1:8081/belle_whitebg.png);
   background-size:contain;
   background-repeat: no-repeat;
   background-position: center center;

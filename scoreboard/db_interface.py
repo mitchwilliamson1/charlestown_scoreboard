@@ -182,6 +182,7 @@ class Game:
                 parsed_rows.append({
                     "game_id": game["game_id"],
                     "name": game["name"],
+                    "sponsor": game["sponsor"],
                     "competition": game["comp"],
                     "start_time": game["start_time"],
                     "finish_time": game["finish_time"],
@@ -249,8 +250,8 @@ class Game:
         coordinator_ip += ':8000'
         js['finish_time'] = None
 
-        sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?,?);"
-        params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip)
+        sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip, sponsor) VALUES(?,?,?,?,?,?,?);"
+        params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip, js["sponsor"]["sponsor_logo"])
         game_id = cursor.execute(sql, params)
 
         for player in js['competitors']:

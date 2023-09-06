@@ -3,8 +3,9 @@
     <div class="container">
       <div class="row">
         <div class="col-2 fw-bold">Game</div>
-        <div class="col-4 fw-bold">Team 1</div>
-        <div class="col-4 fw-bold">Team 2</div>
+        <div class="col-3 fw-bold">Team 1</div>
+        <div class="col-3 fw-bold">Team 2</div>
+        <div class="col-2 fw-bold">Sponsor</div>
         <div class="col-2 fw-bold">Rink</div>
       </div>
       <div >
@@ -14,12 +15,12 @@
           aria-expanded="false" 
           aria-controls="collapseOne">
           <div class="col-2">{{gameType(game)}}</div>
-          <div :class="winner(n, game.winner)" class="col-4" v-for="n, index in 2">
+          <div :class="winner(n, game.winner)" class="col-3" v-for="n, index in 2">
             <div v-for="player in game.competitors">
               <div class="p-1" v-if="player.is_skipper && player.team == n " >Skipper: {{player.first_name[0]}}.{{player.last_name}} - Score: {{player.score}}</div>
             </div>
           </div>
-
+          <div class="col-2">{{game.sponsor.sponsor}}</div>
           <div class="col-2">{{game.rink.rink}}</div>
         </div>
         <div class="row p-2">
