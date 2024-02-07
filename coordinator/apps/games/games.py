@@ -710,6 +710,7 @@ class Games:
                 ips.append(tpl)
 
         masterboard_ip = self.get_masterboard(master_id)
+        print("URL: ", 'http://'+masterboard_ip['ip']+'/setup')
         try:
             response = requests.post('http://'+masterboard_ip['ip']+'/setup', json = ips)
             return response.status_code
