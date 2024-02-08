@@ -141,11 +141,11 @@ class Game:
                                 WHERE finish_time is NULL''').fetchall()
 
         if not games:
-            self.create_game(DEFAULT_GAME, "127.0.0.1")
+            self.create_game(DEFAULT_GAME, "192.168.15.200")
         else:
             for game in games:
                 if game['ends'] < 0:
-                    self.create_game(DEFAULT_GAME, "127.0.0.1")
+                    self.create_game(DEFAULT_GAME, "192.168.15.200")
 
                 sql = """SELECT competitor_id, player_id, first_name, last_name, score, sets, logo, d.display FROM competitors as c
                         INNER JOIN displays AS d

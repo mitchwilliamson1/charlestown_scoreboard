@@ -6,9 +6,9 @@ import pytz
 import requests
 
 # COORDINATOR_IP = "127.0.0.1:8000"
-COORDINATOR_IP = "10.0.0.41:8000"
+COORDINATOR_IP = "192.168.15.200:8000"
 
-DEFAULT_MASTER = [{'game_id': -1,'coordinator_ip':'192.168', 'name': 'standard', 'start_time': '2023-02-16 07:08:47.105881+00:00', 'finish_time': None, 'ends': 0, 'winner': '', 'competitors': [{'competitor_id': 1, 'player_id': 1, 'first_name': 'Player', 'last_name': '1', 'score': '0'}, {'competitor_id': 2, 'player_id': 2, 'first_name': 'Player', 'last_name': '2', 'score': '0'}]}]
+DEFAULT_MASTER = [{'game_id': -1,'coordinator_ip':'192.168.15.200', 'name': 'standard', 'start_time': '2023-02-16 07:08:47.105881+00:00', 'finish_time': None, 'ends': 0, 'winner': '', 'competitors': [{'competitor_id': 1, 'player_id': 1, 'first_name': 'Player', 'last_name': '1', 'score': '0'}, {'competitor_id': 2, 'player_id': 2, 'first_name': 'Player', 'last_name': '2', 'score': '0'}]}]
 
 
 local_tz = pytz.timezone("Australia/Sydney")
