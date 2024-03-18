@@ -94,7 +94,7 @@ export default {
   },
   computed: {
     getBackgroundImage() {
-      return 'background-image:url(http://'+coordinator+'/players/get_logo/'+this.detail.sponsor+');'
+      return 'background-image:url(http://'+this.coordinator+'/players/get_logo/'+this.detail.sponsor+');'
     },
     p1() {
       return this.detail.competitors[0]
