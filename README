@@ -1,0 +1,19 @@
+https://www.tomshardware.com/how-to/static-ip-raspberry-pi
+
+You MAY find this information in the system log files /var/log/messages, /var/log/syslog
+
+https://gallaugher.com/make-a-copy-of-a-raspberry-pi-sd-card-mac/
+
+https://www.thedigitalpictureframe.com/screen-sharing-between-a-raspberry-pi-4-and-a-macos-computer/
+
+To shrink the iso run this from: mitch@mitchs-MacBook-Pro PiShrink-macOS-master
+./pishrink /Users/mitch/Desktop/scoreboard.iso
+
+#My IP
+120.159.54.44
+
+#Copy file to Pi
+scp -r home.py mitch@10.0.0.33:mitchtranet
+
+#Copy file from Pi
+scp -r mitch@120.159.54.44:mitchtranet/apps /home/mitchellwilliamson/Desktop/

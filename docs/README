@@ -1,4 +1,0 @@
-To shrink the iso run this from: mitch@mitchs-MacBook-Pro PiShrink-macOS-master
-./pishrink /Users/mitch/Desktop/scoreboard.iso
-
-Vnc 19 address: 192.168.15.201 pass: crownvnc

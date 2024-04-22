@@ -1,6 +1,17 @@
 to do
 
+- Consolodate coordinator apps so that there is just one URL end point file not two different apps...
+- Write the README - break all the links into their cmds and steps
 - game start is from the front end so both coordinator and rink has same time
 - proper id's / send game to correct rink (process to compare update check etc coordinator db and rink dbs, look for games with no end time and check they'r in the rink) if they can't match show on error page
 - check that game created goes to both coordinator and rink
 - vue store has all ip addresses etc
+- drop down selects name fuzzy search
+- UI improvements make it cleaner and fix names and headings etc
+- UI incorporate correct error handling for not filled fields and saved images feedback on success or error etc
+- Proper logs ie response from requests. Real error handling.
+- proper config section ie scripts to set up db to default. Get IP addresses out of code. Have a settings table in the DB?
+- ansible steps / cmds to get a raspi pi setup
+- test it all works on WIFI
+- investigate a repeater / base station / LTE access point?
+
