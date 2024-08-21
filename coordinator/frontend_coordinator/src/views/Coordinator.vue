@@ -1,12 +1,24 @@
 <template>
   <div v-if="getGames" class="coordinator">
     <div class="container">
-      <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Create New Game</div>
+      <div class="bg-secondary p-3 text-white" 
+        type="button" 
+        data-bs-toggle="offcanvas" 
+        data-bs-target="#offcanvasRight" 
+        aria-controls="offcanvasRight">
+          Create New Game
+        </div>
 
-      <div class="offcanvas offcanvas-end w-50" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+      <div class="offcanvas offcanvas-end w-50" 
+        tabindex="-1" 
+        id="offcanvasRight" 
+        aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
           <h5 id="offcanvasRightLabel">New Game</h5>
-          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          <button type="button" 
+            class="btn-close text-reset" 
+            data-bs-dismiss="offcanvas" 
+            aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
           <div class="row p-1" v-for="item, key in state.init">
