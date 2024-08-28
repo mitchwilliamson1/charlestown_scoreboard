@@ -22,11 +22,11 @@ def slash():
 @gamesapp.route("/init")
 def init():
     initialise = {}
-    initialise["gender"] = Games().get_genders()
+    # initialise["gender"] = Games().get_genders()
     initialise["competition"] = Games().get_competitions()
-    initialise["game_type"] = Games().get_game_types()
-    initialise["round"] = Games().get_rounds()
-    initialise["grade"] = Games().get_grades()
+    # initialise["game_type"] = Games().get_game_types()
+    # initialise["round"] = Games().get_rounds()
+    # initialise["grade"] = Games().get_grades()
     initialise["display"] = Games().get_displays()
     initialise["rink"] = Games().get_rinks()
     initialise["sponsor"] = Games().get_sponsors(False)

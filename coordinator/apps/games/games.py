@@ -9,7 +9,7 @@ import threading
 
 local_tz = pytz.timezone("Australia/Sydney")
 
-class Games:
+class Games:get_competitions
     def __init__(self):
         self.db_path = "co_ordinator.db"
         self.init_database_tables()
@@ -37,10 +37,9 @@ class Games:
                      competition TEXT, "")''')
         conn.commit()
         c.execute('''INSERT into competitions (competition_id, competition)
-                    VALUES (1, 'Gala'),
-                            (2, 'Pennants'),
-                            (3, 'Club'),
-                            (4, 'BPL')
+                    VALUES (1, 'Bowls / Pennants'),
+                            (2, 'BPL'),
+                            (3, 'Consistency Singles')
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
 

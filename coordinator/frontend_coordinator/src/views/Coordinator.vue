@@ -30,21 +30,19 @@
             </div>
           </div>
           <div class="row">
-            <div v-if="createGame['game_type']" v-for="team in 2" class="col">
+            <div v-for="team in 2" class="col">
               <div class="">Club {{team}}</div>
                 <select v-model="createGame.clubs[team]" class="form-select">
                   <option v-for="club in state.clubs" :value="club">{{club.club_name}}</option>
                 </select>
-              <div class="col" v-for="number in parseInt(createGame['game_type']['players']/2)">
                 <div v-if="createGame.clubs[team] && display[team]">
-                  <div class="">Player {{number}}</div>
-                  <select v-model="createGame.competitors[team][number]" class="form-select">
+                  <div class="">Player </div>
+                  <select v-model="createGame.competitors[team]['player']" class="form-select">
                       <option :value="player" v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
                   </select>
-                </div>
               <div>Display</div>
                 
-                <select v-model="createGame.competitors[team][number].display" class="form-select">
+                <select v-model="createGame.competitors[team]['player'].display" class="form-select">
                   <option v-for="display in state.init.display" :value="display">{{display.display}}</option>
                 </select>
               </div>
@@ -89,16 +87,16 @@ export default {
       display: {1:{}, 2:{}},
       rinks: 12,
       createGame: {
-        'name': null,
-        'game_type': null,
-        'round': {},
-        'grade': {},
-        'level': {},
+        'name': {},
+        'competition': {},
+        // 'round': {},
+        // 'grade': {},
+        // 'level': {},
         'display': {},
         'rink': {},
         'clubs': {},
         'sponsor': {},
-        'competitors': {'1':{'1':{}}, '2':{'1':{}}},
+        'competitors': {'1':{'player':{}}, '2':{'player':{}}},
       }
     }
   },
