@@ -32,13 +32,15 @@
           <div class="row">
             <div v-for="team in 2" class="col">
               <div class="">Club {{team}}</div>
-              <model-select v-if="state.clubs" :options="state.clubs"></model-select>
-                <!-- <select v-model="createGame.clubs[team]" class="form-select">
-                  <option v-for="club in state.clubs" :value="club">{{club.club_name}}</option>
+              <input @click="list()" v-model="clubInput" type="text" name="">
+              <li :id="club.club_id" class="listItem" v-if="!isHidden" @click="select()" v-for="club in state.clubs">
+                {{ club.club_name }}
+              </li>
+<!--                 <select type="input" id="browsers">
+                  <option v-for="club in state.clubs" :value="club" :label="club.club_name"></option>
                 </select> -->
                 <div v-if="createGame.clubs[team] && display[team]">
                   <div class="">Player </div>
-                  <!-- <model-select :options="selectPlayers(createGame.clubs[team].club_id, team)"></model-select> -->
                   <select v-model="createGame.competitors[team]['player']" class="form-select">
                       <option :value="player" v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
                   </select>
@@ -88,6 +90,16 @@ export default {
     return{
       display: {1:{}, 2:{}},
       rinks: 12,
+      clubInput:null,
+      isHidden: false,
+      active:false,
+      options: [
+          { value: '1', text: 'aa' + ' - ' + '1' },
+          { value: '2', text: 'ab' + ' - ' + '2' },
+          { value: '3', text: 'bc' + ' - ' + '3' },
+          { value: '4', text: 'cd' + ' - ' + '4' },
+          { value: '5', text: 'de' + ' - ' + '5' }
+        ],
       createGame: {
         'name': {},
         'competition': {},
@@ -222,10 +234,37 @@ export default {
   },
   created () {
   },
+  watch: {
+    clubInput(newval) {
+      console.log(newval)
+      this.selectClubs(newval)
+    },
+  },
   computed: {
 
   },
   methods:{
+    selectClubs(val){
+      if(this.state.clubs){
+        const listItems = document.querySelectorAll('.listItem');
+        listItems.forEach(function (item) {
+          const text = item.innerText.toLowerCase();
+          if (text.includes(val)) {
+              item.classList.remove('hidden');
+              console.log("IF TRUE", item)
+          } else {
+              item.classList.add('hidden');
+              console.log("IF NOT")
+          }
+      });
+      }
+    },
+    list(num){
+      this.isHidden = !this.isHidden
+    },
+    select(num){
+      this.isHidden = !this.isHidden
+    },
     playerObj(number, player) {
       console.log('Number: ', number)
       return {number:player}
@@ -244,5 +283,7 @@ export default {
 </script>
 
 <style scoped type="text/css">
-
+.hidden {
+  display: none;
+}
 </style>

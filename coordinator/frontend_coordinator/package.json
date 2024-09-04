@@ -14,7 +14,8 @@
     "luxon": "^3.0.3",
     "vue": "^3.2.25",
     "vue-router": "^4.0.15",
-    "vue-search-select": "^3.2.0"
+    "vue-search-select": "^3.2.0",
+    "vue3-select2-component": "^0.1.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
