@@ -32,11 +32,13 @@
           <div class="row">
             <div v-for="team in 2" class="col">
               <div class="">Club {{team}}</div>
-                <select v-model="createGame.clubs[team]" class="form-select">
+              <model-select v-if="state.clubs" :options="state.clubs"></model-select>
+                <!-- <select v-model="createGame.clubs[team]" class="form-select">
                   <option v-for="club in state.clubs" :value="club">{{club.club_name}}</option>
-                </select>
+                </select> -->
                 <div v-if="createGame.clubs[team] && display[team]">
                   <div class="">Player </div>
+                  <!-- <model-select :options="selectPlayers(createGame.clubs[team].club_id, team)"></model-select> -->
                   <select v-model="createGame.competitors[team]['player']" class="form-select">
                       <option :value="player" v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
                   </select>
