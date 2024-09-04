@@ -9,7 +9,7 @@ import threading
 
 local_tz = pytz.timezone("Australia/Sydney")
 
-class Games:get_competitions
+class Games:
     def __init__(self):
         self.db_path = "co_ordinator.db"
         self.init_database_tables()

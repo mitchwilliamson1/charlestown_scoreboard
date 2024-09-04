@@ -31,11 +31,20 @@
           </div>
           <div class="row">
             <div v-for="team in 2" class="col">
-              <div class="">Club {{team}}</div>
-              <input @click="list()" v-model="clubInput" type="text" name="">
-              <li :id="club.club_id" class="listItem" v-if="!isHidden" @click="select()" v-for="club in state.clubs">
-                {{ club.club_name }}
-              </li>
+              <div class="col">Club {{team}}
+                <input @click="list()" v-model="clubInput" type="text" name="">
+                <div class="club">
+                <ul>
+                  <li :id="club.club_id"
+                      class="listItem"
+                      v-if="!isHidden"
+                      @click="select()"
+                      v-for="club in state.clubs">
+                    {{ club.club_name }}
+                  </li>
+                </ul>
+                </div>
+              </div>
 <!--                 <select type="input" id="browsers">
                   <option v-for="club in state.clubs" :value="club" :label="club.club_name"></option>
                 </select> -->
@@ -91,7 +100,7 @@ export default {
       display: {1:{}, 2:{}},
       rinks: 12,
       clubInput:null,
-      isHidden: false,
+      isHidden: true,
       active:false,
       options: [
           { value: '1', text: 'aa' + ' - ' + '1' },
@@ -283,6 +292,41 @@ export default {
 </script>
 
 <style scoped type="text/css">
+.club {
+  max-width: 600px;
+  max-height: 400px;
+  overflow: scroll;
+  margin: 20px auto;
+  /*padding: 20px;*/
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#filterInput {
+  margin-bottom: 20px;
+  padding: 10px;
+  width: calc(100% - 20px);
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+} 
+.listItem {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.listItem:hover {
+  background-color: #e9e9e9;
+}
 .hidden {
   display: none;
 }
