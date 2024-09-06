@@ -21,6 +21,7 @@
             aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+
           <div class="row p-1" v-for="item, key in state.init">
             <div class="row" v-if="key != 'display'">
               <div class="col-4">{{capitalise(key)}}</div>
@@ -29,25 +30,23 @@
               </select>
             </div>
           </div>
+
           <div class="row">
             <div v-for="team in 2" class="col">
               <div class="col">Club {{team}}
-                <input @click="list()" v-model="clubInput" type="text" name="">
+                <input :id="'club'+team" @click="list('clubList'+team)" v-model="createGame['clubs'][team]" type="text" name="">
                 <div class="club">
-                <ul>
-                  <li :id="club.club_id"
-                      class="listItem"
-                      v-if="!isHidden"
-                      @click="select()"
-                      v-for="club in state.clubs">
-                    {{ club.club_name }}
-                  </li>
-                </ul>
+                  <ul :id="'clubList'+team">
+                    <li :id="club.club_id"
+                        :class="'listItem'+team"
+                        @click="list('clubList'+team)"
+                        v-for="club in state.clubs">
+                      {{ club.club_name }}
+                    </li>
+                  </ul>
                 </div>
               </div>
-<!--                 <select type="input" id="browsers">
-                  <option v-for="club in state.clubs" :value="club" :label="club.club_name"></option>
-                </select> -->
+
                 <div v-if="createGame.clubs[team] && display[team]">
                   <div class="">Player </div>
                   <select v-model="createGame.competitors[team]['player']" class="form-select">
@@ -61,6 +60,7 @@
               </div>
             </div>
           </div>
+
           <div class="col p-5">
             <button type="button" @click="create(this.createGame)" class="btn btn-success">Create Game</button>
           </div>
@@ -102,19 +102,9 @@ export default {
       clubInput:null,
       isHidden: true,
       active:false,
-      options: [
-          { value: '1', text: 'aa' + ' - ' + '1' },
-          { value: '2', text: 'ab' + ' - ' + '2' },
-          { value: '3', text: 'bc' + ' - ' + '3' },
-          { value: '4', text: 'cd' + ' - ' + '4' },
-          { value: '5', text: 'de' + ' - ' + '5' }
-        ],
       createGame: {
         'name': {},
         'competition': {},
-        // 'round': {},
-        // 'grade': {},
-        // 'level': {},
         'display': {},
         'rink': {},
         'clubs': {},
@@ -122,9 +112,6 @@ export default {
         'competitors': {'1':{'player':{}}, '2':{'player':{}}},
       }
     }
-  },
-  mounted () {
-    
   },
   setup() {
     const state = reactive({
@@ -139,11 +126,11 @@ export default {
     path = 'http://127.0.0.1:8000/'
     
     onMounted(async () => { 
+      initialise()
       getGames()
       getFinishedGames()
       getPlayers()
       getClubs()
-      initialise()
     });
     function initialise() {
       axios.get(path+'games/init')
@@ -241,35 +228,50 @@ export default {
       getPlayers
     };
   },
+  mounted () {
+    
+  },
   created () {
   },
   watch: {
-    clubInput(newval) {
-      console.log(newval)
-      this.selectClubs(newval)
+    createGame: {
+      handler: function (val, oldVal) {
+        this.selectClubs(val.clubs)
+      },
+      deep: true,
     },
   },
   computed: {
-
+    clubInput(){
+      return this.createGame.clubs
+    }
   },
   methods:{
     selectClubs(val){
       if(this.state.clubs){
-        const listItems = document.querySelectorAll('.listItem');
-        listItems.forEach(function (item) {
-          const text = item.innerText.toLowerCase();
-          if (text.includes(val)) {
-              item.classList.remove('hidden');
-              console.log("IF TRUE", item)
-          } else {
-              item.classList.add('hidden');
-              console.log("IF NOT")
-          }
-      });
+        for (let i = 1; i <= 2; i++) {
+          console.log(i)
+          const listItems = document.querySelectorAll('.listItem'+i);
+          listItems.forEach(function (item) {
+            const text = item.innerText.toLowerCase();
+            if (text.includes(val[i])) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        }
       }
     },
-    list(num){
-      this.isHidden = !this.isHidden
+    list(id){
+      const listItem = document.getElementById(id);
+      if (listItem.classList.contains('hidden')){
+        listItem.classList.remove('hidden');
+      }else{
+        listItem.classList.add('hidden');
+      }
+
+      // this.isHidden = !this.isHidden
     },
     select(num){
       this.isHidden = !this.isHidden
@@ -316,7 +318,7 @@ ul {
   padding: 0;
   margin: 0;
 } 
-.listItem {
+.listItem1 {
   padding: 10px;
   margin: 5px 0;
   background-color: #f9f9f9;
@@ -324,7 +326,18 @@ ul {
   transition: background-color 0.3s;
 }
 
-.listItem:hover {
+.listItem1:hover {
+  background-color: #e9e9e9;
+}
+.listItem2 {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.listItem2:hover {
   background-color: #e9e9e9;
 }
 .hidden {
