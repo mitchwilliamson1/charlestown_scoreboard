@@ -30,16 +30,18 @@
               </select>
             </div>
           </div>
-
-          <div class="row">
+          <div class="row p-2">
             <div v-for="team in 2" class="col">
-              <div class="col">Club {{team}}
-                <input :id="'club'+team" @click="list('clubList'+team)" v-model="createGame['clubs'][team]" type="text" name="">
+              Club {{team}}
+              <div class="col">
+                <input @click="showClubList(team)" 
+                    v-model="clubHolder[team]" 
+                    class="form-control">
                 <div class="club">
-                  <ul :id="'clubList'+team">
+                  <ul :id="'clubList'+team" class="hidden">
                     <li :id="club.club_id"
-                        :class="'listItem'+team"
-                        @click="list('clubList'+team)"
+                        :class="'clubListItem'+team"
+                        @click="hideClubList(team, club)"
                         v-for="club in state.clubs">
                       {{ club.club_name }}
                     </li>
@@ -47,17 +49,28 @@
                 </div>
               </div>
 
-                <div v-if="createGame.clubs[team] && display[team]">
-                  <div class="">Player </div>
-                  <select v-model="createGame.competitors[team]['player']" class="form-select">
-                      <option :value="player" v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">{{player.first_name}} {{player.last_name}} - BA No: {{player.bowls_number}}</option>
-                  </select>
-              <div>Display</div>
-                
-                <select v-model="createGame.competitors[team]['player'].display" class="form-select">
+              <div v-if="createGame.clubs[team] && display[team] && state.players">
+                <div class="">Player </div>
+                  <input @click="showPlayerList(team)" 
+                      v-model="playerHolder[team]" 
+                      class="form-control">
+                  <div class="player">
+                    <ul :id="'playerList'+team" class="hidden">
+                      <li :id="player.player_id"
+                          :class="'playerListItem'+team"
+                          @click="hidePlayerList(team, player)"
+                          v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">
+                        {{player.first_name}} {{player.last_name}}
+                      </li>
+                    </ul>
+                  </div>
+
+                <div>Display</div>
+<!--                 <select v-model="createGame.competitors[team]['player'].display" class="form-select">
                   <option v-for="display in state.init.display" :value="display">{{display.display}}</option>
-                </select>
+                </select> -->
               </div>
+
             </div>
           </div>
 
@@ -102,14 +115,22 @@ export default {
       clubInput:null,
       isHidden: true,
       active:false,
+      clubHolder:{1:"", 2:""},
+      playerHolder:{1:"", 2:""},
       createGame: {
         'name': {},
         'competition': {},
         'display': {},
         'rink': {},
-        'clubs': {},
+        'clubs': {
+          1:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
+          2:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
+        },
+        'players':{
+          1:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null },
+          2:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null }
+        },
         'sponsor': {},
-        'competitors': {'1':{'player':{}}, '2':{'player':{}}},
       }
     }
   },
@@ -124,8 +145,8 @@ export default {
 
     var path = ""
     path = 'http://127.0.0.1:8000/'
-    
-    onMounted(async () => { 
+
+    onMounted(async () => {
       initialise()
       getGames()
       getFinishedGames()
@@ -229,29 +250,31 @@ export default {
     };
   },
   mounted () {
-    
   },
   created () {
   },
   watch: {
-    createGame: {
-      handler: function (val, oldVal) {
-        this.selectClubs(val.clubs)
+    clubHolder: {
+      handler: function (val) {
+        this.hideClubs(val)
+      },
+      deep: true,
+    },
+    playerHolder: {
+      handler: function (val) {
+        this.hidePlayers(val)
       },
       deep: true,
     },
   },
   computed: {
-    clubInput(){
-      return this.createGame.clubs
-    }
+
   },
   methods:{
-    selectClubs(val){
+    hideClubs(val){
       if(this.state.clubs){
         for (let i = 1; i <= 2; i++) {
-          console.log(i)
-          const listItems = document.querySelectorAll('.listItem'+i);
+          const listItems = document.querySelectorAll('.clubListItem'+i);
           listItems.forEach(function (item) {
             const text = item.innerText.toLowerCase();
             if (text.includes(val[i])) {
@@ -263,22 +286,49 @@ export default {
         }
       }
     },
-    list(id){
-      const listItem = document.getElementById(id);
+    hidePlayers(val){
+      if(this.state.clubs){
+        for (let i = 1; i <= 2; i++) {
+          const listItems = document.querySelectorAll('.playerListItem'+i);
+          listItems.forEach(function (item) {
+            const text = item.innerText.toLowerCase();
+            if (text.includes(val[i])) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        }
+      }
+    },
+    showClubList(id){
+      const listItem = document.getElementById('clubList'+id);
       if (listItem.classList.contains('hidden')){
         listItem.classList.remove('hidden');
       }else{
         listItem.classList.add('hidden');
       }
-
-      // this.isHidden = !this.isHidden
     },
-    select(num){
-      this.isHidden = !this.isHidden
+    showPlayerList(id){
+      const listItem = document.getElementById('playerList'+id);
+      if (listItem.classList.contains('hidden')){
+        listItem.classList.remove('hidden');
+      }else{
+        listItem.classList.add('hidden');
+      }
     },
-    playerObj(number, player) {
-      console.log('Number: ', number)
-      return {number:player}
+    hideClubList(id, clubDeets){
+      this.showClubList(id)
+      this.createGame['clubs'][id] = clubDeets
+      this.clubHolder[id] = this.createGame['clubs'][id]['club_name']
+      this.createGame['players'][id] = {}
+      this.playerHolder[id] = ''
+    },
+    hidePlayerList(id, playerDeets){
+      this.showPlayerList(id)
+      console.log("WHATTTT: ", this.createGame['players'])
+      this.createGame['players'][id] = playerDeets
+      this.playerHolder[id] = this.createGame['players'][id]['first_name'] + " " +this.createGame['players'][id]['last_name']
     },
     capitalise(key) {
       key = key.replace("_", " ")
@@ -304,6 +354,16 @@ export default {
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.player {
+  max-width: 600px;
+  max-height: 400px;
+  overflow: scroll;
+  margin: 20px auto;
+  /*padding: 20px;*/
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
 #filterInput {
   margin-bottom: 20px;
@@ -318,7 +378,7 @@ ul {
   padding: 0;
   margin: 0;
 } 
-.listItem1 {
+.clubListItem1 {
   padding: 10px;
   margin: 5px 0;
   background-color: #f9f9f9;
@@ -326,10 +386,10 @@ ul {
   transition: background-color 0.3s;
 }
 
-.listItem1:hover {
+.clubListItem1:hover {
   background-color: #e9e9e9;
 }
-.listItem2 {
+.clubListItem2 {
   padding: 10px;
   margin: 5px 0;
   background-color: #f9f9f9;
@@ -337,7 +397,29 @@ ul {
   transition: background-color 0.3s;
 }
 
-.listItem2:hover {
+.clubListItem2:hover {
+  background-color: #e9e9e9;
+}
+.playerListItem1 {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.playerListItem1:hover {
+  background-color: #e9e9e9;
+}
+.playerListItem2 {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.playerListItem2:hover {
   background-color: #e9e9e9;
 }
 .hidden {
