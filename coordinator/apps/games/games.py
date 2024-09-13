@@ -483,45 +483,40 @@ class Games:
 
 
     def create_game(self, js):
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
+        try:
+            con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+            con.row_factory = sqlite3.Row
+            cursor = con.cursor()
 
-        utc = datetime.datetime.strptime(js["start_time"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.timezone('UTC'))
+            utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
 
-        sql = "INSERT INTO games (name, game_type, gender, competition, round, grade, rink, sponsor, start_time) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);"
+            sql = "INSERT INTO games (name, competition, rink, sponsor, start_time) VALUES(?, ?, ?, ?, ?) returning game_id;"
 
-        params = [js["name"], js["game_type"]["game_type_id"], js["gender"]["gender_id"], js["competition"]["competition_id"], js["round"]["round_id"], js["grade"]["grade_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
-        cursor.execute(sql, params)
+            params = [js["name"], js["competition"]["competition_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
+            cursor.execute(sql, params)
 
-        sql = "SELECT game_id FROM games ORDER BY start_time DESC LIMIT 1 "
-        game_id = cursor.execute(sql).fetchone()
+            game_id = cursor.lastrowid
 
-        scoreboard_competitors = {}
+            scoreboard_competitors = {}
 
-        for _game_id in game_id:
-            for team in js['competitors']:
-                for player in js['competitors'][team]:
-                    if player == '1':
-                        js['competitors'][team][player]['is_skipper'] = 1
-                    else:
-                        js['competitors'][team][player]['is_skipper'] = 0
-
-                    js['competitors'][team][player]['score'] = 0
-                    js['competitors'][team][player]['sets'] = 0
-
-                    sql = "INSERT INTO competitors (player, score, sets, game, display, team, is_skipper) VALUES(?, ?, ?, ?, ?, ?, ?);"
-                    params = [js['competitors'][team][player]['player_id'], js['competitors'][team][player]['score'], js['competitors'][team][player]['sets'], _game_id, js['competitors'][team][player]['display']['display_id'], team, js['competitors'][team][player]['is_skipper']]
+            for _game_id in game_id:
+                js['game_id'] = _game_id
+                for player in js['competitors']:
+                    sql = "INSERT INTO competitors (player, score, sets, game, display) VALUES(?, ?, ?, ?, ?);"
+                    params = [js['competitors'][player]['player_id'],
+                        js['competitors'][player]['score'],
+                        js['competitors'][player]['sets'],
+                        _game_id,
+                        js['competitors'][player]['display']['display_id']]
                     cursor.execute(sql, params)
                 con.commit()
 
-                js['game_id'] = _game_id
 
-        x = threading.Thread(target=self.write_scoreboard, args=(js,))
-        x.start()
-        return {
-                "status": "ok",
-        }
+            x = threading.Thread(target=self.write_scoreboard, args=(js,))
+            x.start()
+            return {"status": "ok",}
+        except:
+            return {"status": 300}
 
 
     def add_score(self, js):

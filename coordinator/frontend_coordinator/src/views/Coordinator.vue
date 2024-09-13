@@ -34,8 +34,9 @@
             <div v-for="team in 2" class="col">
               Club {{team}}
               <div class="col">
-                <input @click="showClubList(team)" 
-                    v-model="clubHolder[team]" 
+                <input @click="showClubList(team)"
+                    @focusout="showClubList(team)"
+                    v-model="clubHolder[team]"
                     class="form-control">
                 <div class="club">
                   <ul :id="'clubList'+team" class="hidden">
@@ -52,7 +53,7 @@
               <div v-if="createGame.clubs[team] && display[team] && state.players">
                 <div class="">Player </div>
                   <input @click="showPlayerList(team)" 
-                      v-model="playerHolder[team]" 
+                      v-model="comptetitorHolder[team]" 
                       class="form-control">
                   <div class="player">
                     <ul :id="'playerList'+team" class="hidden">
@@ -116,9 +117,9 @@ export default {
       isHidden: true,
       active:false,
       clubHolder:{1:"", 2:""},
-      playerHolder:{1:"", 2:""},
+      comptetitorHolder:{1:"", 2:""},
       createGame: {
-        'name': {},
+        'name': "",
         'competition': {},
         'display': {},
         'rink': {},
@@ -126,7 +127,7 @@ export default {
           1:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
           2:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
         },
-        'players':{
+        'comptetitors':{
           1:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null },
           2:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null }
         },
@@ -182,7 +183,6 @@ export default {
       });
     }
     function create(createGame) {
-      createGame.start_time = DateTime.utc().toISO()
       axios.post(path+'games/create_game', {
       create_game: createGame,
       })
@@ -260,7 +260,7 @@ export default {
       },
       deep: true,
     },
-    playerHolder: {
+    comptetitorHolder: {
       handler: function (val) {
         this.hidePlayers(val)
       },
@@ -318,17 +318,17 @@ export default {
       }
     },
     hideClubList(id, clubDeets){
-      this.showClubList(id)
+      console.log("ID: ", id, "CLUB DEETAS: ", clubDeets)
       this.createGame['clubs'][id] = clubDeets
       this.clubHolder[id] = this.createGame['clubs'][id]['club_name']
-      this.createGame['players'][id] = {}
-      this.playerHolder[id] = ''
+      this.createGame['comptetitors'][id] = {}
+      this.comptetitorHolder[id] = ''
+      this.showClubList(id)
     },
     hidePlayerList(id, playerDeets){
       this.showPlayerList(id)
-      console.log("WHATTTT: ", this.createGame['players'])
-      this.createGame['players'][id] = playerDeets
-      this.playerHolder[id] = this.createGame['players'][id]['first_name'] + " " +this.createGame['players'][id]['last_name']
+      this.createGame['comptetitors'][id] = playerDeets
+      this.comptetitorHolder[id] = this.createGame['comptetitors'][id]['first_name'] + " " +this.createGame['comptetitors'][id]['last_name']
     },
     capitalise(key) {
       key = key.replace("_", " ")

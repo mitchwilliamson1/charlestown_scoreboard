@@ -51,12 +51,10 @@ class Players:
         c.execute('''CREATE TABLE IF NOT EXISTS competitors
                      (competitor_id INTEGER NOT NULL PRIMARY KEY,
                      player TEXT NOT NULL DEFAULT "No Player",
-                     score TEXT NOT NULL DEFAULT "",
-                     sets TEXT NOT NULL DEFAULT "",
+                     score TEXT NOT NULL DEFAULT 0,
+                     sets TEXT NOT NULL DEFAULT 0,
                      game INTEGER NOT NULL DEFAULT "No Game",
                      display INTEGER NOT NULL DEFAULT 2,
-                     team TEXT NOT NULL DEFAULT "",
-                     is_skipper BOOL NOT NULL DEFAULT FALSE,
                      FOREIGN KEY (display)
                         REFERENCES displays (display_id)
                             ON UPDATE CASCADE
@@ -98,6 +96,18 @@ class Players:
 
         return json.dumps(parsed_rows)
 
+
+    def create_player(self, player):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        sql = 'INSERT INTO players (first_name, last_name, club, bowls_number, grade) VALUES(?, ?, ?, ?, ?);'
+        params = [player['first_name'], player['last_name'], player['club'], player['bowls_number'], player['grade']]
+        cursor.execute(sql, params)
+        con.commit()
+
+
     def get_clubs(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
@@ -116,6 +126,23 @@ class Players:
             })
 
         return json.dumps(parsed_rows)
+
+
+    def create_club(self, club, logo):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        try:
+            logo.save("./assets/"+logo.filename)
+        except:
+            pass
+
+        sql = 'INSERT INTO clubs (club_name, logo, address, contact_details) VALUES(?, ?, ?, ?);'
+        params = [club['name'], logo.filename, club['address'], club['contact_details']]
+
+        cursor.execute(sql, params)
+        con.commit()
 
 
     def update_club(self, js, logo):
@@ -138,30 +165,5 @@ class Players:
         }
 
 
-    def create_player(self, player):
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
 
-        sql = 'INSERT INTO players (first_name, last_name, club, bowls_number, grade) VALUES(?, ?, ?, ?, ?);'
-        params = [player['first_name'], player['last_name'], player['club'], player['bowls_number'], player['grade']]
-        cursor.execute(sql, params)
-        con.commit()
-
-
-    def create_club(self, club, logo):
-        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-        con.row_factory = sqlite3.Row
-        cursor = con.cursor()
-
-        try:
-            logo.save("./assets/"+logo.filename)
-        except:
-            pass
-
-        sql = 'INSERT INTO clubs (club_name, logo, address, contact_details) VALUES(?, ?, ?, ?);'
-        params = [club['name'], logo.filename, club['address'], club['contact_details']]
-
-        cursor.execute(sql, params)
-        con.commit()
 

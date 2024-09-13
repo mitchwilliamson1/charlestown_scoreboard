@@ -13,8 +13,8 @@ DEFAULT_GAME = {"game_id":-1,
         'sponsor': {'sponsor_logo': 'belle_whitebg.png'}, 
         "finish_time":None, 
         'competitors': {
-            '1': {'1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
-            '2': {'1': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'is_skipper': 1, 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} }},
+            '1': {'player_id':'1', 'first_name': 'Player', 'last_name':'1', 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} },
+            '2': {'player_id':'2', 'first_name': 'Player', 'last_name':'2', 'score': 0, 'sets': 0, 'display':{'display': 'Default', 'display_id': 1} },
         },
     'clubs': {
         '1': {'club_id': 1, 'club_name': 'Merewether', 'logo': 'charls.jpeg'}, 
@@ -52,10 +52,9 @@ class Game:
                      competition TEXT, "")''')
         conn.commit()
         c.execute('''INSERT into competitions (competition_id, competition)
-                    VALUES (1, 'Gala'),
-                            (2, 'Pennants'),
-                            (3, 'Club'),
-                            (4, 'BPL')
+                    VALUES (1, 'Bowls / Pennants'),
+                            (2, 'BPL'),
+                            (3, 'Consistency Singles')
                             ON CONFLICT DO NOTHING;''')
         conn.commit()
 
