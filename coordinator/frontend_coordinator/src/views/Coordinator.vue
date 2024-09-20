@@ -35,7 +35,6 @@
               Club {{team}}
               <div class="col">
                 <input @click="showClubList(team)"
-                    @focusout="showClubList(team)"
                     v-model="clubHolder[team]"
                     class="form-control">
                 <div class="club">
@@ -53,7 +52,7 @@
               <div v-if="createGame.clubs[team] && display[team] && state.players">
                 <div class="">Player </div>
                   <input @click="showPlayerList(team)" 
-                      v-model="comptetitorHolder[team]" 
+                      v-model="competitorHolder[team]" 
                       class="form-control">
                   <div class="player">
                     <ul :id="'playerList'+team" class="hidden">
@@ -66,10 +65,10 @@
                     </ul>
                   </div>
 
-                <div>Display</div>
-<!--                 <select v-model="createGame.competitors[team]['player'].display" class="form-select">
-                  <option v-for="display in state.init.display" :value="display">{{display.display}}</option>
-                </select> -->
+                <div >Display</div>
+                  <select v-model="createGame.displays[team]" class="form-select">
+                    <option v-for="display in state.init.display" :value="display">{{display.display}}</option>
+                  </select>
               </div>
 
             </div>
@@ -83,6 +82,15 @@
       <div class="row p-3">
         <div class="col-12">
           <h3 class="p-3">Current Games</h3>
+          <div class="container">
+            <div class="row">
+              <div class="col-2 fw-bold">Game</div>
+              <div class="col-3 fw-bold">Team 1</div>
+              <div class="col-3 fw-bold">Team 2</div>
+              <div class="col-2 fw-bold">Sponsor</div>
+              <div class="col-2 fw-bold">Rink</div>
+            </div>
+          </div>
           <current-games v-for="game in state.games" @reload="getGames" :game="game" :gameOptions="state.init"/>
         </div>
       </div>
@@ -90,6 +98,15 @@
       <div class="row p-3">
         <div class="col-12">
           <h3 class="p-3">Finished Games</h3>
+          <div class="container">
+            <div class="row">
+              <div class="col-2 fw-bold">Game</div>
+              <div class="col-3 fw-bold">Team 1</div>
+              <div class="col-3 fw-bold">Team 2</div>
+              <div class="col-2 fw-bold">Sponsor</div>
+              <div class="col-2 fw-bold">Rink</div>
+            </div>
+          </div>
           <current-games v-for="game in state.finishedGames" @reload="getGames" :game="game" :gameOptions="state.init"/>
         </div>
       </div>
@@ -117,21 +134,24 @@ export default {
       isHidden: true,
       active:false,
       clubHolder:{1:"", 2:""},
-      comptetitorHolder:{1:"", 2:""},
+      competitorHolder:{1:"", 2:""},
       createGame: {
         'name': "",
         'competition': {},
-        'display': {},
         'rink': {},
         'clubs': {
           1:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
           2:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
         },
-        'comptetitors':{
-          1:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null },
-          2:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null }
+        'competitors':{
+          1:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null},
+          2:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null}
         },
         'sponsor': {},
+        'displays':{
+          1:{},
+          2:{}
+        },
       }
     }
   },
@@ -260,7 +280,7 @@ export default {
       },
       deep: true,
     },
-    comptetitorHolder: {
+    competitorHolder: {
       handler: function (val) {
         this.hidePlayers(val)
       },
@@ -321,14 +341,14 @@ export default {
       console.log("ID: ", id, "CLUB DEETAS: ", clubDeets)
       this.createGame['clubs'][id] = clubDeets
       this.clubHolder[id] = this.createGame['clubs'][id]['club_name']
-      this.createGame['comptetitors'][id] = {}
-      this.comptetitorHolder[id] = ''
+      this.createGame['competitors'][id] = {}
+      this.competitorHolder[id] = ''
       this.showClubList(id)
     },
     hidePlayerList(id, playerDeets){
       this.showPlayerList(id)
-      this.createGame['comptetitors'][id] = playerDeets
-      this.comptetitorHolder[id] = this.createGame['comptetitors'][id]['first_name'] + " " +this.createGame['comptetitors'][id]['last_name']
+      this.createGame['competitors'][id] = playerDeets
+      this.competitorHolder[id] = this.createGame['competitors'][id]['first_name'] + " " +this.createGame['competitors'][id]['last_name']
     },
     capitalise(key) {
       key = key.replace("_", " ")

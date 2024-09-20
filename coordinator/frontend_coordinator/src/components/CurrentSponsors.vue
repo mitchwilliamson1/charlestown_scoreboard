@@ -1,5 +1,4 @@
 <template>
-  <div class="hello">
   <div class="container row">
     <div v-for="sponsor, i in sponsors" :key="i" class="col-3">
       <div class="shadow p-2 mb-1 bg-body rounded"
@@ -15,16 +14,15 @@
         <div class="col collapse"
           :id="'collapseClub'+i"
           data-parent="#accordion">
-          <edit-sponsors :sponsor="sponsor"/>
+          <edit-sponsors @reLoadSponsors="reLoadSponsors" :sponsor="sponsor"/>
         </div>
       </div>
     </div>
   </div>
-  </div>
 </template>
 
 <script>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, ref} from "vue";
 import EditSponsors from '../components/EditSponsors.vue'
 
 
@@ -63,6 +61,9 @@ export default {
   },
 
   methods:{
+    reLoadSponsors() {
+      this.$emit("reLoadSponsors")
+    },
     post() {
       (async () => {
       const rawResponse = await fetch('http://127.0.0.1:8000/save', {
@@ -112,8 +113,6 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
-
-
 
 input {
   width: 90%;

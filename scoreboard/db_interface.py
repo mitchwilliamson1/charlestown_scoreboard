@@ -226,14 +226,12 @@ class Game:
         params = (js['game_id'], js['name'], js["competition"]["competition_id"], js["sponsor"]["sponsor_logo"], utc, js['finish_time'], coordinator_ip)
         game_id = cursor.execute(sql, params)
 
-        for teams in js['competitors']:
-            for player in js['competitors'][teams]:
-                competitor = js['competitors'][teams][player]
+        for player in js['competitors']:
+            competitor = js['competitors'][player]
 
-                if competitor['is_skipper']:
-                    sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?,?);"
-                    params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['sets'], js['clubs'][teams]['logo'], competitor['display']['display_id'], js['game_id'])
-                    cursor.execute(sql, params)
+            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?,?);"
+            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], competitor['score'], competitor['sets'], js['clubs'][player]['logo'], js['displays'][player]['display_id'], js['game_id'])
+            cursor.execute(sql, params)
         con.commit()
 
 

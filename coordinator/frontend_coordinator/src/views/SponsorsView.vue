@@ -3,7 +3,7 @@
     <div class="row">
 
       <div class="col">
-        <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Create New Club</div>
+        <div class="bg-secondary p-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Create New Sponsor</div>
 
       <div class="offcanvas offcanvas-end w-50" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
@@ -18,7 +18,7 @@
           </div>
           <div class="row p-1">
             <div class="col-4">Logo</div>
-            <input type="file" ref="file" @change="onChange($event)" class="col">
+            <input type="file" @change="onChange($event)" class="col">
           </div>
           </div>
           <div class="">
@@ -30,7 +30,7 @@
         <div class="row">
           <div v-if="state.sponsors" class="col-12">
             <h3 class="p-3">Current Sponsors</h3>
-            <current-sponsors :sponsors="state.sponsors"/>
+            <current-sponsors @reLoadSponsors="getSponsors" :sponsors="state.sponsors"/>
           </div>
         </div>
         
@@ -53,7 +53,6 @@ export default {
   },
   data() {
     return {
-
     }
   },
   setup() {
@@ -62,7 +61,7 @@ export default {
       sponsors: null,
     });
 
-  const createSponsor = reactive({
+    const createSponsor = reactive({
         name:null,
         logo:null,
       });
@@ -80,7 +79,7 @@ export default {
     function createSponsorButton(sponsor) {
       let data = new FormData();
       data.append('file', sponsor.logo);
-      data.append('sponsor', JSON.stringify(sponsor));
+      data.append('sponsor_name', sponsor.name);
 
       axios.post(path+'games/create_sponsor',
       data,
@@ -89,12 +88,13 @@ export default {
         }
       })
       .then(function (response) {
-        getClubs()
+        getSponsors()
       })
       .catch(function (error) {
         console.log(error);
       });
     }
+
     function getSponsors() {
       axios.get(path+'games/get_sponsors')
       .then(function (response) {
@@ -122,7 +122,9 @@ export default {
     };
   },
   methods: {
+    getpic() {
 
+    },
   }
 }
 </script>

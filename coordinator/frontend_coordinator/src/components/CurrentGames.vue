@@ -1,37 +1,28 @@
 <template>
   <div v-if="game && gameOptions" class="currentGames">
     <div class="container">
-      <div class="row">
-        <div class="col-2 fw-bold">Game</div>
-        <div class="col-3 fw-bold">Team 1</div>
-        <div class="col-3 fw-bold">Team 2</div>
-        <div class="col-2 fw-bold">Sponsor</div>
-        <div class="col-2 fw-bold">Rink</div>
-      </div>
-      <div >
-        <div class="row shadow p-2 mb-1 bg-body rounded"
-          data-bs-toggle="collapse" 
-          :data-bs-target="'#collapse'+game.game_id" 
-          aria-expanded="false" 
-          aria-controls="collapseOne">
-          <div class="col-2">{{gameType(game)}}</div>
-          <div :class="winner(n, game.winner)" class="col-3" v-for="n, index in 2">
-            <div v-for="player in game.competitors">
-              <div class="p-1" v-if="player.is_skipper && player.team == n " >Skipper: {{player.first_name[0]}}.{{player.last_name}} - Score: {{player.score}}</div>
-            </div>
-          </div>
-          <div class="col-2">{{game.sponsor.sponsor}}</div>
-          <div class="col-2">{{game.rink.rink}}</div>
+      <div class="row shadow p-1 m-0 bg-body rounded"
+        data-bs-toggle="collapse" 
+        :data-bs-target="'#collapse'+game.game_id" 
+        aria-expanded="false" 
+        aria-controls="collapseOne">
+        <div class="col-2">{{gameType(game)}}</div>
+        <div :class="winner(game.winner, competitor.player_id)" class="col-3" v-for="competitor, index in game.competitors">
+            <div class="p-0 m-0" >{{competitor.first_name[0]}}.{{competitor.last_name}}</div>
+            <div>Score: {{competitor.score}}</div>
         </div>
-        <div class="row p-2">
-          <div class="col collapse"
-            :id="'collapse'+game.game_id"
-            data-parent="#accordion">
-            <edit-games @reload="$emit('reload')" :details="game" :gameOptions="gameOptions"/>
-          </div>
-          
+        <div class="col-2">{{game.sponsor.sponsor}}</div>
+        <div class="col-2">{{game.rink.rink}}</div>
+      </div>
+
+      <div class="row p-2">
+        <div class="col collapse"
+          :id="'collapse'+game.game_id"
+          data-parent="#accordion">
+          <edit-games @reload="$emit('reload')" :details="game" :gameOptions="gameOptions"/>
         </div>
       </div>
+
     </div>
   </div>
 </template>

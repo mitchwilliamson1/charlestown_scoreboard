@@ -12,7 +12,7 @@ local_tz = pytz.timezone("Australia/Sydney")
 class Games:
     def __init__(self):
         self.db_path = "co_ordinator.db"
-        self.init_database_tables()
+        # self.init_database_tables()
 
     def init_database_tables(self):
         conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -397,7 +397,15 @@ class Games:
         games = cursor.execute(sql).fetchall()
 
         for game in games:
-            sql = '''SELECT player_id, cd.display, cd.display_id, p.first_name, p.last_name, club.logo, c.team, c.is_skipper, c.score, c.sets FROM competitors AS c
+            sql = '''SELECT player_id,
+                        cd.display,
+                        cd.display_id,
+                        p.first_name,
+                        p.last_name,
+                        club.logo,
+                        c.competitor_id,
+                        c.score,
+                        c.sets FROM competitors AS c
                     INNER JOIN players AS p
                     ON c.player = p.player_id 
                     INNER JOIN displays AS cd
@@ -414,11 +422,10 @@ class Games:
                     "player_id": player['player_id'],
                     "first_name": player['first_name'],
                     "last_name": player['last_name'],
+                    "competitor_id": player['competitor_id'],
                     "score": player['score'],
                     "sets": player['sets'],
                     "logo": player['logo'],
-                    "team": player['team'],
-                    "is_skipper": player['is_skipper'],
                     "display": {'display':player['display'],'display_id':player['display_id']},
                  })
             
@@ -496,27 +503,33 @@ class Games:
             cursor.execute(sql, params)
 
             game_id = cursor.lastrowid
+            print("GAme ID: ", game_id)
 
-            scoreboard_competitors = {}
+            js['game_id'] = game_id
+            for player in js['competitors']:
+                print("DISPLAY: ", js['displays'][player]['display_id'])
+                sql = "INSERT INTO competitors (player, game, display) VALUES(?, ?, ?);"
+                params = [js['competitors'][player]['player_id'],
+                    game_id,
+                    js['displays'][player]['display_id']]
+                print("SQWL: ", sql)
+                print("PARAM: ", params)
+                # print(cursor.mogrify(sql, params))
+                cursor.execute(sql, params)
 
-            for _game_id in game_id:
-                js['game_id'] = _game_id
-                for player in js['competitors']:
-                    sql = "INSERT INTO competitors (player, score, sets, game, display) VALUES(?, ?, ?, ?, ?);"
-                    params = [js['competitors'][player]['player_id'],
-                        js['competitors'][player]['score'],
-                        js['competitors'][player]['sets'],
-                        _game_id,
-                        js['competitors'][player]['display']['display_id']]
-                    cursor.execute(sql, params)
-                con.commit()
+            con.commit()
+            con.close()
 
+            print("CON: ", con)
 
             x = threading.Thread(target=self.write_scoreboard, args=(js,))
             x.start()
             return {"status": "ok",}
         except:
-            return {"status": 300}
+            import traceback
+            traceback.format_exc()
+
+            return {"status": 400}
 
 
     def add_score(self, js):
@@ -595,6 +608,73 @@ class Games:
                 "status": "ok",
         }
 
+        ######################
+
+
+    def create_sponsor(self, logo_file, sponsor_name):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        print("FILE: ", logo_file)
+        print("NAME: ", sponsor_name)
+
+        try:
+            logo_file.save("./assets/"+logo_file.filename)
+        except:
+            pass
+
+
+        sql = 'INSERT INTO sponsors (sponsor, sponsor_logo) VALUES(?, ?);'
+        params = [sponsor_name, logo_file.filename]
+
+        cursor.execute(sql, params)
+        con.commit()
+
+
+    def update_sponsor(self, logo_file, sponsor_name):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        print("WHAT THE: ", logo_file.filename)
+
+        try:
+            logo_file.save("./assets/"+logo_file.filename)
+        except:
+            pass
+
+        cmd = "UPDATE sponsors SET sponsor = ?, sponsor_logo = ? WHERE sponsor_id = ?"
+        params = [sponsor_name['sponsor'], logo_file, sponsor_name['sponsor_id']]
+        res = cursor.execute(cmd, params)
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
+
+    def update_club(self, js, logo):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        try:
+            logo.save("./assets/"+logo.filename)
+        except:
+            pass
+
+        #######################
+
+        cmd = "UPDATE clubs SET club_name = ?, address = ?, contact_details = ? WHERE club_id = ?"
+        params = [js['club_name'], js['address'], js['contact_details'], js['club_id']]
+        res = cursor.execute(cmd, params)
+        if res.fetchone() is None:
+            con.commit()
+        return {
+                "status": "ok",
+        }
+
 
     def update_game(self, js):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -606,11 +686,9 @@ class Games:
         res = cursor.execute(cmd, params)
 
         for competitor in js['competitors']:
-            
-            if competitor['is_skipper']:
-                cmd = "UPDATE competitors SET score = ?,display = ? WHERE team = ? AND game = ?"
-                params = (competitor['score'], competitor['display']['display_id'], competitor['team'], js['game_id'])
-                res = cursor.execute(cmd, params)
+            cmd = "UPDATE competitors SET score = ?,display = ? WHERE competitor_id = ? AND game = ?"
+            params = (competitor['score'], competitor['display']['display_id'], competitor['competitor_id'], js['game_id'])
+            res = cursor.execute(cmd, params)
 
         if res.fetchone() is None:
             con.commit()

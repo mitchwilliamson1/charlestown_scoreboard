@@ -1,35 +1,40 @@
-from bottle import Bottle, route, template, request, response
+from bottle import Bottle, route, template, request, response, static_file
 import requests as REQUEST
 from .games import Games
 
 import json
 
 
+_ALLOW_CORS = "*"
+_ALLOW_METHODS = "PUT, GET, POST, DELETE, OPTIONS"
+_ALLOW_HEADERS = "Authorization, Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token"
 
 gamesapp = Bottle()
 
-
 @gamesapp.hook('after_request')
 def enable_cors():
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+    response.headers["Access-Control-Allow-Origin"] = _ALLOW_CORS
+    response.headers["Access-Control-Allow-Methods"] = _ALLOW_METHODS
+    response.headers["Access-Control-Allow-Headers"] = _ALLOW_HEADERS
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+
 
 @gamesapp.route("/")
 def slash():
     return "blah"
 
+
 @gamesapp.route("/init")
 def init():
     initialise = {}
-    # initialise["gender"] = Games().get_genders()
     initialise["competition"] = Games().get_competitions()
-    # initialise["game_type"] = Games().get_game_types()
-    # initialise["round"] = Games().get_rounds()
-    # initialise["grade"] = Games().get_grades()
     initialise["display"] = Games().get_displays()
     initialise["rink"] = Games().get_rinks()
     initialise["sponsor"] = Games().get_sponsors(False)
+    # initialise["gender"] = Games().get_genders()
+    # initialise["game_type"] = Games().get_game_types()
+    # initialise["round"] = Games().get_rounds()
+    # initialise["grade"] = Games().get_grades()
     return json.dumps(initialise)
 
 
@@ -57,6 +62,17 @@ def get_masterboard():
 def get_sponsors():
     return Games().get_sponsors(True)
 
+
+@gamesapp.route("/create_sponsor", method=["POST", "OPTIONS"])
+def create_sponsor():
+    if request.method == "OPTIONS":
+        return
+
+    logo_file = request.files.get('file')
+    sponsor_name = request.forms.get('sponsor_name')
+
+    Games().create_sponsor(logo_file, sponsor_name)
+    return request.json
 
 
 @gamesapp.route("/create_game", method=["POST", "OPTIONS"])
@@ -133,12 +149,22 @@ def update_masterboards():
 
 
 
-@gamesapp.route("/update_club", method=["POST", "OPTIONS"])
-def update_club():
+@gamesapp.route("/update_sponsor", method=["POST", "OPTIONS"])
+def update_sponsor():
     if request.method == "OPTIONS":
         return
-    request_params = json.loads(request.body.getvalue())
-    Games().update_club(request_params)
+
+    sponsor_name = json.loads(request.forms.get('sponsor_name'))
+    try:
+        f = request.files.get('file')
+        logo_file = f.filename
+    except:
+        logo_file = sponsor_name['sponsor_logo']
+
+    print("SPON NAME:", sponsor_name)
+    print("logo_file:", logo_file)
+
+    Games().update_sponsor(logo_file, sponsor_name)
     return request.json
 
 

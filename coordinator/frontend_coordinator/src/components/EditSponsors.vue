@@ -1,20 +1,21 @@
 <template>
   <div class="edit">
     <div class="card p-2 pt-0 shadow">
-
-      <form class="row">
-        <div class="">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-control" v-model="sponsor.sponsor_name">
-        </div>
-        <div class="">
-            <label class="form-label w-100">Logo</label>
-          <div class="row border rounded p-1">
-            <div class="col">{{sponsor.sponsor_logo}}</div>
-            <input type="file" ref="file" @change="onChange($event)" class="col">
+      <div class="container">
+        <form class="row">
+          <div class="">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" v-model="sponsor.sponsor">
           </div>
-        </div>
-      </form>
+          <div class="">
+            <label class="form-label w-100">Logo</label>
+            <div class="row border rounded p-1">
+              <input type="file" @change="onChange($event)">
+            </div>
+          </div>
+        </form>
+      </div>
+
       <div class="col-12">
         <button @click="updateSponsor(sponsor)" class="btn btn-primary">Update</button>
       </div>
@@ -33,7 +34,7 @@ export default {
     sponsor: Object,
   },
 
-  setup() {
+  setup(props, context) {
     const state = reactive({
       someData: null,
     });
@@ -49,15 +50,13 @@ export default {
       createSponsor.logo = event.target.files[0]
     }
 
-    function updateSponsor(sponsor) {
+    function updateSponsor() {
       let data = new FormData();
+      console.log("SPON OBJ: ", props.sponsor)
       data.append('file', createSponsor.logo);
-      data.append('club', JSON.stringify(sponsor));
+      data.append('sponsor_name', JSON.stringify(props.sponsor));
 
-      console.log("name:")
-      console.log("name: ", JSON.stringify(sponsor))
-
-      axios.post(path+'players/update_club',
+      axios.post(path+'games/update_sponsor',
       data,
       {headers: {
         'Content-Type': 'multipart/form-data'
@@ -65,7 +64,8 @@ export default {
       })
       .then(function (response) {
         console.log(response);
-        getSponsors()
+        context.emit("reLoadSponsors")
+        // getSponsors()
       })
       .catch(function (error) {
         console.log(error);

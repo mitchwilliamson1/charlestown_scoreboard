@@ -10,7 +10,7 @@ local_tz = pytz.timezone("Australia/Sydney")
 class Players:
     def __init__(self):
         self.db_path = "co_ordinator.db"
-        self.init_database_tables()
+        # self.init_database_tables()
 
     def init_database_tables(self):
         conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
