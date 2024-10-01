@@ -17,7 +17,7 @@
       </div>
 
       <div class="col-12">
-        <button @click="updateSponsor(sponsor)" class="btn btn-primary">Update</button>
+        <button @click="updateSponsor()" class="btn btn-primary">Update</button>
       </div>
     </div>
   </div>
@@ -52,7 +52,6 @@ export default {
 
     function updateSponsor() {
       let data = new FormData();
-      console.log("SPON OBJ: ", props.sponsor)
       data.append('file', createSponsor.logo);
       data.append('sponsor_name', JSON.stringify(props.sponsor));
 
@@ -63,12 +62,16 @@ export default {
         }
       })
       .then(function (response) {
-        console.log(response);
-        context.emit("reLoadSponsors")
-        // getSponsors()
+        if (response.data == "No File Uploaded") {
+          alert(response.data)
+        }
+        else{
+          console.log("LOOK: ", response);
+          context.emit("reLoadSponsors")
+        }
       })
       .catch(function (error) {
-        console.log(error);
+        console.log("ERROR: ", error);
       });
     }
     

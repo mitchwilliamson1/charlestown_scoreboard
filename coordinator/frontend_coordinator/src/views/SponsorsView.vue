@@ -118,6 +118,7 @@ export default {
       createSponsor,
       createSponsorButton,
       onChange,
+      getSponsors,
       
     };
   },

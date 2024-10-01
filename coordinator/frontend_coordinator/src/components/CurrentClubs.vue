@@ -15,7 +15,7 @@
         <div class="col collapse"
           :id="'collapseClub'+i"
           data-parent="#accordion">
-          <edit-clubs :club="club"/>
+          <edit-clubs @reLoadClubs="reLoadClubs" :club="club"/>
         </div>
       </div>
     </div>
@@ -37,15 +37,20 @@ export default {
     clubs: Object,
   },
 
-  setup() {
+  setup(props, context) {
     const state = reactive({
       someData: null,
     });
 
+    function reLoadClubs() {
+      context.emit("reLoadSponsors")
+    }
+
     onMounted(async () => {});
 
     return {
-      state
+      state,
+      reLoadClubs
     };
   },
   data(){

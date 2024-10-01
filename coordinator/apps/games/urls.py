@@ -79,9 +79,14 @@ def create_sponsor():
 def create_game():
     if request.method == "OPTIONS":
         return
+
     request_params = json.loads(request.body.getvalue())
-    Games().create_game(request_params['create_game']) 
-    return request.json
+    created = Games().create_game(request_params['create_game'])
+    if created == "success":
+        response.status = 200
+    else:
+        response.status = 400
+    return json.dumps(created)
 
 
 @gamesapp.route("/create_rink", method=["POST", "OPTIONS"])
@@ -154,15 +159,11 @@ def update_sponsor():
     if request.method == "OPTIONS":
         return
 
+    logo_file = request.files.get('file')
+    if not logo_file:
+        print("No File Uploaded")
+        return "No File Uploaded"
     sponsor_name = json.loads(request.forms.get('sponsor_name'))
-    try:
-        f = request.files.get('file')
-        logo_file = f.filename
-    except:
-        logo_file = sponsor_name['sponsor_logo']
-
-    print("SPON NAME:", sponsor_name)
-    print("logo_file:", logo_file)
 
     Games().update_sponsor(logo_file, sponsor_name)
     return request.json

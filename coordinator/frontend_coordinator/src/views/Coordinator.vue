@@ -25,7 +25,7 @@
           <div class="row p-1" v-for="item, key in state.init">
             <div class="row" v-if="key != 'display'">
               <div class="col-4">{{capitalise(key)}}</div>
-              <select v-model="createGame[key]" class="form-select col">
+              <select v-model="createGame[key]" class="form-select col" :class="state.formatGame[key]">
                 <option v-for="type in item" :value="type">{{type[key]}}</option>
               </select>
             </div>
@@ -36,7 +36,8 @@
               <div class="col">
                 <input @click="showClubList(team)"
                     v-model="clubHolder[team]"
-                    class="form-control">
+                    class="form-control" 
+                    :class="state.formatGame['clubs'][team]">
                 <div class="club">
                   <ul :id="'clubList'+team" class="hidden">
                     <li :id="club.club_id"
@@ -136,32 +137,48 @@ export default {
       clubHolder:{1:"", 2:""},
       competitorHolder:{1:"", 2:""},
       createGame: {
-        'name': "",
         'competition': {},
         'rink': {},
+        'sponsor': {},
         'clubs': {
-          1:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
-          2:{ "club_id": null, "club_name": null, "logo": null, "address": null, "contact_details": null},
+          1:{},
+          2:{},
         },
         'competitors':{
-          1:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null},
-          2:{"player_id":null,"first_name":null,"last_name":null,"club":null,"bowls_number":null,"grade":null}
+          1:{},
+          2:{}
         },
-        'sponsor': {},
         'displays':{
           1:{},
           2:{}
         },
-      }
+      },
     }
   },
-  setup() {
+  setup(props, context) {
     const state = reactive({
       games: null,
       finishedGames: null,
       players: null,
       clubs: null,
       init: null,
+      formatGame: {
+        'competition': {},
+        'rink': {},
+        'sponsor': {},
+        'clubs': {
+          1:'',
+          2:'',
+        },
+        'competitors':{
+          1:{},
+          2:{}
+        },
+        'displays':{
+          1:{},
+          2:{}
+        },
+      }
     });
 
     var path = ""
@@ -207,11 +224,12 @@ export default {
       create_game: createGame,
       })
       .then(function (response) {
-        console.log("GET GAMES: ", response);
+        console.log("CREATED GAME: ", response);
         getGames()
       })
       .catch(function (error) {
-        console.log("ERROR: ", error);
+        state.formatGame = error.response.data
+        console.log(error);
       });
       
     }
@@ -266,7 +284,7 @@ export default {
       getGames,
       create,
       getFinishedGames,
-      getPlayers
+      getPlayers,
     };
   },
   mounted () {

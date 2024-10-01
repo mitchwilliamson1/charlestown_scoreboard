@@ -490,24 +490,33 @@ class Games:
 
 
     def create_game(self, js):
+        con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
+
+        sql = "INSERT INTO games (competition, rink, sponsor, start_time) VALUES(?, ?, ?, ?) returning game_id;"
+
+        for i in js:
+            if js[i]:
+                for j in js[i]:
+                    print(j)
+            else:
+                js[i] = 'border border-danger'
+        print(js)
+
         try:
-            con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
-            con.row_factory = sqlite3.Row
-            cursor = con.cursor()
-
-            utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
-
-            sql = "INSERT INTO games (name, competition, rink, sponsor, start_time) VALUES(?, ?, ?, ?, ?) returning game_id;"
-
-            params = [js["name"], js["competition"]["competition_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
+            params = [js["competition"]["competition_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
             cursor.execute(sql, params)
 
             game_id = cursor.lastrowid
-            print("GAme ID: ", game_id)
+
+
 
             js['game_id'] = game_id
             for player in js['competitors']:
-                print("DISPLAY: ", js['displays'][player]['display_id'])
+                print("player: ", js['clubs'][player]['logo'])
                 sql = "INSERT INTO competitors (player, game, display) VALUES(?, ?, ?);"
                 params = [js['competitors'][player]['player_id'],
                     game_id,
@@ -517,19 +526,20 @@ class Games:
                 # print(cursor.mogrify(sql, params))
                 cursor.execute(sql, params)
 
-            con.commit()
+            r = con.commit()
             con.close()
-
-            print("CON: ", con)
 
             x = threading.Thread(target=self.write_scoreboard, args=(js,))
             x.start()
-            return {"status": "ok",}
+            return "success"
         except:
-            import traceback
-            traceback.format_exc()
-
-            return {"status": 400}
+            return js
+        # except:
+            # import traceback
+            # return "could not create game"
+            # exceptiondata = traceback.format_exc().splitlines()
+            # exceptionarray = [exceptiondata[-1]] + exceptiondata[1:-1]
+            # return exceptionarray[0]
 
 
     def add_score(self, js):
@@ -637,15 +647,13 @@ class Games:
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
 
-        print("WHAT THE: ", logo_file.filename)
-
         try:
             logo_file.save("./assets/"+logo_file.filename)
         except:
             pass
 
         cmd = "UPDATE sponsors SET sponsor = ?, sponsor_logo = ? WHERE sponsor_id = ?"
-        params = [sponsor_name['sponsor'], logo_file, sponsor_name['sponsor_id']]
+        params = [sponsor_name['sponsor'], logo_file.filename, sponsor_name['sponsor_id']]
         res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
@@ -664,10 +672,8 @@ class Games:
         except:
             pass
 
-        #######################
-
-        cmd = "UPDATE clubs SET club_name = ?, address = ?, contact_details = ? WHERE club_id = ?"
-        params = [js['club_name'], js['address'], js['contact_details'], js['club_id']]
+        cmd = "UPDATE clubs SET club_name = ?, logo = ?, address = ?, contact_details = ? WHERE club_id = ?"
+        params = [js['club_name'], logo.filename, js['address'], js['contact_details'], js['club_id']]
         res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()

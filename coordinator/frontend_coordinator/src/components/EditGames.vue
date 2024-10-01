@@ -3,7 +3,6 @@
     <div v-if="gameOptions && details">
     <div class="card p-2 pt-0 shadow">
         <form>
-          {{details}}
           <div class="row">
             <div class="col-3">
               <label class="form-label">Winner</label>

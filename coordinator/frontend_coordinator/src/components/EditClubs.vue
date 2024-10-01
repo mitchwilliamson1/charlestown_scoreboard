@@ -1,30 +1,30 @@
 <template>
   <div class="edit">
     <div class="card p-2 pt-0 shadow">
+      <div class="container">
 
-      <form class="row">
-        <div class="">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-control" v-model="club.club_name">
-        </div>
-        <div class="">
-          <label class="form-label">Address</label>
-          <input type="text" class="form-control" v-model="club.address">
-        </div>
-        <div class="">
-          <label class="form-label">Contact</label>
-          <input type="text" class="form-control" v-model="club.contact_details">
-        </div>
-        <div class="">
-            <label class="form-label w-100">Logo</label>
-          <div class="row border rounded p-1">
-            <div class="col">{{club.logo}}</div>
-            <input type="file" ref="file" @change="onChange($event)" class="col">
+        <form class="row">
+          <div class="p-0 m-0">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" v-model="club.club_name">
           </div>
-        </div>
-      </form>
+          <div class="p-0 m-0">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-control" v-model="club.address">
+          </div>
+          <div class="p-0 m-0">
+            <label class="form-label">Contact</label>
+            <input type="text" class="form-control" v-model="club.contact_details">
+          </div>
+          <div class="p-0 m-0">
+            <label class="form-label w-100">Logo</label>
+            <div class="col">{{club.logo}}</div>
+              <input type="file" ref="file" @change="onChange($event)" class="">
+          </div>
+        </form>
+      </div>
       <div class="col-12">
-        <button @click="updateClub(club)" class="btn btn-primary">Update</button>
+        <button @click="updateClub()" class="btn btn-primary">Update</button>
       </div>
     </div>
   </div>
@@ -41,7 +41,7 @@ export default {
     club: Object,
   },
 
-  setup() {
+  setup(props, context) {
     const state = reactive({
       someData: null,
     });
@@ -59,13 +59,10 @@ export default {
       createClub.logo = event.target.files[0]
     }
 
-    function updateClub(club) {
+    function updateClub() {
       let data = new FormData();
       data.append('file', createClub.logo);
-      data.append('club', JSON.stringify(club));
-
-      console.log("name:")
-      console.log("name: ", JSON.stringify(club))
+      data.append('club', JSON.stringify(props.club));
 
       axios.post(path+'players/update_club',
       data,
@@ -74,11 +71,16 @@ export default {
         }
       })
       .then(function (response) {
-        console.log(response);
-        getClubs()
+        console.log("THEN: ", response)
+        if (response.data == "No File Uploaded"){
+          alert(response.data)
+        } else {
+          console.log(response);
+          context.emit("reLoadClubs")
+        }
       })
       .catch(function (error) {
-        console.log(error);
+        console.log("ERROR", error);
       });
     }
     

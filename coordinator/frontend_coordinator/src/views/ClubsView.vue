@@ -39,7 +39,7 @@
         <div class="row">
           <div v-if="state.clubs" class="col-12">
             <h3 class="p-3">Current Clubs</h3>
-            <current-clubs :clubs="state.clubs"/>
+            <current-clubs @reLoadSponsors="getClubs" :clubs="state.clubs"/>
           </div>
         </div>
         
@@ -164,6 +164,7 @@ export default {
       state,
       createClub,
       getPlayers,
+      getClubs,
       createClubButton,
       createPlayerButton,
       onChange,

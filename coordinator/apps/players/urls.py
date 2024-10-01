@@ -71,9 +71,18 @@ def update_club():
         return
 
     logo = request.files.get('file')
+    if not logo:
+        response.status = 300
+        response.body = json.dumps({'blah':"No File Uploaded"})
+        return
+        # print()
+        # return "No File Uploaded"
+
     club = request.forms.get('club')
 
     Players().update_club(json.loads(club), logo)
+    print("JSON: ", request.json)
+
     return request.json
 
 

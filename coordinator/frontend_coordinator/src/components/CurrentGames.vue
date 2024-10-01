@@ -73,11 +73,7 @@ export default {
 
   methods:{
     gameType(game){
-      var competition = game.competition.competition
-      // var gender = this.gameOptions.gender.filter(i => i.gender_id == game.gender)[0].gender
-      // var game = this.gameOptions.game_type.filter(i => i.game_type_id == game.game_type)[0].game_type
-      // return gender +" "+ competition +" " + game
-      return competition
+      return game.competition.competition
     },
     winner(team, winner) {
       if (team == winner){

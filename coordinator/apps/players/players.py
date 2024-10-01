@@ -153,10 +153,13 @@ class Players:
         try:
             logo.save("./assets/"+logo.filename)
         except:
-            pass
+            return json.dumps({
+                'status':500,
+                'data':"File Exists"
+            })
 
-        cmd = "UPDATE clubs SET club_name = ?, address = ?, contact_details = ? WHERE club_id = ?"
-        params = [js['club_name'], js['address'], js['contact_details'], js['club_id']]
+        cmd = "UPDATE clubs SET club_name = ?, logo = ?, address = ?, contact_details = ? WHERE club_id = ?"
+        params = [js['club_name'], logo.filename, js['address'], js['contact_details'], js['club_id']]
         res = cursor.execute(cmd, params)
         if res.fetchone() is None:
             con.commit()
