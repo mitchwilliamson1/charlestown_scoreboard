@@ -130,7 +130,6 @@ export default {
   data(){
     return{
       display: {1:{}, 2:{}},
-      rinks: 12,
       clubInput:null,
       isHidden: true,
       active:false,
@@ -386,6 +385,7 @@ export default {
   max-width: 600px;
   max-height: 400px;
   overflow: scroll;
+  overflow: hidden;
   margin: 20px auto;
   /*padding: 20px;*/
   background-color: #fff;
@@ -396,6 +396,7 @@ export default {
   max-width: 600px;
   max-height: 400px;
   overflow: scroll;
+  overflow: hidden;
   margin: 20px auto;
   /*padding: 20px;*/
   background-color: #fff;

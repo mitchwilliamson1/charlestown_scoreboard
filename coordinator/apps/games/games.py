@@ -389,6 +389,7 @@ class Games:
                     on g.sponsor = sponsors.sponsor_id
                     WHERE finish_time IS NULL'''
         else:
+            return json.dumps({})
             sql = '''SELECT *, r.rink as rink_name FROM games g
                     inner join rinks r
                     on g.rink = r.rink_id
@@ -496,7 +497,7 @@ class Games:
 
         utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
 
-        sql = "INSERT INTO games (competition, rink, sponsor, start_time) VALUES(?, ?, ?, ?) returning game_id;"
+        sql = "INSERT INTO games (competition, rink, sponsor, start_time) VALUES(?, ?, ?, ?);"
 
         for i in js:
             if js[i]:
@@ -504,26 +505,22 @@ class Games:
                     print(j)
             else:
                 js[i] = 'border border-danger'
-        print(js)
 
         try:
             params = [js["competition"]["competition_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
             cursor.execute(sql, params)
 
             game_id = cursor.lastrowid
+            print('JJJ SSS\n', js)
 
 
 
             js['game_id'] = game_id
             for player in js['competitors']:
-                print("player: ", js['clubs'][player]['logo'])
                 sql = "INSERT INTO competitors (player, game, display) VALUES(?, ?, ?);"
                 params = [js['competitors'][player]['player_id'],
                     game_id,
                     js['displays'][player]['display_id']]
-                print("SQWL: ", sql)
-                print("PARAM: ", params)
-                # print(cursor.mogrify(sql, params))
                 cursor.execute(sql, params)
 
             r = con.commit()
@@ -533,9 +530,10 @@ class Games:
             x.start()
             return "success"
         except:
+            import traceback
+            print(traceback.format_exc())
             return js
         # except:
-            # import traceback
             # return "could not create game"
             # exceptiondata = traceback.format_exc().splitlines()
             # exceptionarray = [exceptiondata[-1]] + exceptiondata[1:-1]
@@ -723,7 +721,7 @@ class Games:
             con.commit()
             con.close()
 
-            x = threading.Thread(target=self.write_scoreboard, args=(js,))
+            x = threading.Thread(target=self.update_scoreboard, args=(js,))
             x.start()
             return
 
