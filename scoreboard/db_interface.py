@@ -5,47 +5,22 @@ import pickle
 import pytz
 import requests
 import os
+import asyncio
+import sys
 
+# import importlib
+# config = importlib.import_module(sys.argv[1])
 
-DEFAULT_GAME = {
-    "game_id": -1,
-    "name": "standard",
-    "competition": {"competition_id": 3},
-    "sponsor": {"sponsor_logo": "belle_whitebg.png"},
-    "finish_time": None,
-    "competitors": {
-        "1": {
-            "player_id": "1",
-            "first_name": "Player",
-            "last_name": "1",
-            "score": 0,
-            "sets": 0,
-            "display": {"display": "Default", "display_id": 1},
-        },
-        "2": {
-            "player_id": "2",
-            "first_name": "Player",
-            "last_name": "2",
-            "score": 0,
-            "sets": 0,
-            "display": {"display": "Default", "display_id": 1},
-        },
-    },
-    "clubs": {
-        "1": {"club_id": 1, "club_name": "Merewether", "logo": "charls.jpeg"},
-        "2": {"club_id": 2, "club_name": "Charlestown", "logo": "away.jpeg"},
-    },
-    "displays": {
-        "1": {"display": "Default", "display_id": 1},
-        "2": {"display": "Default", "display_id": 1},
-    },
-}
+import config
+
 
 
 local_tz = pytz.timezone("Australia/Sydney")
 
 class Game:
     def __init__(self):
+        print()
+
         self.db_path = "scoreboard.db"
         self.init_database_tables()
 
@@ -159,11 +134,11 @@ class Game:
                                 WHERE finish_time is NULL''').fetchall()
 
         if not games:
-            self.create_game(DEFAULT_GAME, "192.168.15.200")
+            self.create_game(config.DEFAULT_GAME, config.COORDINATOR_IP)
         else:
             for game in games:
                 if game['ends'] < 0:
-                    self.create_game(DEFAULT_GAME, "192.168.15.200")
+                    self.create_game(config.DEFAULT_GAME, config.COORDINATOR_IP)
 
                 sql = """SELECT competitor_id, player_id, first_name, last_name, score, sets, logo, d.display FROM competitors as c
                         INNER JOIN displays AS d
@@ -241,8 +216,6 @@ class Game:
         coordinator_ip += ':8000'
         js['finish_time'] = None
 
-        print("JJSS: \n", js)
-
         sql = "INSERT INTO games (game_id, competition, sponsor, start_time, finish_time, coordinator_ip) VALUES(?,?,?,?,?,?);"
         params = (js['game_id'], js["competition"]["competition_id"], js["sponsor"]["sponsor_logo"], utc, js['finish_time'], coordinator_ip)
         game_id = cursor.execute(sql, params)
@@ -251,7 +224,12 @@ class Game:
             competitor = js['competitors'][player]
 
             sql = "INSERT INTO competitors (player_id, first_name, last_name, logo, display, game) VALUES(?,?,?,?,?,?);"
-            params = (competitor['player_id'], competitor['first_name'], competitor['last_name'], js['clubs'][player]['logo'], js['displays'][player]['display_id'], js['game_id'])
+            params = (js['competitors'][player]['player_id'],
+                js['competitors'][player]['first_name'],
+                js['competitors'][player]['last_name'],
+                js['clubs'][player]['logo'],
+                js['competitors'][player]['display']['display_id'],
+                js['game_id'])
             cursor.execute(sql, params)
         con.commit()
 
@@ -266,17 +244,22 @@ class Game:
         utc = datetime.datetime.utcnow().replace(tzinfo=pytz.timezone('UTC'))
 
         coordinator_ip += ':8000'
-        js['finish_time'] = None
 
-        sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip, sponsor) VALUES(?,?,?,?,?,?,?);"
-        params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip, js["sponsor"]["sponsor_logo"])
-        game_id = cursor.execute(sql, params)
+        if js['finish_time']:
+            cursor.execute("DELETE from games")
+            cursor.execute("DELETE from competitors")
+            con.commit()
 
-        for player in js['competitors']:
-            sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?,?);"
-            params = (player['player_id'], player['first_name'], player['last_name'], player['score'], player['sets'], player['logo'], player['display']['display_id'], js['game_id'])
-            cursor.execute(sql, params)
-        con.commit()
+        else:
+            sql = "INSERT INTO games (game_id, name, competition, start_time, finish_time, coordinator_ip, sponsor) VALUES(?,?,?,?,?,?,?);"
+            params = (js['game_id'], js['name'], js["competition"]["competition_id"], utc, js['finish_time'], coordinator_ip, js["sponsor"]["sponsor_logo"])
+            game_id = cursor.execute(sql, params)
+
+            for player in js['competitors']:
+                sql = "INSERT INTO competitors (player_id, first_name, last_name, score, sets, logo, display, game) VALUES(?,?,?,?,?,?,?,?);"
+                params = (player['player_id'], player['first_name'], player['last_name'], player['score'], player['sets'], player['logo'], player['display']['display_id'], js['game_id'])
+                cursor.execute(sql, params)
+            con.commit()
 
 
     def add_ends(self, js):

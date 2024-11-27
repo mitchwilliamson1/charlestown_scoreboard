@@ -17,3 +17,25 @@ scp -r home.py mitch@10.0.0.33:mitchtranet
 
 #Copy file from Pi
 scp -r mitch@120.159.54.44:mitchtranet/apps /home/mitchellwilliamson/Desktop/
+
+  169  sudo vncpasswd -service
+  170  sudo nano /etc/vnc/config.d/common.custom
+  171  sudo systemctl restart vncserver-x11-serviced
+  172  sudo vncpasswd -service
+  173  sudo nano /etc/vnc/config.d/common.custom
+  174  sudo systemctl restart vncserver-x11-serviced
+  175  sudo reboot
+  176  sudo systemctl stop scoreboard.service 
+  177  sudo systemctl disbale scoreboard.service
+
+  sudo nano /etc/systemd/system/scoreboard.service
+     86  systemctl daemon-reload
+     87  sudo systemctl restart scoreboard
+     88  sudo systemctl status scoreboard
+
+
+
+     
+cd ..
+  135  cd .config
+  136  sudo nano lxsession/LXDE-pi/autostart

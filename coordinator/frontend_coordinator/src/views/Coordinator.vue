@@ -1,5 +1,5 @@
 <template>
-  <div v-if="getGames" class="coordinator">
+  <div v-if="getGames && state.init" class="coordinator">
     <div class="container">
       <div class="bg-secondary p-3 text-white" 
         type="button" 
@@ -21,23 +21,23 @@
             aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-
           <div class="row p-1" v-for="item, key in state.init">
-            <div class="row" v-if="key != 'display'">
+            <div class="row" v-if="key != 'display' && key != 'create_game'">
               <div class="col-4">{{capitalise(key)}}</div>
-              <select v-model="createGame[key]" class="form-select col" :class="state.formatGame[key]">
+              <select v-model="state.init.create_game[0][key]" 
+                      class="form-select col" :class="state.formatGame[key]">
                 <option v-for="type in item" :value="type">{{type[key]}}</option>
               </select>
             </div>
           </div>
           <div class="row p-2">
-            <div v-for="team in 2" class="col">
-              Club {{team}}
+            <div v-for="key, team in state.init.create_game[0].clubs" class="col">
+              Club {{team}}: <strong>{{state.init.create_game[0].clubs[team].club_name}}</strong>
               <div class="col">
                 <input @click="showClubList(team)"
-                    v-model="clubHolder[team]"
+                    v-model="clubSearch[team]"
                     class="form-control" 
-                    :class="state.formatGame['clubs'][team]">
+                    :class="state.formatGame['clubs'][team]['club_name']">
                 <div class="club">
                   <ul :id="'clubList'+team" class="hidden">
                     <li :id="club.club_id"
@@ -50,24 +50,29 @@
                 </div>
               </div>
 
-              <div v-if="createGame.clubs[team] && display[team] && state.players">
-                <div class="">Player </div>
+              <div v-if="state.players && state.init">
+                <div class="">Player: <strong>{{state.init.create_game[0].competitors[team].first_name}}
+                  {{state.init.create_game[0].competitors[team].last_name}}</strong>
+                </div>
                   <input @click="showPlayerList(team)" 
-                      v-model="competitorHolder[team]" 
-                      class="form-control">
+                      v-model="playerSearch[team]"
+                      class="form-control"
+                      :class="state.formatGame['competitors'][team]['first_name']">
                   <div class="player">
                     <ul :id="'playerList'+team" class="hidden">
                       <li :id="player.player_id"
                           :class="'playerListItem'+team"
                           @click="hidePlayerList(team, player)"
-                          v-for="player in selectPlayers(createGame.clubs[team].club_id, team)">
+                          v-for="player in selectPlayers(state.init.create_game[0].clubs[team].club_id, team)">
                         {{player.first_name}} {{player.last_name}}
                       </li>
                     </ul>
                   </div>
 
                 <div >Display</div>
-                  <select v-model="createGame.displays[team]" class="form-select">
+                  <select v-model="state.init.create_game[0].competitors[team].display"
+                        class="form-select"
+                        :class="state.formatGame['competitors'][team]['display']">
                     <option v-for="display in state.init.display" :value="display">{{display.display}}</option>
                   </select>
               </div>
@@ -96,7 +101,7 @@
         </div>
       </div>
 
-      <div class="row p-3">
+<!--       <div class="row p-3">
         <div class="col-12">
           <h3 class="p-3">Finished Games</h3>
           <div class="container">
@@ -110,7 +115,7 @@
           </div>
           <current-games v-for="game in state.finishedGames" @reload="getGames" :game="game" :gameOptions="state.init"/>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -129,29 +134,11 @@ export default {
   },
   data(){
     return{
-      display: {1:{}, 2:{}},
       clubInput:null,
       isHidden: true,
       active:false,
-      clubHolder:{1:"", 2:""},
-      competitorHolder:{1:"", 2:""},
-      createGame: {
-        'competition': {},
-        'rink': {},
-        'sponsor': {},
-        'clubs': {
-          1:{},
-          2:{},
-        },
-        'competitors':{
-          1:{},
-          2:{}
-        },
-        'displays':{
-          1:{},
-          2:{}
-        },
-      },
+      playerSearch: {1:"", 2:""},
+      clubSearch: {1:"", 2:""},
     }
   },
   setup(props, context) {
@@ -220,13 +207,14 @@ export default {
     }
     function create(createGame) {
       axios.post(path+'games/create_game', {
-      create_game: createGame,
+      create_game: state.init.create_game[0],
       })
       .then(function (response) {
         console.log("CREATED GAME: ", response);
         getGames()
       })
       .catch(function (error) {
+        console.log("ERRORRR: ", error.response.data)
         state.formatGame = error.response.data
         console.log(error);
       });
@@ -291,13 +279,13 @@ export default {
   created () {
   },
   watch: {
-    clubHolder: {
+    clubSearch: {
       handler: function (val) {
         this.hideClubs(val)
       },
       deep: true,
     },
-    competitorHolder: {
+    playerSearch: {
       handler: function (val) {
         this.hidePlayers(val)
       },
@@ -326,6 +314,7 @@ export default {
     hidePlayers(val){
       if(this.state.clubs){
         for (let i = 1; i <= 2; i++) {
+          console.log(val[i])
           const listItems = document.querySelectorAll('.playerListItem'+i);
           listItems.forEach(function (item) {
             const text = item.innerText.toLowerCase();
@@ -355,17 +344,13 @@ export default {
       }
     },
     hideClubList(id, clubDeets){
-      console.log("ID: ", id, "CLUB DEETAS: ", clubDeets)
-      this.createGame['clubs'][id] = clubDeets
-      this.clubHolder[id] = this.createGame['clubs'][id]['club_name']
-      this.createGame['competitors'][id] = {}
-      this.competitorHolder[id] = ''
+      this.state.init.create_game[0].clubs[id] = clubDeets
       this.showClubList(id)
     },
     hidePlayerList(id, playerDeets){
       this.showPlayerList(id)
-      this.createGame['competitors'][id] = playerDeets
-      this.competitorHolder[id] = this.createGame['competitors'][id]['first_name'] + " " +this.createGame['competitors'][id]['last_name']
+      playerDeets['display'] = {"display": "Default", "display_id": 1}
+      this.state.init.create_game[0].competitors[id] = playerDeets
     },
     capitalise(key) {
       key = key.replace("_", " ")

@@ -5,6 +5,9 @@ import pickle
 import pytz
 import requests
 import threading
+import sys
+
+import config
 
 
 local_tz = pytz.timezone("Australia/Sydney")
@@ -370,6 +373,10 @@ class Games:
         else:
             return parsed_rows
 
+    def get_default_game(self):
+        return [config.DEFAULT_GAME]
+
+
 
     def get_games(self, get_current):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -499,28 +506,41 @@ class Games:
 
         sql = "INSERT INTO games (competition, rink, sponsor, start_time) VALUES(?, ?, ?, ?);"
 
+        not_filled = False
+
         for i in js:
+            if i == 'game_id' or i == 'name' or i == 'ends' or i == 'finish_time':
+                continue
             if js[i]:
                 for j in js[i]:
-                    print(j)
+                    if type(js[i][j]) == dict:
+                        for k in js[i][j]:
+                            if js[i][j][k]:
+                                continue
+                            else:
+                                js[i][j][k] = 'border border-danger'
+                                not_filled = True
+                    else:
+                        continue
             else:
                 js[i] = 'border border-danger'
+                not_filled = True
+
+        if not_filled:
+            return js
 
         try:
             params = [js["competition"]["competition_id"], js["rink"]["rink_id"], js["sponsor"]["sponsor_id"], utc]
             cursor.execute(sql, params)
 
             game_id = cursor.lastrowid
-            print('JJJ SSS\n', js)
-
-
 
             js['game_id'] = game_id
             for player in js['competitors']:
                 sql = "INSERT INTO competitors (player, game, display) VALUES(?, ?, ?);"
                 params = [js['competitors'][player]['player_id'],
                     game_id,
-                    js['displays'][player]['display_id']]
+                    js['competitors'][player]['display']['display_id']]
                 cursor.execute(sql, params)
 
             r = con.commit()
@@ -531,6 +551,7 @@ class Games:
             return "success"
         except:
             import traceback
+            print(js)
             print(traceback.format_exc())
             return js
         # except:

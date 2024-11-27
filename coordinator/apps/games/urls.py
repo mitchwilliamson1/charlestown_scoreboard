@@ -27,6 +27,7 @@ def slash():
 @gamesapp.route("/init")
 def init():
     initialise = {}
+    initialise["create_game"] = Games().get_default_game()
     initialise["competition"] = Games().get_competitions()
     initialise["display"] = Games().get_displays()
     initialise["rink"] = Games().get_rinks()

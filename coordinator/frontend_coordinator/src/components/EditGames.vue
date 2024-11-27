@@ -29,7 +29,7 @@
             </div>
 
             <div class="col-3" v-for="player, index in details['competitors']">
-              <label class="form-label">Team {{n}} Score</label>
+              <label class="form-label">Team {{n}} Display</label>
               <select class="form-select" v-model="player.display">
                 <option v-for="display in gameOptions['display']" :value="display">{{display.display}}</option>
               </select>
