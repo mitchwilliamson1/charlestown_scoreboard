@@ -7,7 +7,7 @@ import socket
 
 import sys
 
-from db_api import Masterboard
+from db_api import Big_Board
 
 
 
@@ -27,9 +27,9 @@ def index():
     return template('index.html')
 
 
-@bott.route("/get_masterboard")
-def get_masterboard():
-    return Masterboard().get_masterboard()
+@bott.route("/get_scoreboards")
+def get_scoreboards():
+    return Big_Board().get_scoreboards()
 
 
 @bott.route("/<logo>")
@@ -45,7 +45,7 @@ def create_game():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Masterboard().setup(request_params)
+    Big_Board().setup(request_params)
     return request.json
 
 
@@ -54,7 +54,7 @@ def add_score():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Masterboard().add_score(request_params['update'])
+    Big_Board().add_score(request_params['update'])
     return request.json
 
 
@@ -63,7 +63,7 @@ def add_score():
     if request.method == "OPTIONS":
         return
     request_params = json.loads(request.body.getvalue())
-    Masterboard().add_ends(request_params['update'])
+    Big_Board().add_ends(request_params['update'])
     return request.json
 
 

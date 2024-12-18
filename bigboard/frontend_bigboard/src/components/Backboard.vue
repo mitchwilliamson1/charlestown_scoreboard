@@ -1,8 +1,14 @@
 <template>
-  <div class="h-100 w-100">
-    <template v-for="board in state.scoreboards">
-      <Scoreboard class="h-100" :detail="board"/>
-    </template>
+  <div class="h-100 w-100" style="background-color: black;">
+    <div class="container p-0 h-100 w-100">
+      <div class="row h-50 w-100 m-0 p-0">
+        <template v-for="board in state.scoreboards">
+          <div class="col  w-100 h-100 m-1">
+            <Scoreboard class="" :detail="board"/>
+          </div>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -35,21 +41,21 @@ export default {
     }
 
     onMounted(async () => {
-      getGame()
+      getScoreboards()
     })
 
-    function getGame() {
-      axios.get(path+'get_masterboard')
+    function getScoreboards() {
+      axios.get(path+'get_scoreboards')
       .then(function (response) {
         if (response.status == 200){
-          state.scoreboards = response.data[0]
+          state.scoreboards = response.data
         }
       })
       .catch(function (error) {
         console.log("ERROR ", error);
       })
       .then(function () {
-        setTimeout(getGame, 1000)
+        setTimeout(getScoreboards, 1000)
       });
     }
 
@@ -100,5 +106,12 @@ export default {
 }
 </script>
 <style scoped type="text/css">
-
+.container {
+  max-width: 100%;
+  /*margin: 0%;*/
+}
+.row {
+  max-width: 100%;
+  /*margin: 0%;*/
+}
 </style>

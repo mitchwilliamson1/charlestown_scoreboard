@@ -1,78 +1,68 @@
 <template>
   <div v-if="this.details" class="container-fluid h-100 w-100 p-0" style="background-color: black;">
-    <div class="container-fluid w-100 h-100 d-flex flex-column">
-
-      <div class="row align-items-center" style="height: 33%;">
-
-        <div class="col p-0 h-75">
-            <img class="logo" :src="'http://127.0.0.1:8081/moama_steamers.png'">
-
-<!--           <template v-if="coordinator_running" >
+    <div class="container-fluid w-100 d-flex flex-column" style="height: 100vh">
+      <div class="row align-items-center" style="height: 25%;">
+        <div class="col p-0 h-100">
+          <div v-if="coordinator_running" class="h-100" >
             <img v-if="p1.competitor_display == 'Logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p1Logo">
             <div v-else-if="p1.competitor_display == 'First Initial'" class="txt">{{p1.first_name.charAt(0)}}</div>
             <div v-else-if="p1.competitor_display == 'Fist and Last Initial'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
             <img v-else="p1.competitor_display == 'Default'" class="logo" :src="'http://127.0.0.1:8081/moama_steamers.png'"> 
-          </template>
-          <template v-else>
+          </div>
+          <div v-else class="h-100">
             <div v-if="p1.competitor_display == 'first name'" class="txt">{{p1.first_name.charAt(0)}}</div>
             <div v-else-if="p1.competitor_display == 'Fist and Last Initial'" class="txt">{{p1.first_name.charAt(0)}}{{p1.last_name.charAt(0)}}</div>
             <img v-else="p1.competitor_display == 'Default'" class="logo" :src="'http://127.0.0.1:8081/moama_steamers.png'">
-          </template> -->
 
+          </div>
         </div>
-
-        <div class="col p-0 h-75">
-            <img class="logo" :src="'http://127.0.0.1:8081/away.jpeg'">
-
-<!--           <template v-if="coordinator_running">
+        <div class="col p-0 h-100">
+          <div v-if="coordinator_running" class="h-100" >
             <img v-if="p2.competitor_display == 'Logo'" class="logo"  :src="'http://'+coordinator+'/players/get_logo/'+p2Logo">
             <div v-else-if="p2.competitor_display == 'First Initial'" class="txt">{{p2.first_name.charAt(0)}}</div>
             <div v-else-if="p2.competitor_display == 'Fist and Last Initial'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
             <img v-else="p2.competitor_display == 'Default'"  class="logo" :src="'http://127.0.0.1:8081/away.jpeg'">
-          </template>
-          <template v-else>
+          </div>
+          <div v-else class="h-100">
             <div v-if="p2.competitor_display == 'First Initial'" class="txt">{{p2.first_name.charAt(0)}}</div>
             <div v-else-if="p2.competitor_display == 'Fist and Last Initial'" class="txt">{{p2.first_name.charAt(0)}}{{p2.last_name.charAt(0)}}</div>
             <img v-else="p2.competitor_display == 'Default'" class="logo" :src="'http://127.0.0.1:8081/away.jpeg'">
-          </template> -->
-
-        </div>
-
-      </div>
-
-      <div class="row align-items-center" style="min-height: 33%; padding-bottom: 30px;">
-        <div class="col p-0 align-self-center">
-          <Ticker :player="details.competitors[1]" 
-                    :details="details"
-                    fontSize="10" 
-                    colour="red"/>
-        </div>
-        <div class="col p-0">
-          <Ticker :player="details.competitors[2]" 
-                    :details="details"
-                    fontSize="10" 
-                    colour="black"/>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="h-100 align-self-center row">
-          <div :style="getBackgroundImage" class="add">
           </div>
         </div>
       </div>
 
-      <div class="row align-items-center overflow-hidden" style="height: 33%;">
+      <div class="row align-items-center" style="min-height: 25%; padding-bottom: 30px;">
+        <div class="col p-0 align-self-center">
+          <Ticker :player="details.competitors[0]" 
+                    :details="details"
+                    fontSize="21" 
+                    colour="red"/>
+        </div>
+        <div class="col p-0">
+          <Ticker :player="details.competitors[1]" 
+                    :details="details"
+                    fontSize="21" 
+                    colour="black"/>
+        </div>
+      </div>
+
+      <div v-if="!isMobile()" class="flex-fill">
+        <div class="h-100 align-self-center">
+          <!-- <div class="h-100" style="background: red" /> -->
+          <div :style="getBackgroundImage" class="add"/>
+        </div>
+      </div>
+
+      <div class="row align-items-center overflow-hidden" style="height: 25%;">
         <div class="col">
           <Ticker :details="details"
                   :endsProp="ends"
                   player="ends" 
-                  fontSize="6" 
+                  fontSize="21" 
                   fontColour="white" 
                   colour="black"/>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -157,7 +147,7 @@ export default {
 }
 
 .row {
-  background-color: black;
+    background-color: black;
 }
 
 .txt {
@@ -177,12 +167,10 @@ export default {
 
 .logo {
   background-color: white;
-  padding: 0px;
-  margin: 0px;
-  /*top: 10%;*/
+  top: 10%;
   aspect-ratio: 4/3;
   position: relative;
-  height: 100%;
+  height: 75%;
   display: block;
   margin-left: auto;
   margin-right: auto;

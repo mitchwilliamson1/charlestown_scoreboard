@@ -12,7 +12,7 @@ DEFAULT_MASTER = [{'game_id': -1,'coordinator_ip':'192.168.15.200', 'name': 'sta
 
 local_tz = pytz.timezone("Australia/Sydney")
 
-class Masterboard:
+class Big_Board:
     def __init__(self):
         self.db_path = "bigboard.db"
 
@@ -37,7 +37,7 @@ class Masterboard:
         except Exception:
             return str_val
 
-    def get_masterboard(self):
+    def get_scoreboards(self):
         con = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         con.row_factory = sqlite3.Row
         cursor = con.cursor()
@@ -51,37 +51,44 @@ class Masterboard:
 
         coordinator_ip = '192.168.15.200:8000'
 
-        summed = []
+        Backboard = []
         ips = cursor.execute('''SELECT * FROM bigboard''').fetchall()
         for ip in ips:
             try:
-                response = requests.get('http://'+ip['ip']+'/get_game', timeout=2)
+                scoreboard = requests.get('http://'+ip['ip']+'/get_game', timeout=0.2)
             except:
-                continue
-            data = json.loads(response.content)
-            ends += int(data[0]['ends'])
-            coordinator_ip = data[0]['coordinator']
+                scoreboard = config.DEFAULT_GAME
 
-            for i in data[0]['competitors']:
-                if i['competitor_id'] == 1:
-                    player_1_score += int(i['score'])
-                    player_1_logo = i['logo']
-                if i['competitor_id'] == 2:
-                    player_2_score += int(i['score'])
-                    player_2_logo = i['logo']
+            # scoreboard = json.loads(response.content)
+            # Backboard.append(scoreboard)
+            Backboard.append(scoreboard)
+        return json.dumps(Backboard, indent=4, sort_keys=True)
 
-        for i in DEFAULT_MASTER[0]['competitors']:
-            if i['player_id'] == 1:
-                i['score'] = str(player_1_score)
-                i['logo'] = str(player_1_logo)
-            if i['player_id'] == 2:
-                i['score'] = str(player_2_score)
-                i['logo'] = str(player_2_logo)
+############# YOU WILL NEED THIS ################
 
-        DEFAULT_MASTER[0]['ends'] = ends
-        DEFAULT_MASTER[0]['coordinator_ip'] = coordinator_ip
+        #     ends += int(data[0]['ends'])
+        #     coordinator_ip = data[0]['coordinator']
 
-        return json.dumps(DEFAULT_MASTER, indent=4, sort_keys=True)
+        #     for i in data[0]['competitors']:
+        #         if i['competitor_id'] == 1:
+        #             player_1_score += int(i['score'])
+        #             player_1_logo = i['logo']
+        #         if i['competitor_id'] == 2:
+        #             player_2_score += int(i['score'])
+        #             player_2_logo = i['logo']
+
+        # for i in DEFAULT_MASTER[0]['competitors']:
+        #     if i['player_id'] == 1:
+        #         i['score'] = str(player_1_score)
+        #         i['logo'] = str(player_1_logo)
+        #     if i['player_id'] == 2:
+        #         i['score'] = str(player_2_score)
+        #         i['logo'] = str(player_2_logo)
+
+        # DEFAULT_MASTER[0]['ends'] = ends
+        # DEFAULT_MASTER[0]['coordinator_ip'] = coordinator_ip
+
+        # return json.dumps(DEFAULT_MASTER, indent=4, sort_keys=True)
 
 
     def write_coordinator_score(self, js):
